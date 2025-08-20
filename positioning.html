@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 1: ICP & Positioning Blueprint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Work+Sans:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f6f6f6;
+        }
+        h1, h2, h3, button {
+            font-family: 'Work Sans', sans-serif;
+        }
+        .scale-gold-text { color: #e5a819; }
+        .scale-gold-bg { background-color: #e5a819; }
+        .scale-gold-border { border-color: #e5a819; }
+        .scale-green-text { color: #224f41; }
+        .scale-green-bg { background-color: #224f41; }
+        .nav-link.active {
+            background-color: #e5a819;
+            color: #224f41;
+            font-weight: 700;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link:hover {
+            background-color: #faeed1;
+            color: #224f41;
+        }
+        textarea, input[type="text"] {
+            font-family: 'Outfit', sans-serif;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        textarea:focus, input[type="text"]:focus {
+            border-color: #e5a819;
+            box-shadow: 0 0 0 2px rgba(229, 168, 25, 0.4);
+            outline: none;
+        }
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div id="export-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-2xl font-bold scale-green-text">Positioning Summary</h2>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-800 text-3xl font-light">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <pre id="export-content" class="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded-md font-mono"></pre>
+            </div>
+            <div class="p-4 border-t bg-gray-50 flex justify-end">
+                 <button id="copy-to-clipboard-btn" class="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-3">
+                <h1 class="text-xl sm:text-2xl font-bold scale-green-text">Part 1: ICP & Positioning</h1>
+                <button id="export-btn" class="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Export</button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                <div id="progress-bar" class="scale-gold-bg h-2.5 rounded-full progress-bar-fill" style="width: 0%"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div class="lg:flex lg:space-x-8">
+            <nav class="hidden lg:block w-1/4 sticky top-28 self-start z-30">
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold scale-green-text mb-2 text-lg">Sections</h3>
+                    <ul class="space-y-1" id="desktop-nav">
+                        <li><a href="#section-1" class="nav-link block p-2 rounded text-gray-700 font-semibold active">1. Define Your ICP</a></li>
+                        <li><a href="#section-2" class="nav-link block p-2 rounded text-gray-700 font-semibold">2. Competitive Alternatives</a></li>
+                        <li><a href="#section-3" class="nav-link block p-2 rounded text-gray-700 font-semibold">3. Unique Attributes</a></li>
+                        <li><a href="#section-4" class="nav-link block p-2 rounded text-gray-700 font-semibold">4. Value and Proof</a></li>
+                        <li><a href="#section-5" class="nav-link block p-2 rounded text-gray-700 font-semibold">5. Summarize Target Market</a></li>
+                        <li><a href="#section-6" class="nav-link block p-2 rounded text-gray-700 font-semibold">6. Market Context (Today)</a></li>
+                        <li><a href="#section-7" class="nav-link block p-2 rounded text-gray-700 font-semibold">7. Relevant Trends</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="w-full lg:w-3/4">
+                <div class="space-y-8">
+                    
+                    <div id="section-1" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <h2 class="text-2xl font-bold scale-green-text mb-2">1. Define Your Ideal Customer Profile (ICP)</h2>
+                        <p class="text-gray-600 mb-6">This is the foundation. A precise ICP provides the lens through which all other positioning elements are viewed. Be specific and use data where possible.</p>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block font-bold text-gray-700">Common Needs (Job-to-be-Done)</label>
+                                <p class="text-sm text-gray-500 mb-2">What specific, high-stakes task are they trying to accomplish?</p>
+                                <textarea id="icp_common_needs" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: We need to de-risk a critical NetSuite to Oracle ERP migration by getting an accurate 'as-is' of all current business processes."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Problem Urgency</label>
+                                <p class="text-sm text-gray-500 mb-2">Why do they need to solve this problem *now*?</p>
+                                <textarea id="icp_problem_urgency" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: The migration is a board-level priority for this fiscal year. Any delay directly impacts our ability to scale and report earnings accurately."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Prioritized Requirements</label>
+                                <p class="text-sm text-gray-500 mb-2">What do they value most in a solution for this problem?</p>
+                                <textarea id="icp_prioritized_requirements" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Speed-to-insight is #1. We cannot wait 6 months for consultants. #2 is accuracy; the data must be audit-grade. #3 is ease of use for our internal team."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Quick Decision Making</label>
+                                <p class="text-sm text-gray-500 mb-2">Who is the economic buyer and can they approve the purchase efficiently?</p>
+                                <textarea id="icp_quick_decision_making" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: The VP of Finance is the economic buyer. They have budget authority up to $250k for transformation projects and can sign off without a lengthy committee review."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Desired Business Value</label>
+                                <p class="text-sm text-gray-500 mb-2">How do they measure success? What are their core metrics?</p>
+                                <textarea id="icp_desired_business_value" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Success is measured by (1) reducing the migration timeline by at least 50%, (2) cutting external consulting fees by $500k+, and (3) zero critical process failures post-launch."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Willingness to Pay</label>
+                                <p class="text-sm text-gray-500 mb-2">What is their budget and value perception for a solution like this?</p>
+                                <textarea id="icp_willingness_to_pay" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: They've already budgeted $1M for consultants, so they perceive high value in a tech solution that can deliver better results for a fraction of that cost. Willing to pay $150k-$200k for a solution that guarantees success."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Implementation Readiness</label>
+                                <p class="text-sm text-gray-500 mb-2">Can they adopt and get value from the product today?</p>
+                                <textarea id="icp_implementation_readiness" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: They have a dedicated transformation team ready to start. All relevant contracts and process documents are digitized and accessible."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Firmographic</label>
+                                <p class="text-sm text-gray-500 mb-2">What are the key company attributes (size, industry, revenue)?</p>
+                                <textarea id="icp_firmographic" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Publicly traded B2B SaaS company, >$1B in annual revenue, 2000+ employees. Headquartered in North America."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Technographic</label>
+                                <p class="text-sm text-gray-500 mb-2">What is their current technology stack?</p>
+                                <textarea id="icp_technographic" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Currently using NetSuite, Salesforce, and Coupa. Moving to Oracle Fusion. Internal BI uses Tableau."></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Behavioral</label>
+                                <p class="text-sm text-gray-500 mb-2">How do they act, buy, and use technology?</p>
+                                <textarea id="icp_behavioral" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: They are early adopters of AI technology in their finance stack. They prefer to buy best-of-breed solutions over suite extensions. They have a history of successful, large-scale software implementations."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-2" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <h2 class="text-2xl font-bold scale-green-text mb-2">2. Competitive Alternatives</h2>
+                        <p class="font-semibold text-gray-600 mb-2">Question: What do customers do if Architect doesn't exist?</p>
+                        <p class="text-gray-600 mb-4">Guidance: Based on your ICP, what is their status quo? Map the compromises they are forced to make.</p>
+                        <div id="alternatives-container" class="space-y-4"></div>
+                        <button id="add-alternative-btn" class="mt-4 text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90">+ Add Alternative</button>
+                    </div>
+
+                    <div id="section-3" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <h2 class="text-2xl font-bold scale-green-text mb-2">3. Unique Attributes</h2>
+                        <p class="font-semibold text-gray-600 mb-2">Question: What are the specific capabilities of Architect that the alternatives lack?</p>
+                        <p class="text-gray-600 mb-4">Guidance: List the features that are truly unique. This is not a list of all features, but your core differentiators.</p>
+                        <div class="bg-[#faeed1] border-l-4 scale-gold-border p-4 rounded-r-md mb-6">
+                            <h3 class="font-bold text-lg scale-green-text mb-2">Tip: Four Categories of Unique Attributes</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div class="p-3 bg-white rounded-md border border-[#efcb75]">
+                                    <h4 class="font-bold text-gray-800">Product</h4>
+                                    <p class="text-gray-600">Core features and functionality</p>
+                                </div>
+                                <div class="p-3 bg-white rounded-md border border-[#efcb75]">
+                                    <h4 class="font-bold text-gray-800">Customer Centricity</h4>
+                                    <p class="text-gray-600">How you serve customers differently</p>
+                                </div>
+                                <div class="p-3 bg-white rounded-md border border-[#efcb75]">
+                                    <h4 class="font-bold text-gray-800">Pricing & Value</h4>
+                                    <p class="text-gray-600">Unique pricing or value delivery</p>
+                                </div>
+                                <div class="p-3 bg-white rounded-md border border-[#efcb75]">
+                                    <h4 class="font-bold text-gray-800">Service</h4>
+                                    <p class="text-gray-600">Support or implementation approach</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="attributes-container" class="space-y-4"></div>
+                        <button id="add-attribute-btn" class="mt-4 text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90">+ Add Attribute</button>
+                    </div>
+
+                    <div id="section-4" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <h2 class="text-2xl font-bold scale-green-text mb-2">4. Value and Proof</h2>
+                        <p class="font-semibold text-gray-600 mb-2">Question: What is the quantifiable value each unique attribute delivers?</p>
+                        <p class="text-gray-600 mb-4">Guidance: Translate attributes into tangible value. For every claim, provide concrete proof.</p>
+                        <div id="value-container" class="space-y-4"></div>
+                        <button id="add-value-btn" class="mt-4 text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90">+ Add Value Point</button>
+                    </div>
+
+                    <div id="section-5" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <h2 class="text-2xl font-bold scale-green-text mb-2">5. Summarize Target Market</h2>
+                        <p class="font-semibold text-gray-600 mb-2">Question: Who cares the most about the value you deliver?</p>
+                        <p class="text-gray-600 mb-4">Guidance: Write a concise summary of your ICP from Section 1. This is the customer who feels the pain most acutely and values your unique attributes the most.</p>
+                        <textarea id="icp_summary" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="4" placeholder="Example: Our ICP is the VP of Finance at a >$1B public tech company undergoing a critical ERP migration. They are under immense pressure to deliver on time and on budget, and they value speed-to-insight and audit-grade accuracy above all else."></textarea>
+                    </div>
+                    
+                    <div id="section-6" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <h2 class="text-2xl font-bold scale-green-text mb-2">6. Market Context (Today)</h2>
+                        <p class="font-semibold text-gray-600 mb-2">Question: What existing market category do our best customers use to frame us today?</p>
+                        <p class="text-gray-600 mb-4">Guidance: Customers will place you in a box they already know. What is that box?</p>
+                        <div id="market-context-container" class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="market-context" value="Business Process Analysis" class="mr-2 focus-ring-gold"> Business Process Analysis</label>
+                            <label class="flex items-center"><input type="radio" name="market-context" value="Transformation Management" class="mr-2 focus-ring-gold"> Transformation Management</label>
+                            <label class="flex items-center"><input type="radio" name="market-context" value="AI-powered Consulting" class="mr-2 focus-ring-gold"> AI-powered Consulting</label>
+                            <label class="flex items-center"><input type="radio" name="market-context" value="Process Mining" class="mr-2 focus-ring-gold"> Process Mining</label>
+                            <label class="flex items-center"><input type="radio" name="market-context" value="Other" class="mr-2 focus-ring-gold"> Other: <input type="text" id="market-context-other" class="ml-2 p-1 border border-gray-300 rounded-md focus-ring-gold"></label>
+                        </div>
+                    </div>
+
+                    <div id="section-7" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <h2 class="text-2xl font-bold scale-green-text mb-2">7. Relevant Trends</h2>
+                        <p class="font-semibold text-gray-600 mb-2">Question: What macro trends create urgency for our solution *right now*?</p>
+                        <p class="text-gray-600 mb-4">Guidance: Tying your solution to an undeniable trend creates urgency.</p>
+                        <div id="trends-container" class="space-y-4"></div>
+                        <button id="add-trend-btn" class="mt-4 text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90">+ Add Trend</button>
+                    </div>
+                    
+                    <div class="mt-8 text-center">
+                        <a href="category_design.html" id="continue-btn" class="scale-gold-bg text-white font-bold py-4 px-8 rounded-lg hover:bg-opacity-90 text-lg inline-block">
+                            Continue to Part 2: Category Design &rarr;
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="text-center text-sm text-gray-500 py-8">
+        Built for the Klarity Workshop | Scale Venture Partners
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const state = {};
+            const totalFields = 23;
+            let filledFields = 0;
+
+            const addRemovableRow = (containerId, p1, p2, stateKey) => {
+                const container = document.getElementById(containerId);
+                if (!state[stateKey]) state[stateKey] = [];
+                const index = state[stateKey].length;
+                state[stateKey].push({ val1: '', val2: '' });
+
+                const row = document.createElement('div');
+                row.className = 'flex items-center space-x-2';
+                row.innerHTML = `
+                    <input type="text" class="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold" placeholder="${p1}" value="" data-index="${index}" data-key="val1">
+                    <textarea class="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="${p2}" data-index="${index}" data-key="val2"></textarea>
+                    <button class="remove-row-btn text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors">&times;</button>
+                `;
+                container.appendChild(row);
+            };
+            
+            const addRemovableRowTriple = (containerId, p1, p2, p3, stateKey) => {
+                const container = document.getElementById(containerId);
+                if (!state[stateKey]) state[stateKey] = [];
+                const index = state[stateKey].length;
+                state[stateKey].push({ val1: '', val2: '', val3: '' });
+
+                const row = document.createElement('div');
+                row.className = 'p-4 border border-gray-200 rounded-lg space-y-2 bg-gray-50';
+                row.innerHTML = `
+                    <div class="flex items-center">
+                        <input type="text" class="flex-grow p-2 border border-gray-300 rounded-md focus-ring-gold" placeholder="${p1}" data-index="${index}" data-key="val1">
+                        <button class="remove-row-btn ml-2 text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors">&times;</button>
+                    </div>
+                    <textarea class="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" rows="2" placeholder="${p2}" data-index="${index}" data-key="val2"></textarea>
+                    <input type="text" class="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" placeholder="${p3}" data-index="${index}" data-key="val3">
+                `;
+                container.appendChild(row);
+            };
+            
+            const addRemovableInput = (containerId, placeholder, stateKey) => {
+                const container = document.getElementById(containerId);
+                if (!state[stateKey]) state[stateKey] = [];
+                const index = state[stateKey].length;
+                state[stateKey].push({ value: '' });
+
+                const row = document.createElement('div');
+                row.className = 'flex items-center space-x-2';
+                row.innerHTML = `
+                    <input type="text" class="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" placeholder="${placeholder}" data-index="${index}" data-key="value">
+                    <button class="remove-row-btn text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors">&times;</button>
+                `;
+                container.appendChild(row);
+            };
+
+            document.getElementById('add-alternative-btn').addEventListener('click', () => addRemovableRow('alternatives-container', 'Example: Management Consultants (BCG)', 'Example: Extremely expensive, slow...', 'alternatives'));
+            document.getElementById('add-attribute-btn').addEventListener('click', () => addRemovableInput('attributes-container', 'Example: Day-one insights from existing documents', 'attributes'));
+            document.getElementById('add-value-btn').addEventListener('click', () => addRemovableRowTriple('value-container', 'Unique Attribute', 'Value Delivered (The "So What?")', 'Proof Point (Customer story, metric)', 'values'));
+            document.getElementById('add-trend-btn').addEventListener('click', () => addRemovableInput('trends-container', 'Example: Economic pressure is forcing CFOs to cut G&A...', 'trends'));
+
+            addRemovableRow('alternatives-container', 'Example: Management Consultants (BCG)', 'Example: Extremely expensive, slow to value, creates dependency.', 'alternatives');
+            addRemovableInput('attributes-container', 'Example: Day-one insights from existing documents vs. months of interviews.', 'attributes');
+            addRemovableRowTriple('value-container', 'Example: Day-one insights', 'Example: Reduces transformation prep time from 3 months to 2 weeks.', 'Example: Cloudflare ERP migration case study.', 'values');
+            addRemovableInput('trends-container', 'Example: Economic pressure is forcing CFOs to cut G&A and reduce consulting spend.', 'trends');
+
+            const updateProgressBar = () => {
+                filledFields = 0;
+                document.querySelectorAll('input[type="text"], textarea').forEach(input => {
+                    if (input.value.trim() !== '' && !input.id.includes('other')) filledFields++;
+                });
+                const radioChecked = document.querySelector('input[name="market-context"]:checked');
+                if (radioChecked) {
+                    filledFields++;
+                    if(radioChecked.value === 'Other' && document.getElementById('market-context-other').value.trim() !== '') filledFields++;
+                }
+                const progress = Math.min(100, (filledFields / totalFields) * 100);
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+            };
+
+            const updateAllInputs = () => {
+                document.querySelectorAll('input, textarea').forEach(el => {
+                    const parentContainer = el.closest('div[id$="-container"]');
+                    if (parentContainer) {
+                        const stateKey = parentContainer.id.replace('-container', '');
+                        const index = el.dataset.index;
+                        const key = el.dataset.key;
+                        if (state[stateKey] && state[stateKey][index]) state[stateKey][index][key] = el.value;
+                    } else if (el.id) {
+                        state[el.id] = el.value;
+                    } else if (el.name === 'market-context' && el.checked) {
+                        state[el.name] = el.value;
+                    }
+                });
+                updateProgressBar();
+                
+                const continueBtn = document.getElementById('continue-btn');
+                const dataString = btoa(JSON.stringify(state));
+                continueBtn.href = `category_design.html?data=${dataString}`;
+            };
+            
+            document.querySelector('main').addEventListener('input', updateAllInputs);
+            
+            const mainEl = document.querySelector('main');
+            mainEl.addEventListener('click', (e) => {
+                const button = e.target.closest('.remove-row-btn');
+                if (!button) return;
+                const row = button.closest('div');
+                const container = row.parentElement;
+                const stateKey = container.id.replace('-container', '');
+                const index = Array.from(container.children).indexOf(row);
+                if (state[stateKey] && state[stateKey][index]) {
+                    state[stateKey].splice(index, 1);
+                    container.removeChild(row);
+                    updateAllInputs();
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main > div > div[id^="section-"]');
+            const observer = new IntersectionObserver((entries) => {
+                let latestIntersectingEntry = null;
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        latestIntersectingEntry = entry;
+                    }
+                });
+
+                if (latestIntersectingEntry) {
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === `#${latestIntersectingEntry.target.id}`);
+                    });
+                }
+            }, { rootMargin: "-40% 0px -60% 0px", threshold: 0 });
+            sections.forEach(section => observer.observe(section));
+
+            const modal = document.getElementById('export-modal');
+            document.getElementById('export-btn').addEventListener('click', () => {
+                let summary = `Part 1: ICP & Positioning Blueprint\n======================================\n\n`;
+                const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
+                const formatList = (items, k1, k2) => items.map(item => `- ${item[k1]}: ${item[k2]}`).join('\n');
+                
+                summary += `## 1. Ideal Customer Profile (ICP)\n`;
+                summary += `- Common Needs: ${state['icp_common_needs'] || 'N/A'}\n`;
+                summary += `- Problem Urgency: ${state['icp_problem_urgency'] || 'N/A'}\n`;
+                summary += `- Prioritized Requirements: ${state['icp_prioritized_requirements'] || 'N/A'}\n`;
+                summary += `- Quick Decision Making: ${state['icp_quick_decision_making'] || 'N/A'}\n`;
+                summary += `- Desired Business Value: ${state['icp_desired_business_value'] || 'N/A'}\n`;
+                summary += `- Willingness to Pay: ${state['icp_willingness_to_pay'] || 'N/A'}\n`;
+                summary += `- Implementation Readiness: ${state['icp_implementation_readiness'] || 'N/A'}\n`;
+                summary += `- Firmographic: ${state['icp_firmographic'] || 'N/A'}\n`;
+                summary += `- Technographic: ${state['icp_technographic'] || 'N/A'}\n`;
+                summary += `- Behavioral: ${state['icp_behavioral'] || 'N/A'}\n\n`;
+
+                summary += formatSection('2. Competitive Alternatives', state.alternatives ? formatList(state.alternatives, 'val1', 'val2') : 'N/A');
+                summary += formatSection('3. Unique Attributes', state.attributes ? state.attributes.map(item => `- ${item.value}`).join('\n') : 'N/A');
+                summary += formatSection('4. Value and Proof', state.values ? state.values.map(item => `- Attribute: ${item.val1}\n  Value: ${item.val2}\n  Proof: ${item.val3}`).join('\n\n') : 'N/A');
+                summary += formatSection('5. Summarize Target Market', state['icp_summary'] || 'N/A');
+                let marketContext = state['market-context'] === 'Other' ? state['market-context-other'] : state['market-context'];
+                summary += formatSection('6. Market Context (Today)', marketContext);
+                summary += formatSection('7. Relevant Trends', state.trends ? state.trends.map(item => `- ${item.value}`).join('\n') : 'N/A');
+
+                document.getElementById('export-content').textContent = summary;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+
+            document.getElementById('close-modal-btn').addEventListener('click', () => {
+                 modal.classList.add('hidden');
+                 modal.classList.remove('flex');
+            });
+            
+            document.getElementById('copy-to-clipboard-btn').addEventListener('click', function() {
+                const textToCopy = document.getElementById('export-content').textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    this.textContent = 'Copied!';
+                    setTimeout(() => { this.textContent = 'Copy to Clipboard'; }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
