@@ -106,14 +106,14 @@
                                 <textarea id="icp_common_needs" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: We need to de-risk a critical NetSuite to Oracle ERP migration by getting an accurate 'as-is' of all current business processes."></textarea>
                             </div>
                             <div>
+                                <label class="block font-bold text-gray-700">Desired Business Value</label>
+                                <p class="text-sm text-gray-500 mb-2">How do they measure success? What are their core metrics?</p>
+                                <textarea id="icp_desired_business_value" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Success is measured by (1) reducing the migration timeline by at least 50%, (2) cutting external consulting fees by $500k+, and (3) zero critical process failures post-launch."></textarea>
+                            </div>
+                            <div>
                                 <label class="block font-bold text-gray-700">Problem Urgency</label>
                                 <p class="text-sm text-gray-500 mb-2">Why do they need to solve this problem *now*?</p>
                                 <textarea id="icp_problem_urgency" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: The migration is a board-level priority for this fiscal year. Any delay directly impacts our ability to scale and report earnings accurately."></textarea>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-gray-700">Prioritized Requirements</label>
-                                <p class="text-sm text-gray-500 mb-2">What do they value most in a solution for this problem?</p>
-                                <textarea id="icp_prioritized_requirements" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Speed-to-insight is #1. We cannot wait 6 months for consultants. #2 is accuracy; the data must be audit-grade. #3 is ease of use for our internal team."></textarea>
                             </div>
                             <div>
                                 <label class="block font-bold text-gray-700">Quick Decision Making</label>
@@ -121,9 +121,9 @@
                                 <textarea id="icp_quick_decision_making" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: The VP of Finance is the economic buyer. They have budget authority up to $250k for transformation projects and can sign off without a lengthy committee review."></textarea>
                             </div>
                             <div>
-                                <label class="block font-bold text-gray-700">Desired Business Value</label>
-                                <p class="text-sm text-gray-500 mb-2">How do they measure success? What are their core metrics?</p>
-                                <textarea id="icp_desired_business_value" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Success is measured by (1) reducing the migration timeline by at least 50%, (2) cutting external consulting fees by $500k+, and (3) zero critical process failures post-launch."></textarea>
+                                <label class="block font-bold text-gray-700">Prioritized Requirements</label>
+                                <p class="text-sm text-gray-500 mb-2">What do they value most in a solution for this problem?</p>
+                                <textarea id="icp_prioritized_requirements" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus-ring-gold" rows="3" placeholder="Example: Speed-to-insight is #1. We cannot wait 6 months for consultants. #2 is accuracy; the data must be audit-grade. #3 is ease of use for our internal team."></textarea>
                             </div>
                             <div>
                                 <label class="block font-bold text-gray-700">Willingness to Pay</label>
@@ -384,10 +384,10 @@
                 
                 summary += `## 1. Ideal Customer Profile (ICP)\n`;
                 summary += `- Common Needs: ${state['icp_common_needs'] || 'N/A'}\n`;
-                summary += `- Problem Urgency: ${state['icp_problem_urgency'] || 'N/A'}\n`;
-                summary += `- Prioritized Requirements: ${state['icp_prioritized_requirements'] || 'N/A'}\n`;
-                summary += `- Quick Decision Making: ${state['icp_quick_decision_making'] || 'N/A'}\n`;
                 summary += `- Desired Business Value: ${state['icp_desired_business_value'] || 'N/A'}\n`;
+                summary += `- Problem Urgency: ${state['icp_problem_urgency'] || 'N/A'}\n`;
+                summary += `- Quick Decision Making: ${state['icp_quick_decision_making'] || 'N/A'}\n`;
+                summary += `- Prioritized Requirements: ${state['icp_prioritized_requirements'] || 'N/A'}\n`;
                 summary += `- Willingness to Pay: ${state['icp_willingness_to_pay'] || 'N/A'}\n`;
                 summary += `- Implementation Readiness: ${state['icp_implementation_readiness'] || 'N/A'}\n`;
                 summary += `- Firmographic: ${state['icp_firmographic'] || 'N/A'}\n`;
