@@ -1,5 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+<!--
+    ================================================================================================
+    INTERACTIVE GTM BLUEPRINT SERIES - SINGLE PAGE APPLICATION (SPA)
+    ================================================================================================
+    
+    PROJECT EVOLUTION:
+    This file represents the evolution from a 3-file system to a unified Single Page Application.
+    
+    ORIGINAL ARCHITECTURE (3 files):
+    1. positioning.html - Standalone page for Part 1: ICP & Positioning
+    2. category_design.html - Standalone page for Part 2: Category Design  
+    3. index.html - Simple landing page with links to the two tools
+    
+    CURRENT ARCHITECTURE (1 file):
+    - index.html (this file) - Complete SPA containing all functionality:
+      * Home page with navigation cards
+      * Full Positioning Tool (Part 1)
+      * Full Category Design Tool (Part 2)
+      * Unified state management with localStorage persistence
+      * Seamless navigation between all views
+      * Consistent branding and user experience
+    
+    WHY THE CHANGE:
+    1. Better User Experience - No page reloads, instant navigation, persistent state
+    2. Code Reusability - Shared components, consistent styling, DRY principles
+    3. Maintainability - Single source of truth, no duplicate code to sync
+    4. State Management - Data flows seamlessly between tools using React state
+    5. Modern Architecture - Follows current web development best practices
+    
+    TECHNICAL APPROACH:
+    - React 18 with CDN loading (no build process required)
+    - Babel standalone for JSX transformation in the browser
+    - Tailwind CSS for styling
+    - localStorage for data persistence
+    - Component-based architecture with shared state
+    
+    NOTE: The original positioning.html and category_design.html files have been archived
+    in the /archive directory for reference, but are no longer needed or maintained.
+    ================================================================================================
+-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,6 +123,36 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        /*
+         * ============================================================================================
+         * REACT SINGLE PAGE APPLICATION IMPLEMENTATION
+         * ============================================================================================
+         * 
+         * This React application consolidates what was previously three separate HTML files:
+         * 1. A simple index.html with navigation links
+         * 2. positioning.html for the ICP & Positioning tool
+         * 3. category_design.html for the Category Design tool
+         * 
+         * KEY COMPONENTS:
+         * - HomeView: Landing page with navigation cards (replaces old index.html content)
+         * - PositioningTool: Complete Part 1 functionality (replaces positioning.html)
+         * - CategoryDesignTool: Complete Part 2 functionality (replaces category_design.html)
+         * - App: Main component that manages routing and global state
+         * 
+         * STATE MANAGEMENT:
+         * - All form data is stored in a unified appState object
+         * - State persists to localStorage automatically on changes
+         * - Data flows seamlessly between tools (e.g., ICP data appears in Category Design)
+         * 
+         * BENEFITS OVER 3-FILE SYSTEM:
+         * - No data loss when navigating between tools
+         * - Consistent UI/UX across all views
+         * - Single codebase to maintain
+         * - Better performance (no full page reloads)
+         * - Easier to add new features that span multiple tools
+         * ============================================================================================
+         */
+        
         const { useState, useEffect, useRef } = React;
 
         // localStorage helper functions
@@ -154,7 +224,10 @@
             'market-context-other': '',
             alternatives: [{ val1: '', val2: '' }],
             values: [{ val1: '', val2: '', val3: '' }],
-            trends: [{ value: '' }]
+            trend1_desc: '',
+            trend2_desc: '',
+            trend3_desc: '',
+            trend4_desc: ''
           },
           categoryData: {
             'from-statement': '',
@@ -220,7 +293,7 @@
         );
 
         // Export Modal Component
-        const ExportModal = ({ isOpen, onClose, title, content, appState }) => {
+        const ExportModal = ({ isOpen, onClose, title, content, appState, filename = 'gtm-blueprint-export' }) => {
             const [copied, setCopied] = useState(false);
 
             const handleCopy = () => {
@@ -238,7 +311,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'gtm-blueprint-export.json';
+                a.download = `${filename}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -372,6 +445,7 @@
         // PositioningTool Component
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+            const [jtbdExpanded, setJtbdExpanded] = useState(false);
 
             const updateNestedValue = (section, index, key, value) => {
                 const newData = { ...appState.positioningData };
@@ -417,7 +491,12 @@
                 summary += formatSection('5. Summarize Target Market', appState.positioningData.icp_summary || 'N/A');
                 let marketContext = appState.positioningData['market-context'] === 'Other' ? appState.positioningData['market-context-other'] : appState.positioningData['market-context'];
                 summary += formatSection('6. Market Context (Today)', marketContext);
-                summary += formatSection('7. Relevant Trends', appState.positioningData.trends ? appState.positioningData.trends.map(item => `- ${item.value}`).join('\n') : 'N/A');
+                let trendsContent = '';
+                if (appState.positioningData.trend1_desc) trendsContent += `- Industry Trend 1: ${appState.positioningData.trend1_desc}\n`;
+                if (appState.positioningData.trend2_desc) trendsContent += `- Industry Trend 2: ${appState.positioningData.trend2_desc}\n`;
+                if (appState.positioningData.trend3_desc) trendsContent += `- Industry Trend 3: ${appState.positioningData.trend3_desc}\n`;
+                if (appState.positioningData.trend4_desc) trendsContent += `- Industry Trend 4: ${appState.positioningData.trend4_desc}\n`;
+                summary += formatSection('7. Relevant Trends', trendsContent || 'N/A');
 
                 setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
             };
@@ -430,28 +509,195 @@
                                 <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
                                 <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 1: ICP & Positioning</h1>
                             </div>
-                            <button onClick={handleExport} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Export</button>
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm("Are you sure you want to reset all data for Part 1? This will clear all ICP and Positioning fields.")) {
+                                            setAppState(prev => ({
+                                                ...prev,
+                                                positioningData: getInitialState().positioningData
+                                            }));
+                                        }
+                                    }}
+                                    className="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm"
+                                >
+                                    Reset
+                                </button>
+                                <button onClick={handleExport} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Export</button>
+                            </div>
                         </div>
                     </header>
 
-                    <div className="mt-8 space-y-8">
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                    <div className="mt-8">
+                        <div className="lg:flex lg:space-x-8">
+                            <nav className="hidden lg:block w-1/4 sticky top-28 self-start">
+                                <div className="bg-white p-4 rounded-lg shadow-md">
+                                    <h3 className="font-bold scale-green-text mb-2 text-lg">Sections</h3>
+                                    <ul className="space-y-1">
+                                        <li><a href="#section-1" className="nav-link block p-2 rounded text-gray-700 font-semibold">1. Define Your ICP</a></li>
+                                        <li><a href="#section-2" className="nav-link block p-2 rounded text-gray-700 font-semibold">2. Competitive Alternatives</a></li>
+                                        <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Value and Proof</a></li>
+                                        <li><a href="#section-7" className="nav-link block p-2 rounded text-gray-700 font-semibold">7. Relevant Trends</a></li>
+                                    </ul>
+                                    <div className="mt-4 pt-4 border-t">
+                                        <button onClick={() => onNavigate('category')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
+                                            Continue to Part 2 →
+                                        </button>
+                                    </div>
+                                </div>
+                            </nav>
+
+                            <main className="w-full lg:w-3/4">
+                                <div className="space-y-8">
+                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">1. Define Your Ideal Customer Profile (ICP)</h2>
+                            <p className="text-gray-600 mb-6">This is the foundation. A precise ICP provides the lens through which all other positioning elements are viewed. Be specific and use data where possible.</p>
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block font-bold text-gray-700">Common Needs (Job-to-be-Done)</label>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="block font-bold text-gray-700">
+                                            Common Needs (Job-to-be-Done)
+                                        </label>
+                                        <button 
+                                            onClick={() => setJtbdExpanded(!jtbdExpanded)}
+                                            className="text-blue-500 text-sm hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                            <span className={`transition-transform ${jtbdExpanded ? 'rotate-90' : ''}`}>▶</span>
+                                            {jtbdExpanded ? 'Hide guide' : 'Show guide'}
+                                        </button>
+                                    </div>
+                                    
+                                    {jtbdExpanded && (
+                                        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <h4 className="font-bold mb-2 text-blue-900">8 Elements of a JTBD:</h4>
+                                            <ul className="list-disc pl-4 text-sm space-y-1 text-blue-800">
+                                                <li><b>Context:</b> What's going on in the person's life.</li>
+                                                <li><b>Struggling Moments:</b> Realization that something can be better.</li>
+                                                <li><b>Pushes and Pulls:</b> Forces for and against change.</li>
+                                                <li><b>Anxieties and Habits:</b> Concerns about the new and attachment to the old.</li>
+                                                <li><b>Desired Outcomes:</b> The vision for a better future.</li>
+                                                <li><b>Hiring/Firing Criteria:</b> What the solution must do, and what it must not do.</li>
+                                                <li><b>Key Trade-offs:</b> What the person is willing to give up.</li>
+                                                <li><b>Basic Quality:</b> The essential things the job requires.</li>
+                                            </ul>
+                                            <a href="https://therewiredgroup.com/learn/complete-guide-jobs-to-be-done/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm block mt-3">
+                                                Learn more about Jobs-to-be-Done →
+                                            </a>
+                                        </div>
+                                    )}
+                                    
+                                    <p className="text-sm text-gray-500 mb-2">What specific, high-stakes task are they trying to accomplish?</p>
                                     <textarea 
                                         className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
                                         rows="3" 
-                                        placeholder="What specific, high-stakes task are they trying to accomplish?"
+                                        placeholder="Example: We need to de-risk a critical NetSuite to Oracle ERP migration by getting an accurate 'as-is' of all current business processes."
                                         value={appState.positioningData.icp_common_needs || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_common_needs: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Desired Business Value</label>
+                                    <p className="text-sm text-gray-500 mb-2">How do they measure success? What are their core metrics?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: Success is measured by (1) reducing the migration timeline by at least 50%, (2) cutting external consulting fees by $500k+, and (3) zero critical process failures post-launch."
+                                        value={appState.positioningData.icp_desired_business_value || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_desired_business_value: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Problem Urgency</label>
+                                    <p className="text-sm text-gray-500 mb-2">Why do they need to solve this problem *now*?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: The migration is a board-level priority for this fiscal year. Any delay directly impacts our ability to scale and report earnings accurately."
+                                        value={appState.positioningData.icp_problem_urgency || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_problem_urgency: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Quick Decision Making</label>
+                                    <p className="text-sm text-gray-500 mb-2">Who is the economic buyer and can they approve the purchase efficiently?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: The VP of Finance is the economic buyer. They have budget authority up to $250k for transformation projects and can sign off without a lengthy committee review."
+                                        value={appState.positioningData.icp_quick_decision_making || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_quick_decision_making: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Prioritized Requirements</label>
+                                    <p className="text-sm text-gray-500 mb-2">What do they value most in a solution for this problem?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: Speed-to-insight is #1. We cannot wait 6 months for consultants. #2 is accuracy; the data must be audit-grade. #3 is ease of use for our internal team."
+                                        value={appState.positioningData.icp_prioritized_requirements || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_prioritized_requirements: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Willingness to Pay</label>
+                                    <p className="text-sm text-gray-500 mb-2">What is their budget and value perception for a solution like this?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: They've already budgeted $1M for consultants, so they perceive high value in a tech solution that can deliver better results for a fraction of that cost. Willing to pay $150k-$200k for a solution that guarantees success."
+                                        value={appState.positioningData.icp_willingness_to_pay || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_willingness_to_pay: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Implementation Readiness</label>
+                                    <p className="text-sm text-gray-500 mb-2">Can they adopt and get value from the product today?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: They have a dedicated transformation team ready to start. All relevant contracts and process documents are digitized and accessible."
+                                        value={appState.positioningData.icp_implementation_readiness || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_implementation_readiness: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Firmographic</label>
+                                    <p className="text-sm text-gray-500 mb-2">What are the key company attributes (size, industry, revenue)?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: Publicly traded B2B SaaS company, >$1B in annual revenue, 2000+ employees. Headquartered in North America."
+                                        value={appState.positioningData.icp_firmographic || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_firmographic: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Technographic</label>
+                                    <p className="text-sm text-gray-500 mb-2">What is their current technology stack?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: Currently using NetSuite, Salesforce, and Coupa. Moving to Oracle Fusion. Internal BI uses Tableau."
+                                        value={appState.positioningData.icp_technographic || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_technographic: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Behavioral</label>
+                                    <p className="text-sm text-gray-500 mb-2">How do they act, buy, and use technology?</p>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="3" 
+                                        placeholder="Example: They are early adopters of AI technology in their finance stack. They prefer to buy best-of-breed solutions over suite extensions. They have a history of successful, large-scale software implementations."
+                                        value={appState.positioningData.icp_behavioral || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_behavioral: e.target.value } }))}
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                        <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">2. Competitive Alternatives</h2>
                             <div className="space-y-4">
                                 {(appState.positioningData.alternatives || []).map((item, index) => (
@@ -474,7 +720,7 @@
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">4. Value and Proof</h2>
                             <div className="space-y-4">
                                 {(appState.positioningData.values || []).map((item, index) => (
@@ -495,25 +741,51 @@
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                        <div id="section-7" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">7. Relevant Trends</h2>
-                            <div className="space-y-4">
-                                {(appState.positioningData.trends || []).map((item, index) => (
-                                    <RemovableInput 
-                                        key={index}
-                                        index={index}
-                                        item={item}
-                                        onUpdate={(idx, key, value) => updateNestedValue('trends', idx, key, value)}
-                                        onRemove={(idx) => removeItem('trends', idx)}
-                                        placeholder="Trend description"
+                            <p className="font-semibold text-gray-600 mb-2">Question: What macro trends create urgency for our solution *right now*?</p>
+                            <p className="text-gray-600 mb-6">Guidance: Tying your solution to an undeniable trend creates urgency.</p>
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block font-bold text-gray-700">Industry Trend 1</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="2" 
+                                        placeholder="How this trend aligns with and enhances your product"
+                                        value={appState.positioningData.trend1_desc || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend1_desc: e.target.value } }))}
                                     />
-                                ))}
-                                <button 
-                                    onClick={() => addItem('trends', { value: '' })}
-                                    className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
-                                >
-                                    + Add Trend
-                                </button>
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Industry Trend 2</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="2" 
+                                        placeholder="How this trend makes your product more appealing"
+                                        value={appState.positioningData.trend2_desc || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend2_desc: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Industry Trend 3 (Optional)</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="2" 
+                                        placeholder="How this trend creates urgency for your product"
+                                        value={appState.positioningData.trend3_desc || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend3_desc: e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Industry Trend 4 (Optional)</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        rows="2" 
+                                        placeholder="How this trend impacts the need for your product"
+                                        value={appState.positioningData.trend4_desc || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend4_desc: e.target.value } }))}
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -525,6 +797,9 @@
                                 Continue to Part 2: Category Design →
                             </button>
                         </div>
+                                </div>
+                            </main>
+                        </div>
                     </div>
 
                     <ExportModal 
@@ -533,6 +808,7 @@
                         title={exportModal.title}
                         content={exportModal.content}
                         appState={appState}
+                        filename="positioning-blueprint"
                     />
                 </div>
             );
@@ -566,11 +842,46 @@
                                 <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
                                 <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 2: Category Design</h1>
                             </div>
-                            <button onClick={handleExport} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Export</button>
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm("Are you sure you want to reset all data for Part 2? This will clear all Category Design fields.")) {
+                                            setAppState(prev => ({
+                                                ...prev,
+                                                categoryData: getInitialState().categoryData
+                                            }));
+                                        }
+                                    }}
+                                    className="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm"
+                                >
+                                    Reset
+                                </button>
+                                <button onClick={handleExport} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Export</button>
+                            </div>
                         </div>
                     </header>
 
-                    <div className="mt-8 space-y-8">
+                    <div className="mt-8">
+                        <div className="lg:flex lg:space-x-8">
+                            <nav className="hidden lg:block w-1/4 sticky top-28 self-start">
+                                <div className="bg-white p-4 rounded-lg shadow-md">
+                                    <h3 className="font-bold scale-green-text mb-2 text-lg">Sections</h3>
+                                    <ul className="space-y-1">
+                                        <li><a href="#section-8" className="nav-link block p-2 rounded text-gray-700 font-semibold">8. The Point of View</a></li>
+                                        <li><a href="#section-9" className="nav-link block p-2 rounded text-gray-700 font-semibold">9. The New Opportunity</a></li>
+                                        <li><a href="#section-10" className="nav-link block p-2 rounded text-gray-700 font-semibold">10. Category Name</a></li>
+                                        <li><a href="#section-11" className="nav-link block p-2 rounded text-gray-700 font-semibold">11. The Manifesto</a></li>
+                                    </ul>
+                                    <div className="mt-4 pt-4 border-t">
+                                        <button onClick={() => onNavigate('positioning')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
+                                            ← Back to Part 1
+                                        </button>
+                                    </div>
+                                </div>
+                            </nav>
+
+                            <main className="w-full lg:w-3/4">
+                                <div className="space-y-8">
                         <div className="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg shadow-sm">
                             <h3 className="text-xl font-bold text-green-800 mb-3">Positioning Foundation</h3>
                             <p className="text-green-700 mb-4">This category design exercise builds upon the positioning work from Part 1. Here is a summary of your key inputs:</p>
@@ -578,13 +889,21 @@
                                 <h4 className="font-bold text-gray-800">Ideal Customer Profile (Summary)</h4>
                                 <p className="text-sm text-gray-600 mt-1 italic">{appState.positioningData.icp_summary || 'Complete Part 1 first'}</p>
                                 <h4 className="font-bold text-gray-800 mt-3">Unique Value</h4>
-                                <p className="text-sm text-gray-600 mt-1 italic">
-                                    {appState.positioningData.values ? appState.positioningData.values.map(v => v.val2).join('; ') : 'Complete Part 1 first'}
-                                </p>
+                                <div className="text-sm text-gray-600 mt-1">
+                                    {(appState.positioningData.values && appState.positioningData.values[0]?.val1) ? (
+                                        <ul className="list-disc pl-5 space-y-2">
+                                            {appState.positioningData.values.map((item, index) => (
+                                                item.val1 && <li key={index}><strong>{item.val1}:</strong> <span className="italic">{item.val3}</span></li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <span className="italic">Complete Part 1 first</span>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                        <div id="section-8" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">8. The Point of View (The "From/To" Shift)</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is the old, broken way of thinking, and what is our new, better way?</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -611,7 +930,7 @@
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                        <div id="section-9" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">9. The New Opportunity</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What becomes possible for businesses that adopt our point of view?</p>
                             <textarea 
@@ -623,7 +942,7 @@
                             />
                         </div>
 
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                        <div id="section-10" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">10. Category Name & Definition</h2>
                             <div className="space-y-4">
                                 <div>
@@ -649,7 +968,7 @@
                             </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-lg shadow-md">
+                        <div id="section-11" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">11. The Manifesto</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is our story?</p>
                             <textarea 
@@ -660,6 +979,9 @@
                                 onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'manifesto': e.target.value } }))}
                             />
                         </div>
+                                </div>
+                            </main>
+                        </div>
                     </div>
 
                     <ExportModal 
@@ -668,6 +990,7 @@
                         title={exportModal.title}
                         content={exportModal.content}
                         appState={appState}
+                        filename="category-design-blueprint"
                     />
                 </div>
             );

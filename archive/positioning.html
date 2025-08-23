@@ -21,15 +21,19 @@
         .scale-gold-border { border-color: #e5a819; }
         .scale-green-text { color: #224f41; }
         .scale-green-bg { background-color: #224f41; }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link:hover {
+            background-color: #faeed1;
+            color: #224f41;
+        }
         .nav-link.active {
             background-color: #e5a819;
             color: #224f41;
             font-weight: 700;
         }
-        .nav-link {
-            transition: all 0.2s ease-in-out;
-        }
-        .nav-link:hover {
+        .nav-link.active:hover {
             background-color: #faeed1;
             color: #224f41;
         }
@@ -221,9 +225,45 @@
                     <div id="section-7" class="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                         <h2 class="text-2xl font-bold scale-green-text mb-2">7. Relevant Trends</h2>
                         <p class="font-semibold text-gray-600 mb-2">Question: What macro trends create urgency for our solution *right now*?</p>
-                        <p class="text-gray-600 mb-4">Guidance: Tying your solution to an undeniable trend creates urgency.</p>
-                        <div id="trends-container" class="space-y-4"></div>
-                        <button id="add-trend-btn" class="mt-4 text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90">+ Add Trend</button>
+                        <p class="text-gray-600 mb-6">Guidance: Tying your solution to an undeniable trend creates urgency.</p>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block font-bold text-gray-700">Industry Trend 1</label>
+                                <textarea
+                                    id="trend1_desc"
+                                    class="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                    rows="2"
+                                    placeholder="How this trend aligns with and enhances your product"
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Industry Trend 2</label>
+                                <textarea
+                                    id="trend2_desc"
+                                    class="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                    rows="2"
+                                    placeholder="How this trend makes your product more appealing"
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Industry Trend 3 (Optional)</label>
+                                <textarea
+                                    id="trend3_desc"
+                                    class="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                    rows="2"
+                                    placeholder="How this trend creates urgency for your product"
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Industry Trend 4 (Optional)</label>
+                                <textarea
+                                    id="trend4_desc"
+                                    class="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                    rows="2"
+                                    placeholder="How this trend impacts the need for your product"
+                                ></textarea>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="mt-8 text-center">
@@ -299,12 +339,10 @@
             document.getElementById('add-alternative-btn').addEventListener('click', () => addRemovableRow('alternatives-container', 'Example: Management Consultants (BCG)', 'Example: Extremely expensive, slow...', 'alternatives'));
             document.getElementById('add-attribute-btn').addEventListener('click', () => addRemovableInput('attributes-container', 'Example: Day-one insights from existing documents', 'attributes'));
             document.getElementById('add-value-btn').addEventListener('click', () => addRemovableRowTriple('value-container', 'Unique Attribute', 'Value Delivered (The "So What?")', 'Proof Point (Customer story, metric)', 'values'));
-            document.getElementById('add-trend-btn').addEventListener('click', () => addRemovableInput('trends-container', 'Example: Economic pressure is forcing CFOs to cut G&A...', 'trends'));
 
             addRemovableRow('alternatives-container', 'Example: Management Consultants (BCG)', 'Example: Extremely expensive, slow to value, creates dependency.', 'alternatives');
             addRemovableInput('attributes-container', 'Example: Day-one insights from existing documents vs. months of interviews.', 'attributes');
             addRemovableRowTriple('value-container', 'Example: Day-one insights', 'Example: Reduces transformation prep time from 3 months to 2 weeks.', 'Example: Cloudflare ERP migration case study.', 'values');
-            addRemovableInput('trends-container', 'Example: Economic pressure is forcing CFOs to cut G&A and reduce consulting spend.', 'trends');
 
             const updateProgressBar = () => {
                 filledFields = 0;
@@ -400,7 +438,12 @@
                 summary += formatSection('5. Summarize Target Market', state['icp_summary'] || 'N/A');
                 let marketContext = state['market-context'] === 'Other' ? state['market-context-other'] : state['market-context'];
                 summary += formatSection('6. Market Context (Today)', marketContext);
-                summary += formatSection('7. Relevant Trends', state.trends ? state.trends.map(item => `- ${item.value}`).join('\n') : 'N/A');
+                let trendsContent = '';
+                if (state['trend1_desc']) trendsContent += `- Industry Trend 1: ${state['trend1_desc']}\n`;
+                if (state['trend2_desc']) trendsContent += `- Industry Trend 2: ${state['trend2_desc']}\n`;
+                if (state['trend3_desc']) trendsContent += `- Industry Trend 3: ${state['trend3_desc']}\n`;
+                if (state['trend4_desc']) trendsContent += `- Industry Trend 4: ${state['trend4_desc']}\n`;
+                summary += formatSection('7. Relevant Trends', trendsContent || 'N/A');
 
                 document.getElementById('export-content').textContent = summary;
                 modal.classList.remove('hidden');

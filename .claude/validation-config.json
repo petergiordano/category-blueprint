@@ -1,8 +1,7 @@
 {
   "validation_framework": {
     "version": "1.0.0",
-    "description": "Comprehensive validation configuration for AI development cycle template",
-    "last_updated": "2024-07-19"
+    "description": "Gyro-enhanced validation configuration"
   },
   "specifications_validation": {
     "required_sections": {
@@ -10,168 +9,18 @@
       "design": ["architecture", "data_model", "api_design", "security"],
       "tasks": ["task_breakdown", "dependencies", "timeline", "testing"]
     },
-    "naming_conventions": {
-      "requirements_file": ".*requirements\\.md$",
-      "design_file": ".*design\\.md$", 
-      "tasks_file": ".*tasks\\.md$"
-    },
-    "cross_reference_checks": true,
-    "completeness_threshold": 0.8,
     "quality_standards": {
       "min_word_count_per_section": 50,
       "require_examples": true,
-      "require_acceptance_criteria": true,
-      "require_traceability": true
-    }
-  },
-  "steering_validation": {
-    "required_files": {
-      "core": ["product.md", "tech.md", "structure.md"],
-      "quality": ["testing.md", "security.md"],
-      "development": ["api-standards.md"],
-      "optional": ["accessibility.md"]
-    },
-    "required_sections": {
-      "product.md": ["purpose", "target_users", "key_features", "success_metrics"],
-      "tech.md": ["technology_stack", "architecture", "constraints", "decisions"],
-      "structure.md": ["file_organization", "naming_conventions", "patterns"],
-      "testing.md": ["strategy", "frameworks", "coverage_requirements"],
-      "security.md": ["requirements", "best_practices", "compliance"],
-      "api-standards.md": ["design_principles", "authentication", "error_handling"]
-    },
-    "content_quality_checks": {
-      "min_word_count": 100,
-      "max_word_count": 2000,
-      "require_examples": true,
-      "check_consistency": true
-    },
-    "inclusion_modes": {
-      "always": ["product.md", "tech.md", "structure.md"],
-      "conditional": ["testing.md", "security.md", "api-standards.md"]
+      "require_acceptance_criteria": true
     }
   },
   "hooks_validation": {
-    "required_directories": [
-      "file-events",
-      "development-events", 
-      "templates"
-    ],
-    "required_hook_types": {
-      "file-events": ["on-create.md", "on-save.md", "on-delete.md"],
-      "development-events": ["pre-commit.md", "post-implementation.md", "test-completion.md"],
-      "templates": ["test-generator-hook.md", "doc-updater-hook.md", "security-scanner-hook.md"]
-    },
+    "required_directories": ["file-events", "development-events", "templates"],
     "hook_structure_requirements": {
       "trigger": "required",
-      "conditions": "required", 
-      "actions": "required",
-      "error_handling": "recommended"
-    },
-    "supported_triggers": [
-      "file_create", "file_save", "file_delete",
-      "pre_commit", "post_commit", "test_run",
-      "deployment", "merge", "pull_request"
-    ],
-    "supported_actions": [
-      "run_tests", "generate_docs", "format_code",
-      "security_scan", "performance_check", "validate_schema"
-    ]
-  },
-  "production_readiness_validation": {
-    "infrastructure": {
-      "required_checks": ["load_balancer", "auto_scaling", "ssl_certificates", "backup_system"],
-      "health_check_timeout": 30,
-      "ssl_cert_min_days": 30,
-      "container_requirements": {
-        "resource_limits": true,
-        "health_probes": true,
-        "security_context": true
-      }
-    },
-    "security": {
-      "required_headers": ["X-Content-Type-Options", "X-Frame-Options", "X-XSS-Protection"],
-      "max_vulnerability_score": 7.0,
-      "require_https": true,
-      "min_password_strength": 8,
-      "secret_management": {
-        "no_hardcoded_secrets": true,
-        "env_file_gitignore": true,
-        "rotation_policy": "recommended"
-      }
-    },
-    "performance": {
-      "max_response_time_ms": 2000,
-      "min_lighthouse_score": 80,
-      "max_bundle_size_mb": 5,
-      "min_cache_hit_ratio": 0.8,
-      "optimization_requirements": {
-        "minification": true,
-        "code_splitting": "recommended",
-        "compression": true
-      }
-    },
-    "monitoring": {
-      "required_metrics": ["response_time", "error_rate", "throughput", "availability"],
-      "log_retention_days": 90,
-      "alert_channels": ["email", "slack"],
-      "observability_requirements": {
-        "structured_logging": true,
-        "health_endpoints": true,
-        "metrics_collection": true,
-        "distributed_tracing": "recommended"
-      }
-    },
-    "quality_gates": {
-      "min_test_coverage": 80,
-      "max_critical_issues": 0,
-      "max_high_issues": 3,
-      "require_documentation": true,
-      "deployment_requirements": {
-        "automated_tests": true,
-        "security_scan": true,
-        "performance_tests": "recommended",
-        "rollback_plan": true
-      }
-    }
-  },
-  "scoring_weights": {
-    "specifications": 0.20,
-    "steering": 0.15,
-    "hooks": 0.15,
-    "production_readiness": 0.50
-  },
-  "global_settings": {
-    "fail_on_critical_errors": true,
-    "warning_threshold": 5,
-    "info_threshold": 10,
-    "generate_detailed_reports": true,
-    "enable_progress_tracking": true,
-    "cache_validation_results": false,
-    "parallel_validation": false
-  },
-  "reporting": {
-    "formats": ["json", "text", "html"],
-    "include_suggestions": true,
-    "include_examples": true,
-    "group_by_category": true,
-    "show_progress_indicators": true,
-    "generate_action_items": true
-  },
-  "integration": {
-    "ci_cd": {
-      "github_actions": true,
-      "gitlab_ci": true,
-      "jenkins": true
-    },
-    "pre_commit_hooks": {
-      "enable_validation": true,
-      "fail_on_errors": true,
-      "skip_on_merge": false
-    },
-    "ide_integration": {
-      "vscode_settings": true,
-      "inline_warnings": true,
-      "auto_validation": false
+      "conditions": "required",
+      "actions": "required"
     }
   }
 }
