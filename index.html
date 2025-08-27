@@ -954,13 +954,25 @@
                             <div className="space-y-4">
                                 <div>
                                     <label className="block font-bold text-gray-700">Category Name</label>
-                                    <input 
-                                        type="text" 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                                        placeholder="Example: Continuous Transformation"
-                                        value={appState.categoryData['category-name'] || ''}
-                                        onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
-                                    />
+                                    <div className="flex gap-2 mt-1">
+                                        <input 
+                                            type="text" 
+                                            className="flex-1 p-2 border border-gray-300 rounded-md"
+                                            placeholder="Example: Continuous Transformation"
+                                            value={appState.categoryData['category-name'] || ''}
+                                            onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
+                                        />
+                                        <button 
+                                            className="px-4 py-2 text-white font-bold rounded-md transition-colors hover:opacity-90"
+                                            style={{backgroundColor: '#224f41'}}
+                                            onClick={() => {
+                                                // TODO: Implement AI brainstorming functionality
+                                                console.log('Brainstorm with AI clicked');
+                                            }}
+                                        >
+                                            Brainstorm with AI
+                                        </button>
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">One-Sentence Definition</label>
