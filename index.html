@@ -393,7 +393,7 @@
             </div>
         );
 
-        const RemovableTriple = ({ index, item, onUpdate, onRemove }) => (
+        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult }) => (
             <div className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
@@ -439,12 +439,34 @@
                         onChange={(e) => onUpdate(index, 'val3', e.target.value)}
                     />
                 </div>
-                <div className="pt-2">
+                <div className="pt-2 space-y-3">
                     <button 
-                        className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700"
+                        className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50"
+                        onClick={() => onGrade(item, index)}
+                        disabled={gradingResult?.isGrading}
                     >
-                        Grade Proposition
+                        {gradingResult?.isGrading ? 'Grading...' : 'Grade Proposition'}
                     </button>
+                    
+                    {gradingResult && !gradingResult.isGrading && gradingResult.score && (
+                        <div className="bg-white p-3 rounded-md border border-gray-300">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-bold text-gray-700">AI Grade:</span>
+                                <span 
+                                    className={`text-lg font-bold px-2 py-1 rounded ${
+                                        gradingResult.score.startsWith('A') ? 'bg-green-100 text-green-800' :
+                                        gradingResult.score.startsWith('B') ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-red-100 text-red-800'
+                                    }`}
+                                >
+                                    {gradingResult.score}
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                                {gradingResult.feedback}
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -453,6 +475,70 @@
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [jtbdExpanded, setJtbdExpanded] = useState(false);
+            const [gradingState, setGradingState] = useState({});
+            
+            // Simulate AI grading for value propositions
+            const simulateAIGrading = async (proposition, index) => {
+                const { val1, val2, val3 } = proposition;
+                
+                // Set loading state
+                setGradingState(prev => ({
+                    ...prev,
+                    [index]: { isGrading: true, score: null, feedback: null }
+                }));
+                
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Analyze proposition quality
+                let score = 'C';
+                let feedback = [];
+                
+                // Check attribute quality
+                if (!val1 || val1.length < 10) {
+                    feedback.push('Attribute needs more specificity and detail');
+                } else if (val1.includes('AI') || val1.includes('intelligent') || val1.includes('automated')) {
+                    score = score < 'B' ? 'B' : score;
+                    feedback.push('Good use of compelling technology terms');
+                }
+                
+                // Check benefit quality
+                if (!val2 || val2.length < 15) {
+                    feedback.push('Benefit statement should explain customer impact more clearly');
+                } else if (val2.includes('reduces') || val2.includes('increases') || val2.includes('enables')) {
+                    score = score < 'B+' ? 'B+' : score;
+                    feedback.push('Strong benefit articulation with clear outcomes');
+                }
+                
+                // Check value quality
+                if (!val3 || val3.length < 10) {
+                    feedback.push('Value statement needs quantifiable outcomes or proof points');
+                } else if (val3.match(/\$|%|months?|weeks?|days?|hours?|\d+/)) {
+                    score = 'A-';
+                    feedback.push('Excellent quantifiable value with specific metrics');
+                }
+                
+                // Assign final score
+                if (val1 && val2 && val3 && val1.length > 10 && val2.length > 15 && val3.length > 15) {
+                    if (score === 'C') score = 'B';
+                }
+                
+                // Create final feedback
+                const finalFeedback = feedback.length > 0 
+                    ? feedback.join('. ') + '.'
+                    : 'Complete all three fields with more specific details for better grading.';
+                
+                // Update grading state with results
+                setGradingState(prev => ({
+                    ...prev,
+                    [index]: {
+                        isGrading: false,
+                        score,
+                        feedback: finalFeedback,
+                        timestamp: new Date().toISOString()
+                    }
+                }));
+            };
 
             const updateNestedValue = (section, index, key, value) => {
                 const newData = { ...appState.positioningData };
@@ -474,6 +560,12 @@
                 if (newData[section]) {
                     newData[section].splice(index, 1);
                     setAppState(prev => ({ ...prev, positioningData: newData }));
+                    // Clear grading state for removed item
+                    setGradingState(prev => {
+                        const newState = { ...prev };
+                        delete newState[index];
+                        return newState;
+                    });
                 }
             };
 
@@ -737,6 +829,8 @@
                                         item={item}
                                         onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
                                         onRemove={(idx) => removeItem('values', idx)}
+                                        onGrade={(item, idx) => simulateAIGrading(item, idx)}
+                                        gradingResult={gradingState[index]}
                                     />
                                 ))}
                                 <button 
