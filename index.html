@@ -124,9 +124,9 @@
 
     <script type="text/babel">
         /*
-         * ============================================================================================
+         * ============================================================================================ 
          * REACT SINGLE PAGE APPLICATION IMPLEMENTATION
-         * ============================================================================================
+         * ============================================================================================ 
          * 
          * This React application consolidates what was previously three separate HTML files:
          * 1. A simple index.html with navigation links
@@ -150,7 +150,7 @@
          * - Single codebase to maintain
          * - Better performance (no full page reloads)
          * - Easier to add new features that span multiple tools
-         * ============================================================================================
+         * ============================================================================================ 
          */
         
         const { useState, useEffect, useRef } = React;
@@ -354,13 +354,13 @@
             <div className="flex items-center space-x-2">
                 <input 
                     type="text" 
-                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
                     placeholder={placeholder1}
                     value={item.val1}
                     onChange={(e) => onUpdate(index, 'val1', e.target.value)}
                 />
                 <textarea 
-                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
                     rows="3" 
                     placeholder={placeholder2}
                     value={item.val2}
@@ -379,7 +379,7 @@
             <div className="flex items-center space-x-2">
                 <input 
                     type="text" 
-                    className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                    className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                     placeholder={placeholder}
                     value={item.value}
                     onChange={(e) => onUpdate(index, 'value', e.target.value)}
@@ -402,7 +402,7 @@
                         </label>
                         <input 
                             type="text" 
-                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                             placeholder="Example: Day-one insights from existing documents"
                             value={item.val1}
                             onChange={(e) => onUpdate(index, 'val1', e.target.value)}
@@ -420,7 +420,7 @@
                         Benefit: What the attribute enables for a customer
                     </label>
                     <textarea 
-                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                         rows="2" 
                         placeholder="Example: Enables immediate analysis without lengthy discovery interviews"
                         value={item.val2}
@@ -433,11 +433,18 @@
                     </label>
                     <input 
                         type="text" 
-                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                         placeholder="Example: Reduces transformation timeline by 6 months, saving $500k in consulting fees"
                         value={item.val3}
                         onChange={(e) => onUpdate(index, 'val3', e.target.value)}
                     />
+                </div>
+                <div className="pt-2">
+                    <button 
+                        className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700"
+                    >
+                        Grade Proposition
+                    </button>
                 </div>
             </div>
         );
@@ -588,7 +595,7 @@
                                     
                                     <p className="text-sm text-gray-500 mb-2">What specific, high-stakes task are they trying to accomplish?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: We need to de-risk a critical NetSuite to Oracle ERP migration by getting an accurate 'as-is' of all current business processes."
                                         value={appState.positioningData.icp_common_needs || ''}
@@ -599,7 +606,7 @@
                                     <label className="block font-bold text-gray-700">Desired Business Value</label>
                                     <p className="text-sm text-gray-500 mb-2">How do they measure success? What are their core metrics?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Success is measured by (1) reducing the migration timeline by at least 50%, (2) cutting external consulting fees by $500k+, and (3) zero critical process failures post-launch."
                                         value={appState.positioningData.icp_desired_business_value || ''}
@@ -610,7 +617,7 @@
                                     <label className="block font-bold text-gray-700">Problem Urgency</label>
                                     <p className="text-sm text-gray-500 mb-2">Why do they need to solve this problem *now*?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: The migration is a board-level priority for this fiscal year. Any delay directly impacts our ability to scale and report earnings accurately."
                                         value={appState.positioningData.icp_problem_urgency || ''}
@@ -621,7 +628,7 @@
                                     <label className="block font-bold text-gray-700">Quick Decision Making</label>
                                     <p className="text-sm text-gray-500 mb-2">Who is the economic buyer and can they approve the purchase efficiently?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: The VP of Finance is the economic buyer. They have budget authority up to $250k for transformation projects and can sign off without a lengthy committee review."
                                         value={appState.positioningData.icp_quick_decision_making || ''}
@@ -632,7 +639,7 @@
                                     <label className="block font-bold text-gray-700">Prioritized Requirements</label>
                                     <p className="text-sm text-gray-500 mb-2">What do they value most in a solution for this problem?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Speed-to-insight is #1. We cannot wait 6 months for consultants. #2 is accuracy; the data must be audit-grade. #3 is ease of use for our internal team."
                                         value={appState.positioningData.icp_prioritized_requirements || ''}
@@ -643,7 +650,7 @@
                                     <label className="block font-bold text-gray-700">Willingness to Pay</label>
                                     <p className="text-sm text-gray-500 mb-2">What is their budget and value perception for a solution like this?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: They've already budgeted $1M for consultants, so they perceive high value in a tech solution that can deliver better results for a fraction of that cost. Willing to pay $150k-$200k for a solution that guarantees success."
                                         value={appState.positioningData.icp_willingness_to_pay || ''}
@@ -654,7 +661,7 @@
                                     <label className="block font-bold text-gray-700">Implementation Readiness</label>
                                     <p className="text-sm text-gray-500 mb-2">Can they adopt and get value from the product today?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: They have a dedicated transformation team ready to start. All relevant contracts and process documents are digitized and accessible."
                                         value={appState.positioningData.icp_implementation_readiness || ''}
@@ -665,7 +672,7 @@
                                     <label className="block font-bold text-gray-700">Firmographic</label>
                                     <p className="text-sm text-gray-500 mb-2">What are the key company attributes (size, industry, revenue)?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Publicly traded B2B SaaS company, >$1B in annual revenue, 2000+ employees. Headquartered in North America."
                                         value={appState.positioningData.icp_firmographic || ''}
@@ -676,7 +683,7 @@
                                     <label className="block font-bold text-gray-700">Technographic</label>
                                     <p className="text-sm text-gray-500 mb-2">What is their current technology stack?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Currently using NetSuite, Salesforce, and Coupa. Moving to Oracle Fusion. Internal BI uses Tableau."
                                         value={appState.positioningData.icp_technographic || ''}
@@ -687,7 +694,7 @@
                                     <label className="block font-bold text-gray-700">Behavioral</label>
                                     <p className="text-sm text-gray-500 mb-2">How do they act, buy, and use technology?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: They are early adopters of AI technology in their finance stack. They prefer to buy best-of-breed solutions over suite extensions. They have a history of successful, large-scale software implementations."
                                         value={appState.positioningData.icp_behavioral || ''}
@@ -749,7 +756,7 @@
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 1</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend aligns with and enhances your product"
                                         value={appState.positioningData.trend1_desc || ''}
@@ -759,7 +766,7 @@
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 2</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend makes your product more appealing"
                                         value={appState.positioningData.trend2_desc || ''}
@@ -769,7 +776,7 @@
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 3 (Optional)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend creates urgency for your product"
                                         value={appState.positioningData.trend3_desc || ''}
@@ -779,7 +786,7 @@
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 4 (Optional)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend impacts the need for your product"
                                         value={appState.positioningData.trend4_desc || ''}
@@ -910,7 +917,7 @@
                                 <div>
                                     <label className="block font-bold text-gray-700">From (The Old, Broken Way)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="4" 
                                         placeholder="Example: Business transformation is a series of slow, high-risk, episodic projects."
                                         value={appState.categoryData['from-statement'] || ''}
@@ -920,7 +927,7 @@
                                 <div>
                                     <label className="block font-bold text-gray-700">To (Our New, Better Way)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="4" 
                                         placeholder="Example: Operational excellence is a continuous, automated, data-driven business function."
                                         value={appState.categoryData['to-statement'] || ''}
@@ -934,7 +941,7 @@
                             <h2 className="text-2xl font-bold scale-green-text mb-2">9. The New Opportunity</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What becomes possible for businesses that adopt our point of view?</p>
                             <textarea 
-                                className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                 rows="4" 
                                 placeholder="Example: Businesses can now move beyond reactive, crisis-driven change and achieve continuous transformation..."
                                 value={appState.categoryData['new-opportunity'] || ''}
@@ -949,7 +956,7 @@
                                     <label className="block font-bold text-gray-700">Category Name</label>
                                     <input 
                                         type="text" 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         placeholder="Example: Continuous Transformation"
                                         value={appState.categoryData['category-name'] || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
@@ -959,7 +966,7 @@
                                     <label className="block font-bold text-gray-700">One-Sentence Definition</label>
                                     <input 
                                         type="text" 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         placeholder="Example: The practice of using AI to continuously analyze and optimize business processes in real-time."
                                         value={appState.categoryData['category-definition'] || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-definition': e.target.value } }))}
@@ -972,7 +979,7 @@
                             <h2 className="text-2xl font-bold scale-green-text mb-2">11. The Manifesto</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is our story?</p>
                             <textarea 
-                                className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                 rows="8" 
                                 placeholder="Enter your manifesto here..."
                                 value={appState.categoryData['manifesto'] || ''}
