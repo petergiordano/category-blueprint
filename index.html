@@ -825,15 +825,42 @@
         const CategoryDesignTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [showSuggestions, setShowSuggestions] = useState(false);
+            const [isLoadingNames, setIsLoadingNames] = useState(false);
+            const [suggestedNames, setSuggestedNames] = useState([]);
             
-            // Hardcoded category name suggestions for AI brainstorming
-            const categoryNameSuggestions = [
-                'Intelligent Transformation',
-                'Process Intelligence',
-                'Automated Operations', 
-                'Data-Driven Execution',
-                'Continuous Optimization'
-            ];
+            // Simulate AI API call for category name generation
+            const simulateAIBrainstorming = async (context) => {
+                // Construct prompt based on strategic inputs
+                const { icpSummary, valueProps, fromStatement, toStatement } = context;
+                
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Generate contextually relevant names based on inputs
+                // In a real implementation, this would call an AI API
+                const baseNames = [
+                    'Revenue Process Automation',
+                    'Predictive Market-Fit', 
+                    'Continuous Value Alignment',
+                    'Intelligent Growth Operations',
+                    'Adaptive Business Intelligence',
+                    'Strategic Orchestration Platform'
+                ];
+                
+                // If we have good context, return more tailored names
+                if (fromStatement && toStatement) {
+                    return baseNames.slice(0, 5);
+                }
+                
+                // Fallback to generic names if context is limited
+                return [
+                    'Digital Transformation Platform',
+                    'Business Intelligence Suite',
+                    'Operational Excellence System',
+                    'Market Innovation Engine',
+                    'Growth Acceleration Framework'
+                ];
+            };
 
             const handleExport = () => {
                 const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
@@ -973,20 +1000,56 @@
                                             onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
                                         />
                                         <button 
-                                            className="px-4 py-2 text-white font-bold rounded-md transition-colors hover:opacity-90"
+                                            className="px-4 py-2 text-white font-bold rounded-md transition-colors hover:opacity-90 disabled:opacity-50"
                                             style={{backgroundColor: '#224f41'}}
-                                            onClick={() => {
-                                                setShowSuggestions(!showSuggestions);
+                                            onClick={async () => {
+                                                // Gather strategic inputs from appState
+                                                const icpSummary = appState.positioningData.icp_summary || '';
+                                                const valueProps = appState.positioningData.values 
+                                                    ? appState.positioningData.values
+                                                        .filter(v => v.val3)
+                                                        .map(v => v.val3)
+                                                    : [];
+                                                const fromStatement = appState.categoryData['from-statement'] || '';
+                                                const toStatement = appState.categoryData['to-statement'] || '';
+                                                
+                                                // Construct context for AI
+                                                const context = {
+                                                    icpSummary,
+                                                    valueProps,
+                                                    fromStatement,
+                                                    toStatement
+                                                };
+                                                
+                                                // Show loading state
+                                                setShowSuggestions(true);
+                                                setIsLoadingNames(true);
+                                                
+                                                try {
+                                                    // Simulate AI API call
+                                                    const names = await simulateAIBrainstorming(context);
+                                                    setSuggestedNames(names);
+                                                } catch (error) {
+                                                    console.error('Failed to generate names:', error);
+                                                    setSuggestedNames(['Error generating names']);
+                                                } finally {
+                                                    setIsLoadingNames(false);
+                                                }
                                             }}
+                                            disabled={isLoadingNames}
                                         >
-                                            Brainstorm with AI
+                                            {isLoadingNames ? 'Brainstorming...' : 'Brainstorm with AI'}
                                         </button>
                                     </div>
                                     {showSuggestions && (
                                         <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
-                                            <p className="text-sm font-medium text-gray-700 mb-2">Select a category name:</p>
-                                            <div className="space-y-1">
-                                                {categoryNameSuggestions.map((name, index) => (
+                                            {isLoadingNames ? (
+                                                <p className="text-sm text-gray-600 italic">Analyzing your strategic context and generating category names...</p>
+                                            ) : (
+                                                <>
+                                                    <p className="text-sm font-medium text-gray-700 mb-2">Select a category name:</p>
+                                                    <div className="space-y-1">
+                                                        {suggestedNames.map((name, index) => (
                                                     <button
                                                         key={index}
                                                         className="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors"
@@ -1004,7 +1067,9 @@
                                                         {name}
                                                     </button>
                                                 ))}
-                                            </div>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     )}
                                 </div>
