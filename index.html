@@ -350,28 +350,67 @@
         };
 
         // Dynamic Field Components
-        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2 }) => (
-            <div className="flex items-center space-x-2">
-                <input 
-                    type="text" 
-                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
-                    placeholder={placeholder1}
-                    value={item.val1}
-                    onChange={(e) => onUpdate(index, 'val1', e.target.value)}
-                />
-                <textarea 
-                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
-                    rows="3" 
-                    placeholder={placeholder2}
-                    value={item.val2}
-                    onChange={(e) => onUpdate(index, 'val2', e.target.value)}
-                ></textarea>
-                <button 
-                    onClick={() => onRemove(index)}
-                    className="text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors"
-                >
-                    ×
-                </button>
+        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2, onAnalyze, analysisResult }) => (
+            <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                    <input 
+                        type="text" 
+                        className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
+                        placeholder={placeholder1}
+                        value={item.val1}
+                        onChange={(e) => onUpdate(index, 'val1', e.target.value)}
+                    />
+                    <textarea 
+                        className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
+                        rows="3" 
+                        placeholder={placeholder2}
+                        value={item.val2}
+                        onChange={(e) => onUpdate(index, 'val2', e.target.value)}
+                    ></textarea>
+                    <div className="flex flex-col space-y-2">
+                        <button 
+                            onClick={() => onRemove(index)}
+                            className="text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors"
+                        >
+                            ×
+                        </button>
+                        {onAnalyze && (
+                            <button 
+                                onClick={() => onAnalyze(item, index)}
+                                disabled={analysisResult?.isAnalyzing}
+                                className="text-xs font-bold py-1 px-2 rounded transition-colors bg-blue-100 hover:bg-blue-200 text-blue-700 disabled:opacity-50"
+                            >
+                                {analysisResult?.isAnalyzing ? 'Analyzing...' : 'Analyze Weakness'}
+                            </button>
+                        )}
+                    </div>
+                </div>
+                
+                {analysisResult && !analysisResult.isAnalyzing && analysisResult.angles && (
+                    <div className="bg-white p-4 rounded-md border-l-4 border-blue-500 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-bold text-gray-800">Strategic Angles</h4>
+                            <span className="text-xs text-gray-500">{analysisResult.angles.length} talking points</span>
+                        </div>
+                        <ul className="space-y-2">
+                            {analysisResult.angles.map((angle, idx) => (
+                                <li key={idx} className="text-sm text-gray-700 flex items-start">
+                                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-3 mt-1.5 flex-shrink-0"></span>
+                                    <span>{angle}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <button 
+                            onClick={() => {
+                                const text = analysisResult.angles.join('\n• ');
+                                navigator.clipboard.writeText(`Strategic angles for ${item.val1}:\n• ${text}`);
+                            }}
+                            className="mt-3 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                            Copy talking points
+                        </button>
+                    </div>
+                )}
             </div>
         );
 
@@ -475,7 +514,7 @@
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [jtbdExpanded, setJtbdExpanded] = useState(false);
-            const [gradingState, setGradingState] = useState({});
+            const [gradingState, setGradingState] = useState({});\n            const [analysisState, setAnalysisState] = useState({});
             
             // Simulate AI grading for value propositions
             const simulateAIGrading = async (proposition, index) => {
@@ -540,6 +579,64 @@
                 }));
             };
 
+            
+            // Simulate AI competitive weakness analysis
+            const simulateCompetitiveAnalysis = async (alternative, index) => {
+                const { val1, val2 } = alternative;
+                
+                setAnalysisState(prev => ({
+                    ...prev,
+                    [index]: { isAnalyzing: true, angles: null }
+                }));
+                
+                await new Promise(resolve => setTimeout(resolve, 1800));
+                
+                let angles = [];
+                
+                if (!val1 || !val2) {
+                    angles = ["Add competitor name and weakness for detailed analysis"];
+                } else {
+                    const weakness = val2.toLowerCase();
+                    
+                    if (weakness.includes("slow") || weakness.includes("outdated") || weakness.includes("legacy")) {
+                        angles.push(`Emphasize your speed advantage over ${val1}'s legacy systems`);
+                        angles.push(`Position as future-ready while ${val1} requires modernization`);
+                    }
+                    
+                    if (weakness.includes("expensive") || weakness.includes("cost") || weakness.includes("price")) {
+                        angles.push(`Highlight cost benefits vs ${val1}'s hidden fees`);
+                        angles.push(`Demonstrate faster ROI vs ${val1}'s expensive implementation`);
+                    }
+                    
+                    if (weakness.includes("complex") || weakness.includes("difficult") || weakness.includes("hard")) {
+                        angles.push(`Showcase intuitive UX vs ${val1}'s complexity`);
+                        angles.push(`Emphasize rapid deployment vs ${val1}'s lengthy setup`);
+                    }
+                    
+                    if (weakness.includes("limited") || weakness.includes("lacking") || weakness.includes("missing")) {
+                        angles.push(`Highlight comprehensive features vs ${val1}'s gaps`);
+                        angles.push(`Position as complete solution vs ${val1}'s limitations`);
+                    }
+                    
+                    angles.push(`Frame conversation around outcomes ${val1} struggles to deliver`);
+                    
+                    if (angles.length < 3) {
+                        angles.push(`Leverage ${val1}'s weakness in competitive positioning`);
+                        angles.push(`Use case studies showing success where ${val1} failed`);
+                    }
+                    
+                    angles = angles.slice(0, 4);
+                }
+                
+                setAnalysisState(prev => ({
+                    ...prev,
+                    [index]: {
+                        isAnalyzing: false,
+                        angles,
+                        timestamp: new Date().toISOString()
+                    }
+                }));
+            };
             const updateNestedValue = (section, index, key, value) => {
                 const newData = { ...appState.positioningData };
                 if (!newData[section]) newData[section] = [];
@@ -565,7 +662,7 @@
                         const newState = { ...prev };
                         delete newState[index];
                         return newState;
-                    });
+                    });\n                    setAnalysisState(prev => {\n                        const newState = { ...prev };\n                        delete newState[index];\n                        return newState;\n                    });
                 }
             };
 
@@ -808,6 +905,8 @@
                                         onRemove={(idx) => removeItem('alternatives', idx)}
                                         placeholder1="Alternative"
                                         placeholder2="Why it's inadequate"
+                                        onAnalyze={(item, idx) => simulateCompetitiveAnalysis(item, idx)}
+                                        analysisResult={analysisState[index]}
                                     />
                                 ))}
                                 <button 
