@@ -225,7 +225,8 @@
             'market-context': '',
             'market-context-other': '',
             alternatives: [{ val1: '', val2: '' }],
-            values: [{ val1: '', val2: '', val3: '' }],
+            pillars: [{ id: 1, name: '', benefit: '' }],
+            values: [{ val1: '', val2: '', val3: '', pillarId: null }],
             trend1_desc: '',
             trend2_desc: '',
             trend3_desc: '',
@@ -523,7 +524,7 @@
             </div>
         );
 
-        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult, onAnalyzeUniqueness, uniquenessResult }) => (
+        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult, onAnalyzeUniqueness, uniquenessResult, pillars }) => (
             <div className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
@@ -568,6 +569,23 @@
                         value={item.val3}
                         onChange={(e) => onUpdate(index, 'val3', e.target.value)}
                     />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Strategic Pillar
+                    </label>
+                    <select 
+                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                        value={item.pillarId || ''}
+                        onChange={(e) => onUpdate(index, 'pillarId', e.target.value ? parseInt(e.target.value) : null)}
+                    >
+                        <option value="">Select a pillar...</option>
+                        {(pillars || []).map((pillar) => (
+                            <option key={pillar.id} value={pillar.id}>
+                                {pillar.name || `Pillar ${pillar.id}`}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="pt-2 space-y-3">
                     <div className="flex space-x-2">
@@ -1088,6 +1106,7 @@
                                         <li><a href="#section-2" className="nav-link block p-2 rounded text-gray-700 font-semibold">2. Competitive Alternatives</a></li>
                                         <li><a href="#section-3" className="nav-link block p-2 rounded text-gray-700 font-semibold">3. Value and Proof</a></li>
                                         <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Relevant Trends</a></li>
+                                        <li><a href="#section-5" className="nav-link block p-2 rounded text-gray-700 font-semibold">5. Strategic Pillars</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
                                         <button onClick={() => onNavigate('category')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
@@ -1304,22 +1323,90 @@
 
                         <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">3. Value and Proof</h2>
-                            <div className="space-y-4">
-                                {(appState.positioningData.values || []).map((item, index) => (
-                                    <RemovableTriple 
-                                        key={index}
-                                        index={index}
-                                        item={item}
-                                        onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
-                                        onRemove={(idx) => removeItem('values', idx)}
-                                        onGrade={(item, idx) => simulateAIGrading(item, idx)}
-                                        gradingResult={gradingState[index]}
-                                        onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
-                                        uniquenessResult={uniquenessResults[index]}
-                                    />
-                                ))}
+                            <div className="space-y-6">
+                                {(() => {
+                                    // Group values by pillarId
+                                    const groupedValues = {};
+                                    const ungroupedValues = [];
+                                    
+                                    (appState.positioningData.values || []).forEach((item, index) => {
+                                        if (item.pillarId) {
+                                            if (!groupedValues[item.pillarId]) {
+                                                groupedValues[item.pillarId] = [];
+                                            }
+                                            groupedValues[item.pillarId].push({ item, index });
+                                        } else {
+                                            ungroupedValues.push({ item, index });
+                                        }
+                                    });
+                                    
+                                    return (
+                                        <>
+                                            {/* Render ungrouped values first */}
+                                            {ungroupedValues.length > 0 && (
+                                                <div className="space-y-4">
+                                                    {ungroupedValues.length > 0 && (
+                                                        <div className="text-sm font-medium text-gray-500 border-b border-gray-200 pb-2 mb-4">
+                                                            Unassigned Value Propositions
+                                                        </div>
+                                                    )}
+                                                    {ungroupedValues.map(({ item, index }) => (
+                                                        <RemovableTriple 
+                                                            key={index}
+                                                            index={index}
+                                                            item={item}
+                                                            onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
+                                                            onRemove={(idx) => removeItem('values', idx)}
+                                                            onGrade={(item, idx) => simulateAIGrading(item, idx)}
+                                                            gradingResult={gradingState[index]}
+                                                            onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
+                                                            uniquenessResult={uniquenessResults[index]}
+                                                            pillars={appState.positioningData.pillars}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+                                            
+                                            {/* Render grouped values by pillar */}
+                                            {(appState.positioningData.pillars || []).map((pillar) => {
+                                                const pillarValues = groupedValues[pillar.id] || [];
+                                                if (pillarValues.length === 0) return null;
+                                                
+                                                return (
+                                                    <div key={pillar.id} className="space-y-4">
+                                                        <div className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                                                            <h3 className="text-lg font-bold text-gray-800">
+                                                                {pillar.name || `Strategic Pillar ${pillar.id}`}
+                                                            </h3>
+                                                            {pillar.benefit && (
+                                                                <p className="text-sm text-gray-600 mt-1">{pillar.benefit}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className="space-y-4 ml-4">
+                                                            {pillarValues.map(({ item, index }) => (
+                                                                <RemovableTriple 
+                                                                    key={index}
+                                                                    index={index}
+                                                                    item={item}
+                                                                    onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
+                                                                    onRemove={(idx) => removeItem('values', idx)}
+                                                                    onGrade={(item, idx) => simulateAIGrading(item, idx)}
+                                                                    gradingResult={gradingState[index]}
+                                                                    onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
+                                                                    uniquenessResult={uniquenessResults[index]}
+                                                                    pillars={appState.positioningData.pillars}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </>
+                                    );
+                                })()}
+                                
                                 <button 
-                                    onClick={() => addItem('values', { val1: '', val2: '', val3: '' })}
+                                    onClick={() => addItem('values', { val1: '', val2: '', val3: '', pillarId: null })}
                                     className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
                                 >
                                     + Add Value Point
@@ -1520,6 +1607,96 @@
                                         )}
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">5. Strategic Pillars</h2>
+                            <p className="text-gray-600 mb-6">Organize your value propositions under strategic pillars to create a coherent narrative. Each pillar represents a core benefit theme that groups related value propositions.</p>
+                            <div className="space-y-4">
+                                {(appState.positioningData.pillars || []).map((pillar, index) => (
+                                    <div key={pillar.id} className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-grow space-y-3">
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                                        Pillar Name
+                                                    </label>
+                                                    <input 
+                                                        type="text" 
+                                                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                                                        placeholder="Example: Enterprise-Grade Security"
+                                                        value={pillar.name || ''}
+                                                        onChange={(e) => {
+                                                            const newPillars = [...(appState.positioningData.pillars || [])];
+                                                            newPillars[index] = { ...newPillars[index], name: e.target.value };
+                                                            setAppState(prev => ({
+                                                                ...prev,
+                                                                positioningData: { ...prev.positioningData, pillars: newPillars }
+                                                            }));
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                                        Benefit Statement
+                                                    </label>
+                                                    <textarea 
+                                                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                                                        rows="2"
+                                                        placeholder="Example: Ensures your data meets the highest security standards without slowing down innovation"
+                                                        value={pillar.benefit || ''}
+                                                        onChange={(e) => {
+                                                            const newPillars = [...(appState.positioningData.pillars || [])];
+                                                            newPillars[index] = { ...newPillars[index], benefit: e.target.value };
+                                                            setAppState(prev => ({
+                                                                ...prev,
+                                                                positioningData: { ...prev.positioningData, pillars: newPillars }
+                                                            }));
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {(appState.positioningData.pillars || []).length > 1 && (
+                                                <button 
+                                                    onClick={() => {
+                                                        const newPillars = appState.positioningData.pillars.filter((_, i) => i !== index);
+                                                        // Reset pillarId for any values that were assigned to this pillar
+                                                        const newValues = appState.positioningData.values.map(val => 
+                                                            val.pillarId === pillar.id ? { ...val, pillarId: null } : val
+                                                        );
+                                                        setAppState(prev => ({
+                                                            ...prev,
+                                                            positioningData: { 
+                                                                ...prev.positioningData, 
+                                                                pillars: newPillars,
+                                                                values: newValues
+                                                            }
+                                                        }));
+                                                    }}
+                                                    className="ml-3 text-red-500 hover:text-red-700 font-bold text-lg"
+                                                >
+                                                    ×
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                                <button 
+                                    onClick={() => {
+                                        const maxId = Math.max(0, ...(appState.positioningData.pillars || []).map(p => p.id));
+                                        const newPillar = { id: maxId + 1, name: '', benefit: '' };
+                                        setAppState(prev => ({
+                                            ...prev,
+                                            positioningData: {
+                                                ...prev.positioningData,
+                                                pillars: [...(prev.positioningData.pillars || []), newPillar]
+                                            }
+                                        }));
+                                    }}
+                                    className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
+                                >
+                                    + Add Strategic Pillar
+                                </button>
                             </div>
                         </div>
 
