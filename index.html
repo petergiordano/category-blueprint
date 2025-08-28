@@ -645,6 +645,7 @@
             const [gradingState, setGradingState] = useState({});
             const [analysisState, setAnalysisState] = useState({});
             const [uniquenessResults, setUniquenessResults] = useState({});
+            const [trendAnalysisResults, setTrendAnalysisResults] = useState({});
             const [jtbdModalOpen, setJtbdModalOpen] = useState(false);
             const [jtbdAnalysisData, setJtbdAnalysisData] = useState({
                 originalText: '',
@@ -772,6 +773,63 @@
                         [index]: {
                             isAnalyzing: false,
                             error: 'Analysis unavailable - please try again later',
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+                }
+            };
+            
+            // Analyze trend validation using web search
+            const analyzeTrend = async (trendText, index) => {
+                if (!trendText || !trendText.trim()) {
+                    return;
+                }
+
+                setTrendAnalysisResults(prev => ({
+                    ...prev,
+                    [index]: { isAnalyzing: true, results: null }
+                }));
+
+                try {
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query: `"${trendText.trim()}" market trend industry analysis`
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const searchData = await response.json();
+                    
+                    // Extract relevant results for display
+                    const results = searchData.web?.results?.slice(0, 3).map(result => ({
+                        title: result.title,
+                        description: result.description || result.snippet || 'No description available',
+                        url: result.url
+                    })) || [];
+
+                    setTrendAnalysisResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            results,
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+
+                } catch (error) {
+                    console.error('Trend analysis error:', error);
+                    setTrendAnalysisResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            error: 'No strong evidence found for this trend. Consider rephrasing.',
                             timestamp: new Date().toISOString()
                         }
                     }));
@@ -1283,6 +1341,43 @@
                                         value={appState.positioningData.trend1_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend1_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend1_desc, 0)}
+                                            disabled={trendAnalysisResults[0]?.isAnalyzing || !appState.positioningData.trend1_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[0]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[0] && !trendAnalysisResults[0].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[0].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[0].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[0].results && trendAnalysisResults[0].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[0].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 2</label>
@@ -1293,6 +1388,43 @@
                                         value={appState.positioningData.trend2_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend2_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend2_desc, 1)}
+                                            disabled={trendAnalysisResults[1]?.isAnalyzing || !appState.positioningData.trend2_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[1]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[1] && !trendAnalysisResults[1].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[1].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[1].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[1].results && trendAnalysisResults[1].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[1].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 3 (Optional)</label>
@@ -1303,6 +1435,43 @@
                                         value={appState.positioningData.trend3_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend3_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend3_desc, 2)}
+                                            disabled={trendAnalysisResults[2]?.isAnalyzing || !appState.positioningData.trend3_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[2]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[2] && !trendAnalysisResults[2].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[2].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[2].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[2].results && trendAnalysisResults[2].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[2].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 4 (Optional)</label>
@@ -1313,6 +1482,43 @@
                                         value={appState.positioningData.trend4_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend4_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend4_desc, 3)}
+                                            disabled={trendAnalysisResults[3]?.isAnalyzing || !appState.positioningData.trend4_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[3]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[3] && !trendAnalysisResults[3].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[3].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[3].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[3].results && trendAnalysisResults[3].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[3].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
