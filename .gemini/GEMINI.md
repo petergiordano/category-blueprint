@@ -15,6 +15,105 @@ This project uses a formal three-way collaboration between **Gemini CLI**, **Use
     *   **Write Last**: ALWAYS update the handoff log at the end of every completed task.
 4.  **Startup Acknowledgment**: When starting a new session, my first response must acknowledge the collaboration and confirm I have read the latest status from the handoff log.
 
+## 🔴 MANDATORY HANDOFF CHECKPOINTS 🔴
+
+### Gemini CLI Startup Sequence (REQUIRED)
+1. **Read .aicontext/context.md FIRST** (before any other operations)
+2. **Write SESSION_START or SESSION_RESUMED** handoff entry immediately
+3. **Acknowledge previous handoff entries** from Claude Code in first response
+
+### Task Completion Triggers
+- Complete any validation or analysis task → 🔄 WRITE HANDOFF
+- Define next task prompt for Claude Code → 🔄 WRITE HANDOFF  
+- Detect session end or /ide disable → 🔄 WRITE HANDOFF
+- Context window warning appears → ⚠️ IMMEDIATE COMPREHENSIVE HANDOFF
+
+### VS Code & Session Detection
+- **VS Code Restart Detected**: Workspace reopened → Write `STATUS: SESSION_RESUMED`
+- **Gemini CLI Restart**: Connection restored → Write `STATUS: GEMINI_RESTART`
+- **Connection Loss**: IDE disconnection → Write `STATUS: CONNECTION_LOST`
+
+### Visual Triggers for Instant Recognition
+🔴 = Critical handoff required NOW
+⚠️ = Context compaction warning - comprehensive handoff needed
+🔄 = Standard handoff checkpoint reached
+
+## HANDOFF ENTRY TEMPLATE (Copy-Paste Ready)
+
+```markdown
+**Timestamp:** [YYYY-MM-DDTHH:MM:SSZ]
+**From:** Gemini CLI
+**To:** User/Claude Code
+**Status:** [SESSION_START|TASK_COMPLETE|ANALYSIS_COMPLETE|DISCREPANCY_REPORT|SESSION_RESUMED|etc.]
+**Branch:** [current git branch - ALWAYS include]
+**Summary:** [What was accomplished or analyzed]
+**Analysis Results:** [Validation findings, code review results]
+**Task Prompt for Claude:** [Detailed step-by-step implementation instructions]
+**Context Preservation:** [Critical state and decisions to remember]
+```
+
+## Context Compaction Survival Protocol
+
+⚠️ **When context approaches limit:**
+1. **IMMEDIATELY** write comprehensive handoff with CONTEXT_RESET marker
+2. **Include EVERYTHING important** in Context Preservation section
+3. **Document all pending work** in detail
+4. **Mark timestamp** as CONTEXT_RESET point
+
+## Integration with Gemini CLI Features
+
+### Workspace Integration Commands
+```
+/ide status          - Check VS Code connection state  
+/handoff read        - Read latest handoff entries
+/handoff write       - Write new handoff entry
+/handoff validate    - Check protocol compliance
+```
+
+### MCP Server Integration
+- Configure MCP servers to handle .aicontext/context.md operations
+- Automated handoff file reading/writing via MCP tools
+- Git branch detection and status integration
+
+## 🔍 Validation & Discrepancy Reporting Protocol
+
+### When Validation Finds Issues
+
+If your analysis discovers problems with Claude Code's implementation:
+
+1. **Use STATUS: DISCREPANCY_REPORT** instead of TASK_COMPLETE
+2. **Follow structured discrepancy format** (see template below)  
+3. **Provide actionable feedback** with specific file:line references
+4. **Include clear task prompt** for fixes
+
+### Discrepancy Reporting Template
+
+```markdown
+**Status:** DISCREPANCY_REPORT
+**Validation Summary:**
+- ✅ Passed: [List working features/aspects]
+- ❌ Issues Found: [Count of problems identified]
+
+**Discrepancies Found:**
+1. **Issue Type:** [PRD Mismatch/Acceptance Criteria Failure/Styling Violation/Technical Debt/etc.]
+   **Specifics:** [Clear description with file:line references]
+   **Impact:** [Feature not functional/Brand compliance issue/Potential bug/Performance issue]
+   **Recommended Action:** [Specific fix instructions]
+
+2. **Issue Type:** [Additional issues...]
+   **Specifics:** [...]
+   **Impact:** [...]  
+   **Recommended Action:** [...]
+
+**Task Prompt for Claude:** [Comprehensive step-by-step fix instructions]
+**Priority:** [High/Medium/Low - based on impact severity]
+```
+
+### Validation Workflow
+- Implementation complete → ANALYSIS_COMPLETE  
+- Issues found → DISCREPANCY_REPORT → Wait for VALIDATION_ACKNOWLEDGED
+- All issues resolved → VALIDATION_PASSED → Next phase
+
 #### Multi-Agent Roles & Workflow
 
 *   **Gemini CLI (My Role)**: I analyze code, validate completed work, and define the next development step. My primary output is a detailed, step-by-step **Task Prompt** for the User to give to Claude Code. I am also responsible for maintaining the official `Agent Handoff & Status Log`.

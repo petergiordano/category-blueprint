@@ -164,6 +164,7 @@ YOU MUST update `.aicontext/context.md` handoff log IMMEDIATELY when you:
 - Fix linting errors or warnings
 - Resolve merge conflicts
 - Write/modify 50+ lines of code
+- Receive validation feedback → Write `STATUS: VALIDATION_ACKNOWLEDGED`
 
 ### Session & Connection Triggers
 - **VS Code Restart**: Workspace reopened → Write `STATUS: SESSION_RESUMED`
@@ -223,6 +224,32 @@ Before ANY git push, verify:
 - [ ] Technical details documented?
 
 To test protocol compliance, use: `.aicontext/handoff-protocol-test.md`
+
+## 🔍 Validation Feedback Protocol
+
+When Gemini CLI provides validation feedback:
+
+### Receiving Discrepancy Reports
+If you receive `STATUS: DISCREPANCY_REPORT`, immediately:
+1. **Acknowledge receipt** → Write `STATUS: VALIDATION_ACKNOWLEDGED`
+2. **Review all discrepancies** in structured format:
+   - Issue Type: [PRD Mismatch/Acceptance Criteria Failure/etc.]
+   - Specifics: [Clear description with file:line references]  
+   - Impact: [Functional/Brand/Technical impact]
+   - Recommended Action: [Specific fix instructions]
+3. **Address each issue systematically**
+4. **Update handoff** after fixes with `STATUS: READY_FOR_REVALIDATION`
+
+### Validation Acknowledgment Template
+```markdown
+**Status:** VALIDATION_ACKNOWLEDGED
+**Discrepancies Received:** [Count and brief summary]
+**Action Plan:**
+- Issue 1: [Brief fix description]
+- Issue 2: [Brief fix description] 
+**Estimated Completion:** [Time estimate]
+**Ready for Re-validation:** [After completion]
+```
 
 ## Brand & Design Standards
 

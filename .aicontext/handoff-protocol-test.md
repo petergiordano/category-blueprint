@@ -109,6 +109,58 @@ Summary: Completed [task name]
 Next: [what's next in todo list]
 ```
 
+### ✅ Test 9: Validation Discrepancy Reporting
+**User Action:** Have Gemini CLI find issues during validation
+- [ ] Gemini CLI performs validation analysis
+- [ ] Issues are found (simulated or real)
+- [ ] Gemini CLI uses DISCREPANCY_REPORT status
+- [ ] Report includes structured issue format
+
+**Expected Handoff Entry:**
+```
+STATUS: DISCREPANCY_REPORT
+Validation Summary:
+- ✅ Passed: [working aspects]
+- ❌ Issues Found: [count]
+
+Discrepancies Found:
+1. Issue Type: [specific type]
+   Specifics: [file:line details]
+   Impact: [functional impact]
+   Recommended Action: [fix steps]
+```
+
+### ✅ Test 10: Validation Feedback Acknowledgment
+**User Action:** Claude Code receives discrepancy report
+- [ ] Claude Code reads DISCREPANCY_REPORT
+- [ ] Claude Code writes VALIDATION_ACKNOWLEDGED immediately
+- [ ] Claude Code addresses each listed issue
+- [ ] Claude Code writes READY_FOR_REVALIDATION when complete
+
+**Expected Handoff Entry:**
+```
+STATUS: VALIDATION_ACKNOWLEDGED
+Discrepancies Received: [count and summary]
+Action Plan:
+- Issue 1: [fix description]
+- Issue 2: [fix description]
+Ready for Re-validation: [after fixes complete]
+```
+
+### ✅ Test 11: Validation Iteration Cycle
+**User Action:** Complete validation feedback loop
+- [ ] Gemini CLI reports issues → DISCREPANCY_REPORT
+- [ ] Claude Code acknowledges → VALIDATION_ACKNOWLEDGED
+- [ ] Claude Code fixes issues → READY_FOR_REVALIDATION  
+- [ ] Gemini CLI re-validates → VALIDATION_PASSED or new DISCREPANCY_REPORT
+- [ ] Cycle continues until validation passes
+
+**Expected Flow:**
+```
+TASK_COMPLETE → DISCREPANCY_REPORT → VALIDATION_ACKNOWLEDGED → 
+READY_FOR_REVALIDATION → [VALIDATION_PASSED or repeat cycle]
+```
+
 ## Validation Script
 
 Run these commands to check compliance:
@@ -125,6 +177,13 @@ grep -q "handoff log" .claude/last-todos.json 2>/dev/null && echo "✅ Handoff i
 
 # Count handoff entries
 echo "Total handoff entries: $(grep -c "^**Timestamp:**" .aicontext/context.md)"
+
+# Validation feedback system checks
+grep -q "DISCREPANCY_REPORT" .aicontext/context.md && echo "✅ Discrepancy reporting used" || echo "⚠️ No discrepancy reports found"
+
+grep -q "VALIDATION_ACKNOWLEDGED" .aicontext/context.md && echo "✅ Validation feedback acknowledged" || echo "⚠️ No validation acknowledgments found"
+
+grep -q "READY_FOR_REVALIDATION" .aicontext/context.md && echo "✅ Revalidation cycle active" || echo "⚠️ No revalidation cycles found"
 ```
 
 ## Test Results Log
@@ -141,6 +200,9 @@ echo "Total handoff entries: $(grep -c "^**Timestamp:**" .aicontext/context.md)"
   - [ ] Test 6: Pass/Fail
   - [ ] Test 7: Pass/Fail
   - [ ] Test 8: Pass/Fail
+  - [ ] Test 9: Pass/Fail (Validation Discrepancy Reporting)
+  - [ ] Test 10: Pass/Fail (Validation Feedback Acknowledgment)
+  - [ ] Test 11: Pass/Fail (Validation Iteration Cycle)
 
 ### Notes:
 [Document any issues or observations]

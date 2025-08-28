@@ -859,7 +859,12 @@
                         const newState = { ...prev };
                         delete newState[index];
                         return newState;
-                    });\n                    setAnalysisState(prev => {\n                        const newState = { ...prev };\n                        delete newState[index];\n                        return newState;\n                    });
+                    });
+                    setAnalysisState(prev => {
+                        const newState = { ...prev };
+                        delete newState[index];
+                        return newState;
+                    });
                 }
             };
 
