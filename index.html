@@ -523,7 +523,7 @@
             </div>
         );
 
-        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult }) => (
+        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult, onAnalyzeUniqueness, uniquenessResult }) => (
             <div className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
@@ -580,10 +580,10 @@
                         </button>
                         <button 
                             className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
-                            onClick={() => analyzeUniqueness(item.val1, index)}
-                            disabled={uniquenessResults[index]?.isAnalyzing || !item.val1?.trim()}
+                            onClick={() => onAnalyzeUniqueness(item.val1, index)}
+                            disabled={uniquenessResult?.isAnalyzing || !item.val1?.trim()}
                         >
-                            {uniquenessResults[index]?.isAnalyzing ? 'Analyzing market...' : 'Analyze Uniqueness'}
+                            {uniquenessResult?.isAnalyzing ? 'Analyzing market...' : 'Analyze Uniqueness'}
                         </button>
                     </div>
                     
@@ -607,18 +607,18 @@
                         </div>
                     )}
 
-                    {uniquenessResults[index] && !uniquenessResults[index].isAnalyzing && (
+                    {uniquenessResult && !uniquenessResult.isAnalyzing && (
                         <div className="bg-white p-3 rounded-md border border-gray-300">
                             <div className="mb-2">
                                 <span className="text-sm font-bold text-gray-700">Uniqueness Analysis:</span>
                             </div>
-                            {uniquenessResults[index].error ? (
+                            {uniquenessResult.error ? (
                                 <div className="text-sm text-red-600">
-                                    {uniquenessResults[index].error}
+                                    {uniquenessResult.error}
                                 </div>
-                            ) : uniquenessResults[index].results && uniquenessResults[index].results.length > 0 ? (
+                            ) : uniquenessResult.results && uniquenessResult.results.length > 0 ? (
                                 <div className="space-y-2">
-                                    {uniquenessResults[index].results.slice(0, 3).map((result, idx) => (
+                                    {uniquenessResult.results.slice(0, 3).map((result, idx) => (
                                         <div key={idx} className="text-sm text-gray-600">
                                             <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
                                                 {result.title}
@@ -1256,6 +1256,8 @@
                                         onRemove={(idx) => removeItem('values', idx)}
                                         onGrade={(item, idx) => simulateAIGrading(item, idx)}
                                         gradingResult={gradingState[index]}
+                                        onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
+                                        uniquenessResult={uniquenessResults[index]}
                                     />
                                 ))}
                                 <button 
