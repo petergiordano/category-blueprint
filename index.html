@@ -349,6 +349,95 @@
             );
         };
 
+        // JTBD Analysis Modal Component
+        const JTBDModal = ({ isOpen, onClose, analysisData, setAnalysisData, onSave }) => {
+            if (!isOpen) return null;
+
+            const jtbdFields = [
+                { key: 'context', label: 'Context', description: 'When does this job arise?' },
+                { key: 'strugglingMoments', label: 'Struggling Moments', description: 'What triggers action?' },
+                { key: 'desiredOutcomes', label: 'Desired Outcomes', description: 'What does success look like?' },
+                { key: 'currentSolutions', label: 'Current Solutions', description: 'What are they using now?' },
+                { key: 'constraints', label: 'Constraints', description: 'What limitations exist?' },
+                { key: 'successCriteria', label: 'Success Criteria', description: 'How is progress measured?' },
+                { key: 'emotionalDrivers', label: 'Emotional Drivers', description: 'What feelings are involved?' },
+                { key: 'socialDimensions', label: 'Social Dimensions', description: 'Who else is affected?' }
+            ];
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <div>
+                                <h2 className="text-2xl font-bold scale-green-text">AI-Assisted JTBD Structuring</h2>
+                                <p className="text-sm text-gray-600 mt-1">Bottom-up breadcrumb analysis of your Common Needs text</p>
+                            </div>
+                            <button 
+                                onClick={onClose}
+                                className="text-gray-400 hover:text-gray-600 text-3xl font-light"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {/* Original Text Column */}
+                                <div>
+                                    <h3 className="text-lg font-bold mb-4">Original Text</h3>
+                                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 h-full min-h-[200px]">
+                                        <p className="text-gray-800 whitespace-pre-wrap">
+                                            {analysisData.originalText || 'No text provided'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* JTBD Elements Column */}
+                                <div>
+                                    <h3 className="text-lg font-bold mb-4">8 JTBD Elements</h3>
+                                    <div className="space-y-4">
+                                        {jtbdFields.map(field => (
+                                            <div key={field.key}>
+                                                <label className="block font-semibold text-gray-700 mb-1">
+                                                    {field.label}
+                                                </label>
+                                                <p className="text-xs text-gray-500 mb-2">{field.description}</p>
+                                                <textarea 
+                                                    className="w-full p-3 border border-gray-300 rounded-md text-sm"
+                                                    rows="3" 
+                                                    value={analysisData[field.key] || ''}
+                                                    onChange={(e) => setAnalysisData(prev => ({
+                                                        ...prev,
+                                                        [field.key]: e.target.value
+                                                    }))}
+                                                    placeholder={`AI analysis will appear here...`}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="flex justify-end space-x-4 p-6 border-t">
+                            <button 
+                                onClick={onClose}
+                                className="px-6 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={onSave}
+                                className="px-6 py-2 scale-green-bg text-white font-bold rounded-lg hover:bg-opacity-90"
+                            >
+                                Save Structured JTBD
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // Dynamic Field Components
         const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2, onAnalyze, analysisResult }) => (
             <div className="space-y-3">
@@ -514,7 +603,20 @@
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [jtbdExpanded, setJtbdExpanded] = useState(false);
-            const [gradingState, setGradingState] = useState({});\n            const [analysisState, setAnalysisState] = useState({});
+            const [gradingState, setGradingState] = useState({});
+            const [analysisState, setAnalysisState] = useState({});
+            const [jtbdModalOpen, setJtbdModalOpen] = useState(false);
+            const [jtbdAnalysisData, setJtbdAnalysisData] = useState({
+                originalText: '',
+                context: '',
+                strugglingMoments: '',
+                desiredOutcomes: '',
+                currentSolutions: '',
+                constraints: '',
+                successCriteria: '',
+                emotionalDrivers: '',
+                socialDimensions: ''
+            });
             
             // Simulate AI grading for value propositions
             const simulateAIGrading = async (proposition, index) => {
@@ -636,6 +738,99 @@
                         timestamp: new Date().toISOString()
                     }
                 }));
+            };
+
+            // Simulate AI JTBD analysis using bottom-up breadcrumb approach
+            const simulateJTBDAnalysis = async (originalText) => {
+                if (!originalText.trim()) {
+                    return {
+                        context: '',
+                        strugglingMoments: '',
+                        desiredOutcomes: '',
+                        currentSolutions: '',
+                        constraints: '',
+                        successCriteria: '',
+                        emotionalDrivers: '',
+                        socialDimensions: ''
+                    };
+                }
+
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Apply bottom-up breadcrumb approach - identify signals and cluster them
+                const text = originalText.toLowerCase();
+                const breadcrumbs = {
+                    contextClues: [],
+                    struggleSignals: [],
+                    outcomeSignals: [],
+                    solutionMentions: [],
+                    constraintSignals: [],
+                    metricSignals: [],
+                    emotionWords: [],
+                    stakeholderMentions: []
+                };
+
+                // Identify breadcrumbs (signals) in the text
+                if (text.includes('when') || text.includes('during') || text.includes('while')) {
+                    breadcrumbs.contextClues.push('timing-based triggers identified');
+                }
+                if (text.includes('need') || text.includes('require') || text.includes('must')) {
+                    breadcrumbs.struggleSignals.push('urgency language detected');
+                }
+                if (text.includes('achieve') || text.includes('reach') || text.includes('goal')) {
+                    breadcrumbs.outcomeSignals.push('outcome-oriented language');
+                }
+                if (text.includes('currently') || text.includes('using') || text.includes('tool')) {
+                    breadcrumbs.solutionMentions.push('existing solution references');
+                }
+                if (text.includes('budget') || text.includes('time') || text.includes('resource')) {
+                    breadcrumbs.constraintSignals.push('resource constraint mentions');
+                }
+                if (text.includes('measure') || text.includes('track') || text.includes('metric')) {
+                    breadcrumbs.metricSignals.push('measurement focus detected');
+                }
+                if (text.includes('frustrated') || text.includes('worried') || text.includes('confident')) {
+                    breadcrumbs.emotionWords.push('emotional language identified');
+                }
+                if (text.includes('team') || text.includes('stakeholder') || text.includes('customer')) {
+                    breadcrumbs.stakeholderMentions.push('multiple parties involved');
+                }
+
+                // Cluster breadcrumbs into JTBD elements
+                return {
+                    context: breadcrumbs.contextClues.length > 0 
+                        ? `Based on timing signals in your text, this job typically arises during critical business transitions or system implementations.`
+                        : `This job occurs in the context of ongoing business operations where efficiency and accuracy are paramount.`,
+                    
+                    strugglingMoments: breadcrumbs.struggleSignals.length > 0
+                        ? `The urgency language suggests customers are struggling with time-sensitive decisions that have high business impact. They're likely facing pressure from stakeholders to act quickly while avoiding costly mistakes.`
+                        : `Customers reach this struggling moment when their current approach becomes inadequate for their growing business needs.`,
+                    
+                    desiredOutcomes: breadcrumbs.outcomeSignals.length > 0
+                        ? `Success looks like achieving clearly defined goals with measurable business impact. Customers want certainty in their outcomes and the ability to demonstrate value to stakeholders.`
+                        : `The desired outcome is a reliable, efficient solution that reduces risk while improving business performance.`,
+                    
+                    currentSolutions: breadcrumbs.solutionMentions.length > 0
+                        ? `Analysis of your text suggests customers are currently using a combination of existing tools and manual processes that are proving inadequate for their needs.`
+                        : `Most customers are likely relying on manual processes, spreadsheets, or basic tools that don't scale with their requirements.`,
+                    
+                    constraints: breadcrumbs.constraintSignals.length > 0
+                        ? `Resource constraints are evident in your description. Customers are working within tight budgets, limited time, and restricted personnel availability.`
+                        : `Primary constraints include budget limitations, internal expertise gaps, and the need to minimize disruption to ongoing operations.`,
+                    
+                    successCriteria: breadcrumbs.metricSignals.length > 0
+                        ? `Your text indicates customers will measure success through specific metrics and trackable outcomes. They need clear ROI demonstration and performance indicators.`
+                        : `Success will be measured by improved efficiency, reduced errors, faster time-to-value, and positive stakeholder feedback.`,
+                    
+                    emotionalDrivers: breadcrumbs.emotionWords.length > 0
+                        ? `Emotional language in your text reveals customers experience stress about making the wrong choice, but also excitement about potential improvements. They seek confidence and peace of mind.`
+                        : `Customers are driven by the desire to reduce anxiety around business-critical decisions while gaining confidence in their ability to deliver results.`,
+                    
+                    socialDimensions: breadcrumbs.stakeholderMentions.length > 0
+                        ? `Multiple stakeholders are mentioned, indicating this is a collaborative decision with cross-functional impact. Success requires buy-in and coordination across teams.`
+                        : `This job affects multiple stakeholders including direct users, management, and potentially external customers or partners. Success requires organizational alignment.`
+                };
             };
             const updateNestedValue = (section, index, key, value) => {
                 const newData = { ...appState.positioningData };
@@ -790,6 +985,36 @@
                                         value={appState.positioningData.icp_common_needs || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_common_needs: e.target.value } }))}
                                     />
+                                    <button 
+                                        onClick={async () => {
+                                            const originalText = appState.positioningData.icp_common_needs || '';
+                                            if (!originalText.trim()) {
+                                                alert('Please enter some text in the Common Needs field before analyzing.');
+                                                return;
+                                            }
+                                            
+                                            setJtbdAnalysisData(prev => ({
+                                                ...prev,
+                                                originalText
+                                            }));
+                                            
+                                            setJtbdModalOpen(true);
+                                            
+                                            try {
+                                                const analysisResult = await simulateJTBDAnalysis(originalText);
+                                                setJtbdAnalysisData(prev => ({
+                                                    ...prev,
+                                                    ...analysisResult
+                                                }));
+                                            } catch (error) {
+                                                console.error('Failed to analyze JTBD:', error);
+                                                alert('Failed to analyze JTBD. Please try again.');
+                                            }
+                                        }}
+                                        className="mt-2 text-sm scale-blue-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90"
+                                    >
+                                        Analyze JTBD
+                                    </button>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">Desired Business Value</label>
@@ -1009,6 +1234,69 @@
                         content={exportModal.content}
                         appState={appState}
                         filename="positioning-blueprint"
+                    />
+                    
+                    <JTBDModal
+                        isOpen={jtbdModalOpen}
+                        onClose={() => setJtbdModalOpen(false)}
+                        analysisData={jtbdAnalysisData}
+                        setAnalysisData={setJtbdAnalysisData}
+                        onSave={() => {
+                            // Format the structured JTBD analysis
+                            const structuredJTBD = `**STRUCTURED JTBD ANALYSIS**
+
+**Context (When does this job arise?):**
+${jtbdAnalysisData.context}
+
+**Struggling Moments (What triggers action?):**
+${jtbdAnalysisData.strugglingMoments}
+
+**Desired Outcomes (What does success look like?):**
+${jtbdAnalysisData.desiredOutcomes}
+
+**Current Solutions (What are they using now?):**
+${jtbdAnalysisData.currentSolutions}
+
+**Constraints (What limitations exist?):**
+${jtbdAnalysisData.constraints}
+
+**Success Criteria (How is progress measured?):**
+${jtbdAnalysisData.successCriteria}
+
+**Emotional Drivers (What feelings are involved?):**
+${jtbdAnalysisData.emotionalDrivers}
+
+**Social Dimensions (Who else is affected?):**
+${jtbdAnalysisData.socialDimensions}
+
+---
+*Analysis generated using bottom-up breadcrumb approach*`;
+
+                            // Update the original Common Needs field
+                            setAppState(prev => ({
+                                ...prev,
+                                positioningData: {
+                                    ...prev.positioningData,
+                                    icp_common_needs: structuredJTBD
+                                }
+                            }));
+                            
+                            // Close the modal
+                            setJtbdModalOpen(false);
+                            
+                            // Reset analysis data
+                            setJtbdAnalysisData({
+                                originalText: '',
+                                context: '',
+                                strugglingMoments: '',
+                                desiredOutcomes: '',
+                                currentSolutions: '',
+                                constraints: '',
+                                successCriteria: '',
+                                emotionalDrivers: '',
+                                socialDimensions: ''
+                            });
+                        }}
                     />
                 </div>
             );
