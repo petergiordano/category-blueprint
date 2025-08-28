@@ -559,7 +559,7 @@
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Value: How the attribute maps to a goal the customer is trying to achieve
+                        Value: The metrics and KPIs the customer use to measure value created by this attribute
                     </label>
                     <input 
                         type="text" 
@@ -988,7 +988,7 @@
                 if (appState.positioningData.trend2_desc) trendsContent += `- Industry Trend 2: ${appState.positioningData.trend2_desc}\n`;
                 if (appState.positioningData.trend3_desc) trendsContent += `- Industry Trend 3: ${appState.positioningData.trend3_desc}\n`;
                 if (appState.positioningData.trend4_desc) trendsContent += `- Industry Trend 4: ${appState.positioningData.trend4_desc}\n`;
-                summary += formatSection('7. Relevant Trends', trendsContent || 'N/A');
+                summary += formatSection('4. Relevant Trends', trendsContent || 'N/A');
 
                 setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
             };
@@ -1028,8 +1028,8 @@
                                     <ul className="space-y-1">
                                         <li><a href="#section-1" className="nav-link block p-2 rounded text-gray-700 font-semibold">1. Define Your ICP</a></li>
                                         <li><a href="#section-2" className="nav-link block p-2 rounded text-gray-700 font-semibold">2. Competitive Alternatives</a></li>
-                                        <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Value and Proof</a></li>
-                                        <li><a href="#section-7" className="nav-link block p-2 rounded text-gray-700 font-semibold">7. Relevant Trends</a></li>
+                                        <li><a href="#section-3" className="nav-link block p-2 rounded text-gray-700 font-semibold">3. Value and Proof</a></li>
+                                        <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Relevant Trends</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
                                         <button onClick={() => onNavigate('category')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
@@ -1244,8 +1244,8 @@
                             </div>
                         </div>
 
-                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">4. Value and Proof</h2>
+                        <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">3. Value and Proof</h2>
                             <div className="space-y-4">
                                 {(appState.positioningData.values || []).map((item, index) => (
                                     <RemovableTriple 
@@ -1269,8 +1269,8 @@
                             </div>
                         </div>
 
-                        <div id="section-7" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">7. Relevant Trends</h2>
+                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">4. Relevant Trends</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What macro trends create urgency for our solution *right now*?</p>
                             <p className="text-gray-600 mb-6">Guidance: Tying your solution to an undeniable trend creates urgency.</p>
                             <div className="space-y-6">
@@ -1454,10 +1454,10 @@ ${jtbdAnalysisData.socialDimensions}
                 summary += `- ICP Summary: ${appState.positioningData.icp_summary || 'N/A'}\n`;
                 summary += `- Unique Value: ${appState.positioningData.values ? appState.positioningData.values.map(v => v.val2).join('; ') : 'N/A'}\n\n`;
 
-                summary += `## 8. The Point of View (From/To)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
-                summary += formatSection('9. The New Opportunity', appState.categoryData['new-opportunity']);
-                summary += `## 10. Category Name & Definition\n- Name: ${appState.categoryData['category-name'] || 'N/A'}\n- Definition: ${appState.categoryData['category-definition'] || 'N/A'}\n\n`;
-                summary += formatSection('11. The Manifesto', appState.categoryData['manifesto']);
+                summary += `## 5. The Point of View (From/To)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
+                summary += formatSection('6. The New Opportunity', appState.categoryData['new-opportunity']);
+                summary += `## 7. Category Name & Definition\n- Name: ${appState.categoryData['category-name'] || 'N/A'}\n- Definition: ${appState.categoryData['category-definition'] || 'N/A'}\n\n`;
+                summary += formatSection('8. The Manifesto', appState.categoryData['manifesto']);
 
                 setExportModal({ isOpen: true, content: summary, title: 'Category Design Summary' });
             };
@@ -1495,10 +1495,10 @@ ${jtbdAnalysisData.socialDimensions}
                                 <div className="bg-white p-4 rounded-lg shadow-md">
                                     <h3 className="font-bold scale-green-text mb-2 text-lg">Sections</h3>
                                     <ul className="space-y-1">
-                                        <li><a href="#section-8" className="nav-link block p-2 rounded text-gray-700 font-semibold">8. The Point of View</a></li>
-                                        <li><a href="#section-9" className="nav-link block p-2 rounded text-gray-700 font-semibold">9. The New Opportunity</a></li>
-                                        <li><a href="#section-10" className="nav-link block p-2 rounded text-gray-700 font-semibold">10. Category Name</a></li>
-                                        <li><a href="#section-11" className="nav-link block p-2 rounded text-gray-700 font-semibold">11. The Manifesto</a></li>
+                                        <li><a href="#section-5" className="nav-link block p-2 rounded text-gray-700 font-semibold">5. The Point of View</a></li>
+                                        <li><a href="#section-6" className="nav-link block p-2 rounded text-gray-700 font-semibold">6. The New Opportunity</a></li>
+                                        <li><a href="#section-7" className="nav-link block p-2 rounded text-gray-700 font-semibold">7. Category Name</a></li>
+                                        <li><a href="#section-8" className="nav-link block p-2 rounded text-gray-700 font-semibold">8. The Manifesto</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
                                         <button onClick={() => onNavigate('positioning')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
@@ -1531,8 +1531,8 @@ ${jtbdAnalysisData.socialDimensions}
                             </div>
                         </div>
 
-                        <div id="section-8" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">8. The Point of View (The "From/To" Shift)</h2>
+                        <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">5. The Point of View (The "From/To" Shift)</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is the old, broken way of thinking, and what is our new, better way?</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
@@ -1558,8 +1558,8 @@ ${jtbdAnalysisData.socialDimensions}
                             </div>
                         </div>
 
-                        <div id="section-9" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">9. The New Opportunity</h2>
+                        <div id="section-6" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">6. The New Opportunity</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What becomes possible for businesses that adopt our point of view?</p>
                             <textarea 
                                 className="w-full mt-1 p-2 border border-gray-300 rounded-md"
@@ -1570,8 +1570,8 @@ ${jtbdAnalysisData.socialDimensions}
                             />
                         </div>
 
-                        <div id="section-10" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">10. Category Name & Definition</h2>
+                        <div id="section-7" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">7. Category Name & Definition</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block font-bold text-gray-700">Category Name</label>
@@ -1670,8 +1670,8 @@ ${jtbdAnalysisData.socialDimensions}
                             </div>
                         </div>
 
-                        <div id="section-11" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">11. The Manifesto</h2>
+                        <div id="section-8" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">8. The Manifesto</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is our story?</p>
                             <textarea 
                                 className="w-full mt-1 p-2 border border-gray-300 rounded-md"
