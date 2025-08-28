@@ -570,13 +570,22 @@
                     />
                 </div>
                 <div className="pt-2 space-y-3">
-                    <button 
-                        className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50"
-                        onClick={() => onGrade(item, index)}
-                        disabled={gradingResult?.isGrading}
-                    >
-                        {gradingResult?.isGrading ? 'Grading...' : 'Grade Proposition'}
-                    </button>
+                    <div className="flex space-x-2">
+                        <button 
+                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50"
+                            onClick={() => onGrade(item, index)}
+                            disabled={gradingResult?.isGrading}
+                        >
+                            {gradingResult?.isGrading ? 'Grading...' : 'Grade Proposition'}
+                        </button>
+                        <button 
+                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                            onClick={() => analyzeUniqueness(item.val1, index)}
+                            disabled={uniquenessResults[index]?.isAnalyzing || !item.val1?.trim()}
+                        >
+                            {uniquenessResults[index]?.isAnalyzing ? 'Analyzing market...' : 'Analyze Uniqueness'}
+                        </button>
+                    </div>
                     
                     {gradingResult && !gradingResult.isGrading && gradingResult.score && (
                         <div className="bg-white p-3 rounded-md border border-gray-300">
@@ -597,6 +606,34 @@
                             </p>
                         </div>
                     )}
+
+                    {uniquenessResults[index] && !uniquenessResults[index].isAnalyzing && (
+                        <div className="bg-white p-3 rounded-md border border-gray-300">
+                            <div className="mb-2">
+                                <span className="text-sm font-bold text-gray-700">Uniqueness Analysis:</span>
+                            </div>
+                            {uniquenessResults[index].error ? (
+                                <div className="text-sm text-red-600">
+                                    {uniquenessResults[index].error}
+                                </div>
+                            ) : uniquenessResults[index].results && uniquenessResults[index].results.length > 0 ? (
+                                <div className="space-y-2">
+                                    {uniquenessResults[index].results.slice(0, 3).map((result, idx) => (
+                                        <div key={idx} className="text-sm text-gray-600">
+                                            <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                {result.title}
+                                            </a>
+                                            <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-green-600 font-medium">
+                                    No similar claims found - this appears to be a unique attribute!
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -607,6 +644,7 @@
             const [jtbdExpanded, setJtbdExpanded] = useState(false);
             const [gradingState, setGradingState] = useState({});
             const [analysisState, setAnalysisState] = useState({});
+            const [uniquenessResults, setUniquenessResults] = useState({});
             const [jtbdModalOpen, setJtbdModalOpen] = useState(false);
             const [jtbdAnalysisData, setJtbdAnalysisData] = useState({
                 originalText: '',
@@ -683,6 +721,62 @@
                 }));
             };
 
+            // Analyze uniqueness using web search API
+            const analyzeUniqueness = async (attributeText, index) => {
+                if (!attributeText || !attributeText.trim()) {
+                    return;
+                }
+
+                setUniquenessResults(prev => ({
+                    ...prev,
+                    [index]: { isAnalyzing: true, results: null }
+                }));
+
+                try {
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query: `"${attributeText.trim()}" software features capabilities`
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const searchData = await response.json();
+                    
+                    // Extract relevant results for display
+                    const results = searchData.web?.results?.slice(0, 3).map(result => ({
+                        title: result.title,
+                        description: result.description || result.snippet || 'No description available',
+                        url: result.url
+                    })) || [];
+
+                    setUniquenessResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            results,
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+
+                } catch (error) {
+                    console.error('Uniqueness analysis error:', error);
+                    setUniquenessResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            error: 'Analysis unavailable - please try again later',
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+                }
+            };
             
             // Simulate AI competitive weakness analysis
             const simulateCompetitiveAnalysis = async (alternative, index) => {
