@@ -153,6 +153,77 @@ The `.aicontext/context.md` file contains:
 
 **CRITICAL**: Never proceed with work without first reading `.aicontext/context.md`. This ensures all agents stay synchronized and prevents duplicate or conflicting work.
 
+## 🔴 MANDATORY HANDOFF CHECKPOINTS 🔴
+
+YOU MUST update `.aicontext/context.md` handoff log IMMEDIATELY when you:
+
+### Code Pattern Triggers
+- Type `"status": "completed"` in any TodoWrite update
+- Type `feat:` in a commit message
+- Complete any F-[number] feature (F-1, F-2, etc.)
+- Fix linting errors or warnings
+- Resolve merge conflicts
+- Write/modify 50+ lines of code
+
+### Session & Connection Triggers
+- **VS Code Restart**: Workspace reopened → Write `STATUS: SESSION_RESUMED`
+- **Claude Code Restart**: User mentions restart → Write `STATUS: CLAUDE_RESTART`  
+- **Connection Lost**: File operations fail → Write `STATUS: CONNECTION_LOST`
+- **Context Warning**: See "running long" → Write `STATUS: CONTEXT_WARNING` with FULL state
+- **Session End**: About to stop work → Write `STATUS: SESSION_END`
+
+### Git Operation Triggers
+- **BEFORE** every `git push` → Write `STATUS: PRE_PUSH`
+- If push fails → Add `PUSH_PENDING: [reason]`
+- After major commits → Document what was committed
+
+## ⚠️ Handoff Entry Template ⚠️
+
+```markdown
+---
+**Timestamp:** 2025-XX-XXTXX:XX:XXZ
+**From:** Claude Code
+**To:** User/Gemini-CLI
+**Status:** [FEATURE_COMPLETE|TASK_COMPLETE|SESSION_RESUMED|CLAUDE_RESTART|CONNECTION_LOST|CONTEXT_WARNING|PRE_PUSH]
+**Branch:** [current git branch]
+**Summary:** [What you did or what happened]
+**Technical Details:**
+- Files modified: [list]
+- Functions/Components added: [list]
+- Dependencies: [what this builds on]
+**Context Preservation:** [Critical info that must survive context compaction]
+**Next:** [What should happen next]
+---
+```
+
+## 🔄 Context Compaction Survival Protocol 🔄
+
+When you see context warnings or get summarized:
+1. **IMMEDIATELY** write comprehensive handoff with `STATUS: CONTEXT_WARNING`
+2. Include `CONTEXT_RESET: [timestamp]` marker
+3. Document:
+   - `WORK_COMPLETED:` [comprehensive list]
+   - `WORK_PENDING:` [comprehensive list]
+   - `CRITICAL_STATE:` [must survive compaction]
+
+## ✅ TodoWrite Integration Rules
+
+Your todo list MUST ALWAYS include:
+1. **First item**: "Read .aicontext/context.md and check last handoff"
+2. **Last item**: "Update .aicontext/context.md handoff log"
+3. **Checkpoint items** for long tasks: "Checkpoint: Update handoff (30 min)"
+
+**RED FLAG**: If you mark other todos complete but not the handoff todo → Stop and update immediately
+
+## 🚨 Validation Checks
+
+Before ANY git push, verify:
+- [ ] `.aicontext/context.md` updated in last 3 commits?
+- [ ] Handoff includes current work?
+- [ ] Technical details documented?
+
+To test protocol compliance, use: `.aicontext/handoff-protocol-test.md`
+
 ## Brand & Design Standards
 
 This project follows Scale Venture Partners brand guidelines as defined in `docs/specifications/scale_brand.md`:
