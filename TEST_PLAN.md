@@ -214,7 +214,7 @@ cd test-projects/data-processor-test
 #### T3.4: AI Coordination Test
 ```bash
 # Test AI context loading
-# 1. Verify .ai-context/AI_CONTEXT.md loads correctly
+# 1. Verify .aicontext/context.md loads correctly
 # 2. Test persona.md integration
 # 3. Verify workflow guides are accessible
 # 4. Test command functionality and help text

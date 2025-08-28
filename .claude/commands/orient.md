@@ -50,7 +50,7 @@ Analyze the current directory structure and files:
 **Key Files to Check:**
 - `docs/specifications/PRD.md` - Project requirements and component status
 - `.claude/` directory - Claude Code configuration and commands
-- `.ai-context/` directory - AI coordination documentation
+- `.aicontext/` directory - AI coordination documentation
 - `docs/specifications/` directory - Planning documents and feature specs
 - `src/` directory - Source code structure
 - `tests/` directory - Test files and references
@@ -169,7 +169,7 @@ PRD Status: [component completion status]
 
 💡 NEED MORE HELP?
 - Read docs/specifications/dev-cycle.md for complete workflow
-- Check .ai-context/ directory for coordination guides
+- Check .aicontext/ directory for coordination guides
 - Review component-specific documentation in docs/specifications/
 ```
 

@@ -2,14 +2,22 @@
 
 **Based on**: docs/PRD_AI_Quick_Wins.md  
 **Generated**: 2025-01-27  
-**Status**: Ready for implementation
+**Updated**: 2025-01-28  
+**Status**: Phase 1 Complete, Phase 2 Ready for implementation
 
 ## Overview
 
-This task list covers the implementation of three high-impact AI features for the Interactive GTM Blueprint SPA:
+This task list covers the implementation of six AI features for the Interactive GTM Blueprint SPA:
+
+### Phase 1 - Initial AI Quick Wins (Complete)
 - **F-1**: AI Category Name Brainstormer (Section 10)
 - **F-2**: Value Proposition Grader (Section 4) 
 - **F-3**: Competitive Weakness Analysis (Section 2)
+
+### Phase 2 - Advanced AI Intelligence (New)
+- **F-4**: AI-Assisted JTBD Structuring (Section 1)
+- **F-5**: Uniqueness Attribute Validation (Section 4)
+- **F-6**: Trend Validation (Section 7)
 
 ## Pre-Implementation Setup
 
@@ -137,6 +145,175 @@ This task list covers the implementation of three high-impact AI features for th
 - [ ] Validate talking points quality and relevance
 - [ ] Test modal/expandable behavior across devices
 
+## Feature F-4: AI-Assisted JTBD Structuring
+
+### Initial UI Component Scaffolding
+- [ ] Locate Section 1 (Common Needs/JTBD) in the SPA
+- [ ] Add "Analyze JTBD" button next to textarea
+- [ ] Create button component with Scale brand styling
+- [ ] Position button to not interfere with existing layout
+- [ ] Add loading state indicator for analysis
+
+### Modal System Development
+- [ ] Create reusable modal component framework
+- [ ] Design modal layout with two columns:
+  - [ ] Left: Original user text (read-only)
+  - [ ] Right: 8 JTBD element fields
+- [ ] Implement modal open/close functionality
+- [ ] Add backdrop overlay with proper z-index
+- [ ] Style modal with Scale brand guidelines
+
+### JTBD Field Structure
+- [ ] Create input fields for 8 JTBD elements:
+  - [ ] Context field
+  - [ ] Struggling Moments field
+  - [ ] Desired Outcomes field
+  - [ ] Current Solutions field
+  - [ ] Constraints field
+  - [ ] Success Criteria field
+  - [ ] Emotional Drivers field
+  - [ ] Social Dimensions field
+- [ ] Add field labels and helper text
+- [ ] Implement field validation
+
+### AI Integration
+- [ ] Create API endpoint for JTBD analysis
+- [ ] Design prompt template for text parsing
+- [ ] Implement structured extraction logic
+- [ ] Map extracted content to 8 fields
+- [ ] Add fallback for incomplete extraction
+
+### Data Formatting and Saving
+- [ ] Create formatter for structured JTBD output
+- [ ] Implement "Save Structured JTBD" handler
+- [ ] Format output with clear sections
+- [ ] Update original textarea with formatted text
+- [ ] Add undo capability
+
+### Validation and Testing
+- [ ] Test with various free-form text inputs
+- [ ] Verify all 8 fields get populated
+- [ ] Validate editing functionality
+- [ ] Test save and update mechanism
+- [ ] Ensure modal responsive on all devices
+
+## Feature F-5: Uniqueness Attribute Validation
+
+### Web Search API Setup
+- [ ] Select web search API provider (Brave Search recommended)
+- [ ] Set up API authentication
+- [ ] Create API service wrapper
+- [ ] Implement rate limiting
+- [ ] Add cost tracking mechanism
+
+### Initial UI Component Scaffolding
+- [ ] Locate Section 4 (Attribute fields)
+- [ ] Add "Analyze Uniqueness" button per attribute
+- [ ] Create button with consistent styling
+- [ ] Position inline with attribute fields
+- [ ] Add loading state "Analyzing market..."
+
+### Search Query Construction
+- [ ] Extract attribute text for search
+- [ ] Add context from company/product name
+- [ ] Construct competitive search query
+- [ ] Include industry/market context
+- [ ] Optimize query for relevant results
+
+### Web Search Integration
+- [ ] Implement web search API call
+- [ ] Parse search results for competitor claims
+- [ ] Extract relevant snippets and URLs
+- [ ] Identify competing companies/products
+- [ ] Handle API errors gracefully
+
+### Uniqueness Scoring Algorithm
+- [ ] Develop scoring criteria:
+  - [ ] No similar claims found = "Highly Unique"
+  - [ ] 1-2 similar claims = "Moderately Unique"
+  - [ ] 3+ similar claims = "Common Claim"
+- [ ] Weight results by source authority
+- [ ] Consider recency of competing claims
+
+### UI Results Display
+- [ ] Create inline results component
+- [ ] Display uniqueness score with color coding:
+  - [ ] Green for "Highly Unique"
+  - [ ] Gold for "Moderately Unique"
+  - [ ] Red for "Common Claim"
+- [ ] Show 2-3 competitor links
+- [ ] Add tooltips with more details
+- [ ] Style with Scale brand colors
+
+### Caching and Performance
+- [ ] Implement results caching (1 hour TTL)
+- [ ] Add cache invalidation controls
+- [ ] Optimize API calls with batching
+- [ ] Monitor API usage and costs
+- [ ] Add fallback for API failures
+
+### Validation and Testing
+- [ ] Test with known unique attributes
+- [ ] Test with common industry claims
+- [ ] Verify link quality and relevance
+- [ ] Test API failure scenarios
+- [ ] Validate scoring consistency
+
+## Feature F-6: Trend Validation
+
+### Initial UI Component Scaffolding
+- [ ] Locate Section 7 (Industry Trends)
+- [ ] Add "Analyze Trend" button per trend field
+- [ ] Create button with consistent styling
+- [ ] Position buttons clearly
+- [ ] Add loading indicators
+
+### Search Query Optimization
+- [ ] Extract trend text for search
+- [ ] Add temporal constraints (last 12 months)
+- [ ] Include industry context
+- [ ] Optimize for news/research sources
+- [ ] Add authority site preferences
+
+### Web Search Integration
+- [ ] Implement trend-specific search
+- [ ] Filter for recent content only
+- [ ] Prioritize authoritative sources:
+  - [ ] Industry reports
+  - [ ] News articles
+  - [ ] Expert opinions
+- [ ] Extract quotes and statistics
+- [ ] Capture source metadata
+
+### Evidence Extraction
+- [ ] Parse search results for evidence
+- [ ] Extract relevant quotes (max 50 words)
+- [ ] Identify supporting statistics
+- [ ] Capture publication dates
+- [ ] Verify source credibility
+
+### UI Results Display
+- [ ] Create bullet point component
+- [ ] Display 2-3 evidence points
+- [ ] Include source attribution
+- [ ] Add direct links to sources
+- [ ] Format quotes with quotation marks
+- [ ] Style with Scale brand guidelines
+
+### Source Quality Validation
+- [ ] Check source recency (prefer < 12 months)
+- [ ] Verify source authority
+- [ ] Validate link accessibility
+- [ ] Check for paywalled content
+- [ ] Add source type indicators
+
+### Validation and Testing
+- [ ] Test with current industry trends
+- [ ] Test with outdated trends
+- [ ] Verify evidence relevance
+- [ ] Test source link quality
+- [ ] Validate across industries
+
 ## Cross-Feature Integration
 
 ### State Management
@@ -218,13 +395,30 @@ This task list covers the implementation of three high-impact AI features for th
 
 ## Success Criteria Verification
 
-- [ ] ✅ All three features (F-1, F-2, F-3) are successfully implemented
+### Phase 1 (F-1, F-2, F-3)
+- [ ] ✅ All three initial features are successfully implemented
 - [ ] ✅ The UI for each feature is functional and intuitive
 - [ ] ✅ Brand-guardian agent confirms all new UI text and styling is compliant
 - [ ] ✅ Validation-specialist agent confirms no regression in existing functionality
 
+### Phase 2 (F-4, F-5, F-6)
+- [ ] F-4 successfully structures JTBD from free-form text
+- [ ] F-5 accurately validates uniqueness with competitor evidence
+- [ ] F-6 provides relevant trend validation with sources
+- [ ] Web search API integration performs reliably
+- [ ] All new features maintain brand compliance
+- [ ] No performance degradation from new features
+
 ---
 
-**Total Tasks**: 89 implementation tasks
-**Estimated Effort**: High-impact, low-effort AI features as specified in PRD
-**Dependencies**: AI API access, existing SPA codebase, brand compliance validation
+**Total Tasks**: 176 implementation tasks
+- Phase 1: 89 tasks (complete)
+- Phase 2: 87 additional tasks
+
+**Estimated Effort**: 
+- Phase 1: Low effort (3-5 days) - Simulated AI
+- Phase 2: Medium-High effort (8-11 days) - Real AI + Web Search
+
+**Dependencies**: 
+- Phase 1: AI API access, existing SPA codebase
+- Phase 2: Web search API (Brave Search), modal framework, caching system

@@ -1067,13 +1067,13 @@ customize_templates() {
     fi
     
     # Customize AI Context template
-    if [[ -f ".ai-context/AI_CONTEXT_TEMPLATE.md" ]]; then
+    if [[ -f ".aicontext/AI_CONTEXT_TEMPLATE.md" ]]; then
         sed -i.bak \
             -e "s/\[PROJECT NAME\]/$PROJECT_NAME/g" \
             -e "s/\[DATE\]/$current_date/g" \
-            .ai-context/AI_CONTEXT_TEMPLATE.md
-        mv .ai-context/AI_CONTEXT_TEMPLATE.md .ai-context/AI_CONTEXT.md
-        rm .ai-context/AI_CONTEXT_TEMPLATE.md.bak
+            .aicontext/AI_CONTEXT_TEMPLATE.md
+        mv .aicontext/AI_CONTEXT_TEMPLATE.md .aicontext/context.md
+        rm .aicontext/AI_CONTEXT_TEMPLATE.md.bak
     fi
     
     # Create basic config file
@@ -1327,7 +1327,7 @@ $PROJECT_ID/
 ├── src/                       # Main implementation
 ├── tests/                     # Test suite
 ├── config/                    # Configuration files
-├── .ai-context/              # AI coordination docs
+├── .aicontext/              # AI coordination docs
 ├── .claude/                  # Claude Code commands
 └── scripts/                  # Automation scripts
 \`\`\`
@@ -1337,7 +1337,7 @@ $PROJECT_ID/
 - **[PRD](docs/specifications/PRD.md)**: Project requirements and component status
 - **[Development Workflow](docs/specifications/dev-cycle.md)**: AI-assisted development process
 - **[Architecture Principles](docs/architecture/)**: SLC principles and design guidelines
-- **[AI Context](\.ai-context/AI_CONTEXT.md)**: Project knowledge base for AI assistants
+- **[AI Context](\.aicontext/context.md)**: Project knowledge base for AI assistants
 
 ## Contributing
 
@@ -1370,9 +1370,9 @@ setup_claude_settings() {
   "description": "$PROJECT_DESCRIPTION",
   "claude": {
     "contextFiles": [
-      ".ai-context/AI_CONTEXT.md",
+      ".aicontext/context.md",
       "docs/specifications/PRD.md",
-      ".ai-context/WORKFLOW_GUIDE.md"
+      ".aicontext/WORKFLOW_GUIDE.md"
     ],
     "persona": ".claude/persona.md",
     "commands": [
@@ -1404,8 +1404,8 @@ validate_setup() {
     # Check required files exist
     local required_files=(
         "docs/specifications/PRD.md"
-        ".ai-context/AI_CONTEXT.md"
-        ".ai-context/WORKFLOW_GUIDE.md"
+        ".aicontext/context.md"
+        ".aicontext/WORKFLOW_GUIDE.md"
         ".claude/persona.md"
         "config/project-config.json"
         "README.md"
@@ -1424,7 +1424,7 @@ validate_setup() {
         "docs/specifications"
         "docs/architecture"
         ".claude/commands"
-        ".ai-context"
+        ".aicontext"
     )
     
     # Add Gyro-specific directories if enabled
@@ -1489,7 +1489,7 @@ show_next_steps() {
     echo "📚 Documentation:"
     echo "  docs/specifications/PRD.md           Project requirements"
     echo "  docs/specifications/dev-cycle.md     Development workflow"
-    echo "  .ai-context/AI_CONTEXT.md           AI knowledge base"
+    echo "  .aicontext/context.md           AI knowledge base"
     echo "  docs/architecture/                   Design principles"
     echo
     print_status "Happy coding with AI assistance! 🤖"

@@ -108,7 +108,7 @@ Create the required directory structure:
 ```bash
 mkdir -p src tests config docs/implementation-logs
 mkdir -p docs/specifications docs/architecture
-mkdir -p .claude/commands .ai-context scripts
+mkdir -p .claude/commands .aicontext scripts
 ```
 
 ### Step 2: Customize Core Templates
@@ -134,9 +134,9 @@ Key sections to customize in PRD.md:
 #### AI Context Template Customization
 ```bash
 # Copy and customize AI context template
-cp .ai-context/AI_CONTEXT_TEMPLATE.md .ai-context/AI_CONTEXT.md
+cp .aicontext/AI_CONTEXT_TEMPLATE.md .aicontext/context.md
 
-# Edit AI_CONTEXT.md and replace:
+# Edit context.md and replace:
 # [PROJECT NAME] → Your project name
 # [CUSTOMIZE: ...] → Your domain-specific content
 ```
@@ -241,9 +241,9 @@ cat > .claude/settings.template.json << EOF
   "description": "Your project description",
   "claude": {
     "contextFiles": [
-      ".ai-context/AI_CONTEXT.md",
+      ".aicontext/context.md",
       "docs/specifications/PRD.md",
-      ".ai-context/WORKFLOW_GUIDE.md"
+      ".aicontext/WORKFLOW_GUIDE.md"
     ],
     "persona": ".claude/persona.md",
     "commands": [
@@ -467,7 +467,7 @@ python scripts/validate-setup.py --project-root /path/to/project
 
 - [ ] All required directories exist
 - [ ] PRD.md is customized for your project
-- [ ] AI_CONTEXT.md contains your project information
+- [ ] context.md contains your project information
 - [ ] Configuration files are valid JSON
 - [ ] Language-specific files are created
 - [ ] Git repository is initialized
@@ -520,7 +520,7 @@ After successful setup:
 1. **Start Development**: Use `@orient` to begin your first component
 2. **Iterate on PRD**: Refine requirements as you learn more
 3. **Build Components**: Use the AI workflow to implement your pipeline
-4. **Document Learnings**: Update AI_CONTEXT.md with discoveries
+4. **Document Learnings**: Update context.md with discoveries
 5. **Share Experience**: Contribute improvements back to the template
 
 ---

@@ -119,6 +119,40 @@ The template tracks project state through:
 
 This architecture enables rapid prototyping ("vibe coding") while maintaining production-ready quality standards ("viable code") through structured AI assistance and automated quality gates.
 
+## Three-Way Collaboration Protocol
+
+This project uses a formal three-way collaboration between **Claude Code**, **User**, and **Gemini CLI**. This protocol ensures efficient coordination and prevents context loss across AI agents.
+
+### Critical Protocol Rules
+
+**IMPORTANT**: These collaboration rules OVERRIDE any default behavior and MUST be followed exactly as written.
+
+1. **Shared Context File**: `.aicontext/context.md` is our primary communication hub and state management system
+
+2. **Handoff Log**: Add timestamped entries in the `## Agent Handoff & Status Log` section at the end of `.aicontext/context.md`. **ALWAYS include the current git branch in every log entry.**
+
+3. **The Golden Rule**:
+   - **Read First**: ALWAYS read the entire `.aicontext/context.md` file at the start of every task or session
+   - **Write Last**: ALWAYS update the handoff log at the end of every completed task
+
+4. **Startup Acknowledgment**: When starting a new session, your first response must acknowledge the collaboration and confirm you have read the latest status from the handoff log
+
+### Multi-Agent Coordination
+
+- **Claude Code**: Follows this protocol via `CLAUDE.md` (this file)
+- **Gemini CLI**: Follows parallel protocol via `.gemini/GEMINI.md` on startup
+- **User**: Coordinates handoffs and provides strategic direction
+
+### Context Synchronization
+
+The `.aicontext/context.md` file contains:
+- Current project status and completed work
+- Active tasks and next steps
+- Technical context and decisions
+- Handoff log with timestamped agent updates
+
+**CRITICAL**: Never proceed with work without first reading `.aicontext/context.md`. This ensures all agents stay synchronized and prevents duplicate or conflicting work.
+
 ## Brand & Design Standards
 
 This project follows Scale Venture Partners brand guidelines as defined in `docs/specifications/scale_brand.md`:

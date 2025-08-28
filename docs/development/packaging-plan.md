@@ -31,7 +31,7 @@ ai-dev-cycle-template/
 │       ├── next-task.md                # Task selection command
 │       ├── finalize-task.md            # Task completion command
 │       └── update-prd.md               # PRD synchronization command
-├── .ai-context/
+├── .aicontext/
 │   ├── AI_CONTEXT_TEMPLATE.md          # Project context template
 │   └── WORKFLOW_GUIDE.md               # Implementation coordination guide
 ├── config/
