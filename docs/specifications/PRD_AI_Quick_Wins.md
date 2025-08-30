@@ -1,12 +1,12 @@
 # Interactive GTM Blueprint AI Quick Wins - Product Requirements Document
 
 **Version**: 1.0  
-**Last Updated**: 2025-01-27  
+**Last Updated**: 2025-08-28
 **Development Philosophy**: High-impact, low-effort AI features that transform the tool into an intelligent partner
 
 ## 1. Objective
 
-To enhance the Interactive GTM Blueprint SPA by integrating three high-impact, low-effort AI features that provide real-time strategic feedback to the user, turning the tool into an intelligent partner.
+To enhance the Interactive GTM Blueprint SPA by integrating a series of high-impact, low-effort AI features that provide real-time strategic feedback to the user, turning the tool into an intelligent partner.
 
 ## 2. User Goals
 
@@ -15,6 +15,8 @@ To enhance the Interactive GTM Blueprint SPA by integrating three high-impact, l
 **UG-2**: Get instant, objective feedback on the strength and coherence of their value propositions.
 
 **UG-3**: Quickly generate strategic talking points to use against known competitors.
+
+**UG-4**: Reduce the friction and cognitive load of organizing granular features into high-level strategic themes.
 
 ## 3. Feature Specifications
 
@@ -54,106 +56,82 @@ To enhance the Interactive GTM Blueprint SPA by integrating three high-impact, l
 
 ### F-4: AI-Assisted JTBD Structuring (Bottom-Up Breadcrumb Approach)
 
-**Description**: An AI-powered assistant that applies the "bottom-up breadcrumb approach" from the master GTM prompt (see `docs/specifications/prompt_segment_positioning.md`) to transform free-form text into structured JTBD analysis. The AI identifies "breadcrumbs" - signals pointing to underlying Jobs to be Done, value measurement, and willingness to pay - then clusters them into the 8 formal JTBD elements.
+**Description**: An AI-powered assistant that applies the "bottom-up breadcrumb approach" from the master GTM prompt to transform free-form text into structured JTBD analysis.
 
 **UI**: 
 - An "Analyze JTBD" button next to the "Common Needs" textarea in Section 1
-- Modal window displays user's original text alongside 8 input fields for JTBD elements:
-  - Context (When does this job arise?)
-  - Struggling Moments (What triggers action?)
-  - Desired Outcomes (What does success look like?)
-  - Current Solutions (What are they using now?)
-  - Constraints (What limitations exist?)
-  - Success Criteria (How is progress measured?)
-  - Emotional Drivers (What feelings are involved?)
-  - Social Dimensions (Who else is affected?)
-- AI pre-populates fields using breadcrumb analysis methodology
-- "Save Structured JTBD" button updates the main field
+- Modal window displays user's original text alongside 8 input fields for JTBD elements.
 
 **Acceptance Criteria**:
 - "Analyze JTBD" button exists for the Common Needs textarea
 - Clicking triggers AI analysis using breadcrumb methodology
 - Modal displays all 8 JTBD elements with editable fields
 - AI successfully identifies and clusters breadcrumbs into structured fields
-- User can edit AI suggestions before saving
-- Saved content properly formats and updates original field with clear JTBD structure
 
 ### F-5: Uniqueness Attribute Validation (Expert Mindset Integration)
 
-**Description**: Advanced validation combining the strategic mindsets of positioning expert April Dunford and monetization expert Madhavan Ramanujam. Performs targeted web search to determine if user's "Attribute" claims are genuinely novel, while analyzing competitive context through Dunford's positioning lens and value measurement through Ramanujam's willingness-to-pay framework.
+**Description**: Advanced validation that performs a targeted web search to determine if a user's "Attribute" claims are genuinely novel.
 
 **UI**:
 - "Analyze Uniqueness" button next to each Attribute field in Section 4
-- Loading state shows "Analyzing market positioning..."
-- Results display:
-  - Uniqueness score: "Highly Unique," "Moderately Unique," or "Common Claim"
-  - Positioning context: How this attribute fits in competitive landscape
-  - Value measurement insight: Customer metrics likely to drive willingness to pay
-  - Summary includes links to top 2-3 competing pages found
-- Inline display below each attribute field
+- Results display a uniqueness score and links to competing pages.
 
 **Acceptance Criteria**:
 - "Analyze Uniqueness" button exists for each Attribute
 - Clicking triggers web search API call with attribute text
-- System displays uniqueness rating with positioning context
-- Results include competitive analysis through Dunford framework
-- Value measurement insights align with Ramanujam principles
-- Results include at least one relevant external link if competing claims found
-- Graceful error handling if web search fails
-
-**Technical Note**: Requires web search API integration (Brave Search or similar) with GTM expert prompt templates
+- System displays uniqueness rating with competitive context.
 
 ### F-6: Trend Validation (Strategic Synthesis Framework)
 
-**Description**: AI-powered validation that combines Bob Moesta's customer theory approach with Michael Porter's strategic analysis to validate industry trends. Performs web search to find recent evidence while analyzing trends through the lens of customer "struggling moments" and competitive forces that drive market evolution.
+**Description**: AI-powered validation that performs a web search to find recent, credible evidence for a user-defined market trend.
 
 **UI**:
 - "Analyze Trend" button next to each of four Industry Trend textareas in Section 7
-- Loading indicator shows "Analyzing market forces..."
-- Returns 2-3 bullet points with supporting evidence including:
-  - Customer struggle validation: Evidence of customer pain driving this trend
-  - Competitive force analysis: How this trend affects industry structure
-  - Supporting data with direct source links
-- Results appear inline below each trend field
+- Returns 2-3 bullet points with supporting evidence and source links.
 
 **Acceptance Criteria**:
 - "Analyze Trend" button exists for each trend field
-- Clicking triggers targeted web search with strategic analysis framework
-- UI displays at least 2 pieces of supporting evidence
-- Evidence includes customer struggle and competitive force context
-- Each evidence item includes direct source link
-- Results are recent and relevant (within last 12 months preferred)
-- Analysis connects trends to underlying customer jobs and market dynamics
+- Clicking triggers targeted web search
+- UI displays at least 2 pieces of supporting evidence with source links.
 
-**Technical Note**: Requires web search API integration (Brave Search or similar) with strategic synthesis prompt templates
+### F-8: AI-Powered Pillar Generation (Glass Box)
+
+- **Description:** This feature removes the friction of manually creating strategic pillars. It uses AI to analyze all of the user's value propositions, clusters them into logical themes, and proposes 2-3 high-level pillars. The process is transparent and collaborative, showing the user the AI's rationale and allowing for refinement.
+- **UI Changes:**
+    - A **"Generate Strategic Pillars"** button will be added to Section 5.
+    - Clicking this button opens a **"Rationale & Refine" modal**.
+    - The modal displays each suggested pillar with:
+        1.  A one-sentence **rationale** explaining why the pillar was created.
+        2.  A read-only list of the **supporting value props** that were grouped under it.
+    - Each suggested pillar in the modal has two options:
+        1.  **"Accept & Edit" Button:** Accepts the pillar and allows minor edits in the main UI.
+        2.  **"Refine with AI" Input Field:** Allows the user to chat with the AI to adjust the pillar's name or theme.
+- **Acceptance Criteria:**
+    - A "Generate Strategic Pillars" button exists in Section 5.
+    - Clicking it opens a modal displaying AI-suggested pillars.
+    - Each suggestion in the modal includes a rationale and a list of supporting attributes.
+    - The user can accept the suggestions as-is.
+    - The user can provide text feedback to refine a suggestion, and the AI updates the pillar accordingly.
+    - The final, approved pillars and their value prop assignments are correctly populated in the main UI.
 
 ## 4. Success Metrics
 
-### Phase 1 (F-1, F-2, F-3) - Initial AI Quick Wins
-
-- All three initial features are successfully implemented
-- The UI for each feature is functional and intuitive
-- The brand-guardian agent confirms all new UI text and styling is compliant
-- The validation-specialist agent confirms that the implementation does not break existing functionality
-
-### Phase 2 (F-4, F-5, F-6) - Advanced AI Intelligence
-
-- F-4 JTBD Structuring successfully parses and structures free-form text
-- F-5 and F-6 successfully integrate web search API capabilities
-- All new features maintain Scale brand compliance
-- No performance degradation from web search integrations
-- Graceful error handling when external APIs are unavailable
+- All features (F-1 through F-6, and F-8) are successfully implemented.
+- The UI for each feature is functional and intuitive.
+- The brand-guardian agent confirms all new UI text and styling is compliant.
+- The validation-specialist agent confirms that the implementation does not break existing functionality.
 
 ## 5. Technical Complexity Notes
 
 ### Effort Classification
 
-- **Low Effort**: F-1, F-2, F-3 (simulated AI, no external dependencies)
-- **Medium Effort**: F-4 (complex UI with modal, but no external APIs)
-- **High Effort**: F-5, F-6 (require web search API integration and intelligent parsing)
+- **Low Effort**: F-1, F-2, F-3 (simulated AI)
+- **Medium Effort**: F-4 (complex UI, no external APIs)
+- **High Effort**: F-5, F-6 (web search API integration)
+- **High Effort**: F-8 (thematic analysis, modal UI, chat-like interaction)
 
 ### Implementation Phases
 
-- **Phase 1**: F-1, F-2, F-3 (can be implemented immediately with simulated AI)
-- **Phase 2**: F-4 (requires modal system development)
-- **Phase 3**: F-5, F-6 (requires web search API setup and integration)
+- **Phase 1**: F-1, F-2, F-3 (Complete)
+- **Phase 2**: F-4, F-5, F-6 (Complete)
+- **Phase 3**: F-8 (Value Prop Hierarchy & AI Generation)

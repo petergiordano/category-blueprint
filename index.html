@@ -441,6 +441,150 @@
             );
         };
 
+        // F-8: Pillar Generation Modal Component
+        const PillarGenerationModal = ({ isOpen, onClose, pillarGenState, onGeneratePillars, onAcceptPillar, onRefinePillar, onRefinementInputChange }) => {
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold text-scale-dark-green">
+                                    AI-Powered Pillar Generation
+                                </h2>
+                                <button 
+                                    onClick={onClose}
+                                    className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-2">
+                                AI analyzes your value propositions to suggest strategic pillars with transparent reasoning.
+                            </p>
+                        </div>
+                        
+                        <div className="p-6">
+                            {/* Loading State */}
+                            {pillarGenState.isGenerating && (
+                                <div className="text-center py-8">
+                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-scale-dark-green"></div>
+                                    <p className="mt-4 text-gray-600">AI is analyzing your value propositions...</p>
+                                </div>
+                            )}
+                            
+                            {/* Error State */}
+                            {pillarGenState.error && (
+                                <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                                    <p className="text-red-800">{pillarGenState.error}</p>
+                                </div>
+                            )}
+                            
+                            {/* Pillar Suggestions */}
+                            {!pillarGenState.isGenerating && pillarGenState.suggestedPillars.length > 0 && (
+                                <div className="space-y-6">
+                                    <h3 className="text-lg font-bold text-scale-dark-green mb-4">
+                                        AI-Suggested Strategic Pillars
+                                    </h3>
+                                    
+                                    {pillarGenState.suggestedPillars.map((pillar, index) => (
+                                        <div key={pillar.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                            <div className="mb-4">
+                                                <h4 className="font-bold text-scale-dark-green text-lg mb-2">
+                                                    {pillar.pillarName}
+                                                </h4>
+                                                <p className="text-gray-700 mb-3">
+                                                    {pillar.benefitStatement}
+                                                </p>
+                                                
+                                                <div className="mb-3">
+                                                    <h5 className="font-semibold text-gray-800 mb-1">AI Rationale:</h5>
+                                                    <p className="text-sm text-gray-600 italic">
+                                                        {pillar.rationale}
+                                                    </p>
+                                                </div>
+                                                
+                                                <div>
+                                                    <h5 className="font-semibold text-gray-800 mb-2">Supporting Value Propositions:</h5>
+                                                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                                                        {pillar.supportingAttributeIds.map(id => {
+                                                            const prop = (appState.positioningData.values || [])[id];
+                                                            if (prop && (prop.val1 || prop.val2 || prop.val3)) {
+                                                                return (
+                                                                    <li key={id}>
+                                                                        <strong>Attribute:</strong> {prop.val1} →
+                                                                        <strong> Benefit:</strong> {prop.val2} →
+                                                                        <strong> Value:</strong> {prop.val3}
+                                                                    </li>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex flex-col space-y-3 pt-4 border-t border-gray-300">
+                                                <div className="flex space-x-3">
+                                                    <button 
+                                                        onClick={() => onAcceptPillar(pillar)}
+                                                        className="px-4 py-2 scale-green-bg text-white font-bold rounded-lg hover:bg-opacity-90"
+                                                    >
+                                                        Accept & Edit
+                                                    </button>
+                                                </div>
+                                                
+                                                <div className="flex flex-col space-y-2">
+                                                    <label className="text-sm font-semibold text-gray-700">
+                                                        Refine with AI:
+                                                    </label>
+                                                    <div className="flex space-x-2">
+                                                        <input
+                                                            type="text"
+                                                            className="flex-1 p-2 border border-gray-300 rounded-md focus-ring-gold"
+                                                            placeholder="e.g., 'Make this more technical' or 'Focus on cost savings'"
+                                                            value={pillarGenState.refinementInputs[pillar.id] || ''}
+                                                            onChange={(e) => onRefinementInputChange(pillar.id, e.target.value)}
+                                                        />
+                                                        <button 
+                                                            onClick={() => onRefinePillar(pillar, pillarGenState.refinementInputs[pillar.id])}
+                                                            disabled={!pillarGenState.refinementInputs[pillar.id]?.trim()}
+                                                            className="px-4 py-2 bg-scale-blue text-white font-bold rounded-lg hover:bg-opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                        >
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Empty State */}
+                            {!pillarGenState.isGenerating && pillarGenState.suggestedPillars.length === 0 && !pillarGenState.error && (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-600 mb-4">
+                                        Click "Generate Strategic Pillars" to begin AI analysis of your value propositions.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                            <button 
+                                onClick={onClose}
+                                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // Dynamic Field Components
         const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2, onAnalyze, analysisResult }) => (
             <div className="space-y-3">
@@ -675,6 +819,15 @@
                 successCriteria: '',
                 emotionalDrivers: '',
                 socialDimensions: ''
+            });
+            
+            // F-8: Pillar Generation Modal State
+            const [pillarGenModalOpen, setPillarGenModalOpen] = useState(false);
+            const [pillarGenState, setPillarGenState] = useState({
+                isGenerating: false,
+                suggestedPillars: [],
+                error: null,
+                refinementInputs: {}
             });
             
             // Simulate AI grading for value propositions
@@ -1004,6 +1157,308 @@
                         : `This job affects multiple stakeholders including direct users, management, and potentially external customers or partners. Success requires organizational alignment.`
                 };
             };
+
+            // F-8: AI-Powered Pillar Generation (Glass Box)
+            const generatePillarsFromValueProps = async (valueProps, refinementText = null, pillarIndex = null) => {
+                // Simulate AI thematic analysis and clustering
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Filter out empty value props
+                const validProps = valueProps.filter(prop => 
+                    prop.val1?.trim() || prop.val2?.trim() || prop.val3?.trim()
+                );
+                
+                if (validProps.length === 0) {
+                    throw new Error("No value propositions found. Please add some value propositions first.");
+                }
+                
+                if (validProps.length === 1) {
+                    // For single prop, create one pillar
+                    return [{
+                        id: 1,
+                        pillarName: "Core Value Driver",
+                        benefitStatement: "Our primary strategic advantage that delivers measurable business impact",
+                        rationale: "With only one value proposition defined, we've created a focused pillar that highlights your core differentiator.",
+                        supportingAttributeIds: [0]
+                    }];
+                }
+                
+                // For refinement, update only the specific pillar
+                if (refinementText && pillarIndex !== null) {
+                    // Simulate refined generation based on user feedback
+                    const refinedPillar = generateRefinedPillar(validProps, refinementText, pillarIndex);
+                    return [refinedPillar];
+                }
+                
+                // Perform thematic clustering for 2-3 pillars
+                const pillars = [];
+                const usedProps = new Set();
+                
+                // Analyze themes in value props
+                const themes = analyzeValuePropThemes(validProps);
+                
+                themes.forEach((theme, index) => {
+                    const supportingIds = theme.propIndices.filter(id => !usedProps.has(id));
+                    
+                    if (supportingIds.length > 0) {
+                        supportingIds.forEach(id => usedProps.add(id));
+                        
+                        pillars.push({
+                            id: index + 1,
+                            pillarName: theme.name,
+                            benefitStatement: theme.benefit,
+                            rationale: theme.rationale,
+                            supportingAttributeIds: supportingIds
+                        });
+                    }
+                });
+                
+                return pillars;
+            };
+            
+            const analyzeValuePropThemes = (valueProps) => {
+                const themes = [];
+                const categories = {
+                    technology: { keywords: ['AI', 'automated', 'intelligent', 'machine learning', 'algorithm', 'data', 'analytics', 'real-time'], props: [] },
+                    efficiency: { keywords: ['reduces', 'faster', 'streamlines', 'automates', 'eliminates', 'accelerates', 'optimizes'], props: [] },
+                    security: { keywords: ['secure', 'compliant', 'protected', 'encrypted', 'audit', 'governance', 'risk'], props: [] },
+                    scale: { keywords: ['scalable', 'enterprise', 'global', 'unlimited', 'massive', 'extensive'], props: [] },
+                    insight: { keywords: ['insights', 'visibility', 'analysis', 'intelligence', 'understanding', 'clarity'], props: [] },
+                    integration: { keywords: ['integrates', 'connects', 'unified', 'seamless', 'workflow', 'ecosystem'], props: [] }
+                };
+                
+                // Categorize props by theme
+                valueProps.forEach((prop, index) => {
+                    const text = `${prop.val1} ${prop.val2} ${prop.val3}`.toLowerCase();
+                    let bestMatch = null;
+                    let maxScore = 0;
+                    
+                    for (const [category, data] of Object.entries(categories)) {
+                        const score = data.keywords.reduce((count, keyword) => 
+                            count + (text.includes(keyword.toLowerCase()) ? 1 : 0), 0);
+                        
+                        if (score > maxScore) {
+                            maxScore = score;
+                            bestMatch = category;
+                        }
+                    }
+                    
+                    if (bestMatch && maxScore > 0) {
+                        categories[bestMatch].props.push(index);
+                    } else {
+                        // Default to efficiency theme
+                        categories.efficiency.props.push(index);
+                    }
+                });
+                
+                // Create themes from categories with props
+                const themeMap = {
+                    technology: {
+                        name: "Advanced Technology",
+                        benefit: "Leverages cutting-edge technology to deliver superior capabilities and outcomes",
+                        rationale: "These value propositions share a common theme of technological sophistication and innovation"
+                    },
+                    efficiency: {
+                        name: "Operational Excellence", 
+                        benefit: "Streamlines processes and eliminates inefficiencies to maximize productivity",
+                        rationale: "These value propositions focus on improving speed, reducing effort, and optimizing workflows"
+                    },
+                    security: {
+                        name: "Enterprise Security",
+                        benefit: "Ensures robust security and compliance without compromising functionality",
+                        rationale: "These value propositions emphasize security, compliance, and risk mitigation capabilities"
+                    },
+                    scale: {
+                        name: "Enterprise Scale",
+                        benefit: "Handles enterprise-level complexity and volume requirements effortlessly",
+                        rationale: "These value propositions highlight scalability and enterprise-grade capabilities"
+                    },
+                    insight: {
+                        name: "Strategic Intelligence",
+                        benefit: "Provides deep insights and visibility to enable data-driven decision making",
+                        rationale: "These value propositions center on delivering clarity, understanding, and actionable insights"
+                    },
+                    integration: {
+                        name: "Seamless Integration",
+                        benefit: "Connects seamlessly with existing systems and workflows",
+                        rationale: "These value propositions focus on integration capabilities and workflow connectivity"
+                    }
+                };
+                
+                // Build final themes (max 3)
+                const sortedCategories = Object.entries(categories)
+                    .filter(([_, data]) => data.props.length > 0)
+                    .sort(([_, a], [__, b]) => b.props.length - a.props.length)
+                    .slice(0, 3);
+                    
+                sortedCategories.forEach(([category, data]) => {
+                    themes.push({
+                        ...themeMap[category],
+                        propIndices: data.props
+                    });
+                });
+                
+                // If no clear themes, create default groupings
+                if (themes.length === 0) {
+                    const midpoint = Math.ceil(valueProps.length / 2);
+                    themes.push({
+                        name: "Core Capabilities",
+                        benefit: "Primary features that deliver essential business value",
+                        rationale: "These value propositions represent your core product capabilities",
+                        propIndices: valueProps.slice(0, midpoint).map((_, i) => i)
+                    });
+                    
+                    if (valueProps.length > midpoint) {
+                        themes.push({
+                            name: "Strategic Advantages",
+                            benefit: "Differentiating factors that provide competitive edge",
+                            rationale: "These value propositions highlight your unique competitive advantages",
+                            propIndices: valueProps.slice(midpoint).map((_, i) => i + midpoint)
+                        });
+                    }
+                }
+                
+                return themes;
+            };
+            
+            const generateRefinedPillar = (valueProps, refinementText, pillarIndex) => {
+                // Simple refinement simulation based on user input
+                const keywords = refinementText.toLowerCase().split(' ').filter(word => word.length > 3);
+                
+                let pillarName = "Refined Strategic Pillar";
+                let benefit = "Delivers strategic value aligned with your specific requirements";
+                let rationale = `Based on your feedback: "${refinementText}", we've adjusted this pillar to better reflect your strategic intent.`;
+                
+                // Try to incorporate user keywords into the name
+                if (keywords.includes('security') || keywords.includes('secure')) {
+                    pillarName = "Enhanced Security Framework";
+                    benefit = "Provides comprehensive security and compliance capabilities";
+                } else if (keywords.includes('efficiency') || keywords.includes('fast')) {
+                    pillarName = "Operational Efficiency Engine";
+                    benefit = "Maximizes operational efficiency and reduces time-to-value";
+                } else if (keywords.includes('scale') || keywords.includes('enterprise')) {
+                    pillarName = "Enterprise Scale Platform";
+                    benefit = "Handles enterprise-level requirements with seamless scalability";
+                } else if (keywords.includes('insight') || keywords.includes('analytics')) {
+                    pillarName = "Strategic Intelligence Hub";
+                    benefit = "Transforms data into actionable strategic insights";
+                } else if (keywords.includes('integration') || keywords.includes('connect')) {
+                    pillarName = "Unified Integration Layer";
+                    benefit = "Seamlessly integrates with existing systems and workflows";
+                }
+                
+                return {
+                    id: pillarIndex + 1,
+                    pillarName,
+                    benefitStatement: benefit,
+                    rationale,
+                    supportingAttributeIds: [pillarIndex] // Simplified for refinement
+                };
+            };
+            
+            // F-8: Handler for generating pillars
+            const handleGeneratePillars = async () => {
+                try {
+                    setPillarGenModalOpen(true);
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: true,
+                        suggestedPillars: [],
+                        error: null,
+                        refinementInputs: {}
+                    }));
+                    
+                    const suggestedPillars = await generatePillarsFromValueProps(appState.positioningData.values || []);
+                    
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: false,
+                        suggestedPillars,
+                        refinementInputs: Object.fromEntries(suggestedPillars.map(p => [p.id, '']))
+                    }));
+                    
+                } catch (error) {
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: false,
+                        error: error.message
+                    }));
+                }
+            };
+            
+            // F-8: Handler for accepting a pillar
+            const handleAcceptPillar = (pillar) => {
+                const maxId = Math.max(0, ...(appState.positioningData.pillars || []).map(p => p.id));
+                const newPillar = {
+                    id: maxId + 1,
+                    name: pillar.pillarName,
+                    benefit: pillar.benefitStatement
+                };
+                
+                // Add pillar to state
+                const newPillars = [...(appState.positioningData.pillars || []), newPillar];
+                
+                // Update pillarId for supporting value props
+                const newValues = (appState.positioningData.values || []).map((val, index) => {
+                    if (pillar.supportingAttributeIds.includes(index)) {
+                        return { ...val, pillarId: newPillar.id };
+                    }
+                    return val;
+                });
+                
+                setAppState(prev => ({
+                    ...prev,
+                    positioningData: {
+                        ...prev.positioningData,
+                        pillars: newPillars,
+                        values: newValues
+                    }
+                }));
+                
+                // Close modal
+                setPillarGenModalOpen(false);
+            };
+            
+            // F-8: Handler for refining a pillar
+            const handleRefinePillar = async (pillarId, refinementText) => {
+                if (!refinementText.trim()) return;
+                
+                try {
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: true
+                    }));
+                    
+                    const refinedPillars = await generatePillarsFromValueProps(
+                        appState.positioningData.values || [],
+                        refinementText,
+                        pillarId - 1
+                    );
+                    
+                    if (refinedPillars.length > 0) {
+                        const refinedPillar = refinedPillars[0];
+                        
+                        setPillarGenState(prev => ({
+                            ...prev,
+                            isGenerating: false,
+                            suggestedPillars: prev.suggestedPillars.map(p => 
+                                p.id === pillarId ? { ...refinedPillar, id: pillarId } : p
+                            ),
+                            refinementInputs: {
+                                ...prev.refinementInputs,
+                                [pillarId]: ''
+                            }
+                        }));
+                    }
+                } catch (error) {
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: false,
+                        error: error.message
+                    }));
+                }
+            };
+
             const updateNestedValue = (section, index, key, value) => {
                 const newData = { ...appState.positioningData };
                 if (!newData[section]) newData[section] = [];
@@ -1681,22 +2136,30 @@
                                         </div>
                                     </div>
                                 ))}
-                                <button 
-                                    onClick={() => {
-                                        const maxId = Math.max(0, ...(appState.positioningData.pillars || []).map(p => p.id));
-                                        const newPillar = { id: maxId + 1, name: '', benefit: '' };
-                                        setAppState(prev => ({
-                                            ...prev,
-                                            positioningData: {
-                                                ...prev.positioningData,
-                                                pillars: [...(prev.positioningData.pillars || []), newPillar]
-                                            }
-                                        }));
-                                    }}
-                                    className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
-                                >
-                                    + Add Strategic Pillar
-                                </button>
+                                <div className="flex space-x-3">
+                                    <button 
+                                        onClick={handleGeneratePillars}
+                                        className="text-sm bg-scale-blue text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90"
+                                    >
+                                        🤖 Generate Strategic Pillars
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            const maxId = Math.max(0, ...(appState.positioningData.pillars || []).map(p => p.id));
+                                            const newPillar = { id: maxId + 1, name: '', benefit: '' };
+                                            setAppState(prev => ({
+                                                ...prev,
+                                                positioningData: {
+                                                    ...prev.positioningData,
+                                                    pillars: [...(prev.positioningData.pillars || []), newPillar]
+                                                }
+                                            }));
+                                        }}
+                                        className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
+                                    >
+                                        + Add Strategic Pillar
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -1720,6 +2183,21 @@
                         content={exportModal.content}
                         appState={appState}
                         filename="positioning-blueprint"
+                    />
+                    
+                    <PillarGenerationModal 
+                        isOpen={pillarGenModalOpen}
+                        onClose={() => setPillarGenModalOpen(false)}
+                        pillarGenState={pillarGenState}
+                        onGeneratePillars={handleGeneratePillars}
+                        onAcceptPillar={handleAcceptPillar}
+                        onRefinePillar={handleRefinePillar}
+                        onRefinementInputChange={(pillarId, value) => {
+                            setPillarGenState(prev => ({
+                                ...prev,
+                                refinementInputs: { ...prev.refinementInputs, [pillarId]: value }
+                            }));
+                        }}
                     />
                     
                     <JTBDModal
