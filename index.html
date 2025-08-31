@@ -357,14 +357,15 @@
             if (!isOpen) return null;
 
             const jtbdFields = [
-                { key: 'context', label: 'Context', description: 'When does this job arise?' },
-                { key: 'strugglingMoments', label: 'Struggling Moments', description: 'What triggers action?' },
-                { key: 'desiredOutcomes', label: 'Desired Outcomes', description: 'What does success look like?' },
-                { key: 'currentSolutions', label: 'Current Solutions', description: 'What are they using now?' },
-                { key: 'constraints', label: 'Constraints', description: 'What limitations exist?' },
-                { key: 'successCriteria', label: 'Success Criteria', description: 'How is progress measured?' },
-                { key: 'emotionalDrivers', label: 'Emotional Drivers', description: 'What feelings are involved?' },
-                { key: 'socialDimensions', label: 'Social Dimensions', description: 'Who else is affected?' }
+                { key: 'context', label: 'Context', description: 'The business situation or operating environment' },
+                { key: 'strugglingMoments', label: 'Struggling Moments', description: 'Breakdowns, inefficiencies, or risks that trigger the search' },
+                { key: 'pushesPulls', label: 'Pushes & Pulls', description: 'Internal and external forces moving toward or away from change' },
+                { key: 'anxietiesHabits', label: 'Anxieties & Habits', description: 'Concerns about new solutions and inertia with current processes' },
+                { key: 'desiredOutcomes', label: 'Desired Outcomes', description: 'Business goals and success metrics they want to achieve' },
+                { key: 'basicQuality', label: 'Basic Quality (Table Stakes)', description: 'Minimum standards a solution must meet to be considered' },
+                { key: 'hiringCriteria', label: 'Hiring Criteria', description: 'Differentiators that make them select one vendor' },
+                { key: 'firingCriteria', label: 'Firing Criteria', description: 'Triggers that get a vendor rejected or replaced' },
+                { key: 'keyTradeoffs', label: 'Key Trade-offs', description: 'Acceptable compromises or limits' }
             ];
 
             return (
@@ -397,7 +398,7 @@
 
                                 {/* JTBD Elements Column */}
                                 <div>
-                                    <h3 className="text-lg font-bold mb-4">8 JTBD Elements</h3>
+                                    <h3 className="text-lg font-bold mb-4">9 JTBD Elements</h3>
                                     <div className="space-y-4">
                                         {jtbdFields.map(field => (
                                             <div key={field.key}>
@@ -813,12 +814,13 @@
                 originalText: '',
                 context: '',
                 strugglingMoments: '',
+                pushesPulls: '',
+                anxietiesHabits: '',
                 desiredOutcomes: '',
-                currentSolutions: '',
-                constraints: '',
-                successCriteria: '',
-                emotionalDrivers: '',
-                socialDimensions: ''
+                basicQuality: '',
+                hiringCriteria: '',
+                firingCriteria: '',
+                keyTradeoffs: ''
             });
             
             // F-8: Pillar Generation Modal State
@@ -1122,39 +1124,43 @@
                     breadcrumbs.stakeholderMentions.push('multiple parties involved');
                 }
 
-                // Cluster breadcrumbs into JTBD elements
+                // Cluster breadcrumbs into 9 JTBD elements (B2B/Enterprise focused)
                 return {
                     context: breadcrumbs.contextClues.length > 0 
-                        ? `Based on timing signals in your text, this job typically arises during critical business transitions or system implementations.`
-                        : `This job occurs in the context of ongoing business operations where efficiency and accuracy are paramount.`,
+                        ? `Analysis reveals a complex business operating environment with interdependent systems and evolving regulatory requirements. Organizations are managing distributed teams and need solutions that integrate with existing infrastructure.`
+                        : `The business is operating in a dynamic market environment where manual processes and legacy systems are creating operational bottlenecks that impact competitiveness.`,
                     
                     strugglingMoments: breadcrumbs.struggleSignals.length > 0
-                        ? `The urgency language suggests customers are struggling with time-sensitive decisions that have high business impact. They're likely facing pressure from stakeholders to act quickly while avoiding costly mistakes.`
-                        : `Customers reach this struggling moment when their current approach becomes inadequate for their growing business needs.`,
+                        ? `Critical breakdowns are occurring in workflow efficiency, data accuracy, and compliance processes. These operational failures are triggering urgent evaluation of new solutions to prevent business disruption.`
+                        : `Organizations are experiencing systematic inefficiencies and increased error rates that signal their current approach is unsustainable and requires immediate modernization.`,
+                    
+                    pushesPulls: breadcrumbs.contextClues.length > 0 || breadcrumbs.stakeholderMentions.length > 0
+                        ? `Internal forces include executive mandates for digital transformation and team frustration with current tools. External pressures include competitive threats, regulatory changes, and customer expectations for faster service.`
+                        : `The organization faces internal pressure from leadership to reduce costs and external pressure from competitors who are moving faster with modern technology stacks.`,
+                    
+                    anxietiesHabits: breadcrumbs.emotionWords.length > 0
+                        ? `Teams express concerns about data migration risks, learning curve for new systems, and potential disruption to critical operations. There's organizational inertia around familiar but inefficient processes.`
+                        : `The organization worries about implementation failure, vendor lock-in, and change management challenges while showing strong attachment to existing workflows despite their limitations.`,
                     
                     desiredOutcomes: breadcrumbs.outcomeSignals.length > 0
-                        ? `Success looks like achieving clearly defined goals with measurable business impact. Customers want certainty in their outcomes and the ability to demonstrate value to stakeholders.`
-                        : `The desired outcome is a reliable, efficient solution that reduces risk while improving business performance.`,
+                        ? `Primary business goals include reducing operational costs by 30-40%, achieving 99.9% uptime, ensuring full regulatory compliance, and enabling data-driven decision making across all departments.`
+                        : `The organization seeks measurable improvements in efficiency metrics, reduced audit findings, faster time-to-market, and enhanced visibility into business operations.`,
                     
-                    currentSolutions: breadcrumbs.solutionMentions.length > 0
-                        ? `Analysis of your text suggests customers are currently using a combination of existing tools and manual processes that are proving inadequate for their needs.`
-                        : `Most customers are likely relying on manual processes, spreadsheets, or basic tools that don't scale with their requirements.`,
+                    basicQuality: breadcrumbs.metricSignals.length > 0 || breadcrumbs.constraintSignals.length > 0
+                        ? `Non-negotiable requirements include SOC2/ISO certifications, 99.9% SLA guarantees, enterprise SSO, role-based access controls, API integrations with existing ERP/CRM systems, and 24/7 support.`
+                        : `Minimum viable standards include enterprise-grade security, compliance with industry regulations, seamless data migration capabilities, and proven scalability for growing organizations.`,
                     
-                    constraints: breadcrumbs.constraintSignals.length > 0
-                        ? `Resource constraints are evident in your description. Customers are working within tight budgets, limited time, and restricted personnel availability.`
-                        : `Primary constraints include budget limitations, internal expertise gaps, and the need to minimize disruption to ongoing operations.`,
+                    hiringCriteria: breadcrumbs.solutionMentions.length > 0
+                        ? `Differentiating factors include industry-specific expertise, white-glove implementation services, reference customers in similar verticals, and demonstrated ROI within 6-12 months.`
+                        : `Selection criteria emphasize vendor financial stability, implementation methodology maturity, customer success track record, and ability to customize for unique business requirements.`,
                     
-                    successCriteria: breadcrumbs.metricSignals.length > 0
-                        ? `Your text indicates customers will measure success through specific metrics and trackable outcomes. They need clear ROI demonstration and performance indicators.`
-                        : `Success will be measured by improved efficiency, reduced errors, faster time-to-value, and positive stakeholder feedback.`,
+                    firingCriteria: breadcrumbs.struggleSignals.length > 0 || breadcrumbs.constraintSignals.length > 0
+                        ? `Deal-breakers include any unplanned downtime affecting operations, data security breaches, inability to meet compliance requirements, or lack of responsive technical support during critical issues.`
+                        : `Vendors get rejected for hidden costs, inability to scale with growth, poor integration capabilities, or failure to deliver promised functionality within agreed timelines.`,
                     
-                    emotionalDrivers: breadcrumbs.emotionWords.length > 0
-                        ? `Emotional language in your text reveals customers experience stress about making the wrong choice, but also excitement about potential improvements. They seek confidence and peace of mind.`
-                        : `Customers are driven by the desire to reduce anxiety around business-critical decisions while gaining confidence in their ability to deliver results.`,
-                    
-                    socialDimensions: breadcrumbs.stakeholderMentions.length > 0
-                        ? `Multiple stakeholders are mentioned, indicating this is a collaborative decision with cross-functional impact. Success requires buy-in and coordination across teams.`
-                        : `This job affects multiple stakeholders including direct users, management, and potentially external customers or partners. Success requires organizational alignment.`
+                    keyTradeoffs: breadcrumbs.constraintSignals.length > 0
+                        ? `The organization is willing to accept longer implementation timelines for better long-term fit, and may sacrifice some customization flexibility for faster time-to-value and lower TCO.`
+                        : `Acceptable compromises include adopting standard workflows over custom processes, phased rollouts over big-bang deployments, and cloud-based solutions over on-premise for better scalability.`
                 };
             };
 
@@ -1593,16 +1599,17 @@
                                     
                                     {jtbdExpanded && (
                                         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                            <h4 className="font-bold mb-2 text-blue-900">8 Elements of a JTBD:</h4>
-                                            <ul className="list-disc pl-4 text-sm space-y-1 text-blue-800">
-                                                <li><b>Context:</b> What's going on in the person's life.</li>
-                                                <li><b>Struggling Moments:</b> Realization that something can be better.</li>
-                                                <li><b>Pushes and Pulls:</b> Forces for and against change.</li>
-                                                <li><b>Anxieties and Habits:</b> Concerns about the new and attachment to the old.</li>
-                                                <li><b>Desired Outcomes:</b> The vision for a better future.</li>
-                                                <li><b>Hiring/Firing Criteria:</b> What the solution must do, and what it must not do.</li>
-                                                <li><b>Key Trade-offs:</b> What the person is willing to give up.</li>
-                                                <li><b>Basic Quality:</b> The essential things the job requires.</li>
+                                            <h4 className="font-bold mb-2 text-blue-900">9 JTBD Elements (B2B/Enterprise Language)</h4>
+                                            <ul className="list-disc pl-4 text-sm space-y-2 text-blue-800">
+                                                <li><b>Context:</b> The business situation or operating environment.<br/><em>Example: "Quarterly close process across distributed finance teams."</em></li>
+                                                <li><b>Struggling Moments:</b> Breakdowns, inefficiencies, or risks that trigger the search.<br/><em>Example: "Errors in revenue recognition delaying financial reporting."</em></li>
+                                                <li><b>Pushes & Pulls:</b> Internal and external forces moving them toward or away from change.<br/><em>Example: "CFO pressure to modernize systems vs. IT reluctance to add new vendors."</em></li>
+                                                <li><b>Anxieties & Habits:</b> Concerns about adopting something new, and inertia with current processes/tools.<br/><em>Example: "Fear of migration failure; comfort with spreadsheets."</em></li>
+                                                <li><b>Desired Outcomes:</b> Business goals and success metrics they want to achieve.<br/><em>Example: "Reduce audit prep time by 50%; ensure SOX compliance."</em></li>
+                                                <li><b>Basic Quality (Table Stakes):</b> Minimum standards a solution must meet to even be considered.<br/><em>Example: "SOC2 compliance, API integrations with ERP, enterprise-grade security."</em></li>
+                                                <li><b>Hiring Criteria:</b> Differentiators that make them select one vendor.<br/><em>Example: "Proven implementation playbook; reference customers in financial services."</em></li>
+                                                <li><b>Firing Criteria:</b> Triggers that get a vendor rejected or replaced.<br/><em>Example: "System downtime; lack of role-based access control."</em></li>
+                                                <li><b>Key Trade-offs:</b> Acceptable compromises or limits.<br/><em>Example: "May sacrifice customization for faster time to value."</em></li>
                                             </ul>
                                             <a href="https://therewiredgroup.com/learn/complete-guide-jobs-to-be-done/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm block mt-3">
                                                 Learn more about Jobs-to-be-Done →
@@ -2207,34 +2214,37 @@
                         setAnalysisData={setJtbdAnalysisData}
                         onSave={() => {
                             // Format the structured JTBD analysis
-                            const structuredJTBD = `**STRUCTURED JTBD ANALYSIS**
+                            const structuredJTBD = `**STRUCTURED JTBD ANALYSIS (B2B/ENTERPRISE)**
 
-**Context (When does this job arise?):**
+**1. Context (Business Situation):**
 ${jtbdAnalysisData.context}
 
-**Struggling Moments (What triggers action?):**
+**2. Struggling Moments (Operational Breakdowns):**
 ${jtbdAnalysisData.strugglingMoments}
 
-**Desired Outcomes (What does success look like?):**
+**3. Pushes & Pulls (Change Forces):**
+${jtbdAnalysisData.pushesPulls}
+
+**4. Anxieties & Habits (Change Resistance):**
+${jtbdAnalysisData.anxietiesHabits}
+
+**5. Desired Outcomes (Business Goals & Metrics):**
 ${jtbdAnalysisData.desiredOutcomes}
 
-**Current Solutions (What are they using now?):**
-${jtbdAnalysisData.currentSolutions}
+**6. Basic Quality (Table Stakes Requirements):**
+${jtbdAnalysisData.basicQuality}
 
-**Constraints (What limitations exist?):**
-${jtbdAnalysisData.constraints}
+**7. Hiring Criteria (Vendor Selection):**
+${jtbdAnalysisData.hiringCriteria}
 
-**Success Criteria (How is progress measured?):**
-${jtbdAnalysisData.successCriteria}
+**8. Firing Criteria (Deal Breakers):**
+${jtbdAnalysisData.firingCriteria}
 
-**Emotional Drivers (What feelings are involved?):**
-${jtbdAnalysisData.emotionalDrivers}
-
-**Social Dimensions (Who else is affected?):**
-${jtbdAnalysisData.socialDimensions}
+**9. Key Trade-offs (Acceptable Compromises):**
+${jtbdAnalysisData.keyTradeoffs}
 
 ---
-*Analysis generated using bottom-up breadcrumb approach*`;
+*Analysis generated using bottom-up breadcrumb approach with enterprise context*`;
 
                             // Update the original Common Needs field
                             setAppState(prev => ({
@@ -2253,12 +2263,13 @@ ${jtbdAnalysisData.socialDimensions}
                                 originalText: '',
                                 context: '',
                                 strugglingMoments: '',
+                                pushesPulls: '',
+                                anxietiesHabits: '',
                                 desiredOutcomes: '',
-                                currentSolutions: '',
-                                constraints: '',
-                                successCriteria: '',
-                                emotionalDrivers: '',
-                                socialDimensions: ''
+                                basicQuality: '',
+                                hiringCriteria: '',
+                                firingCriteria: '',
+                                keyTradeoffs: ''
                             });
                         }}
                     />
