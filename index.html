@@ -805,6 +805,8 @@
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [jtbdExpanded, setJtbdExpanded] = useState(false);
+            const [customerValueExpanded, setCustomerValueExpanded] = useState(false);
+            const [wtpExpanded, setWtpExpanded] = useState(false);
             const [gradingState, setGradingState] = useState({});
             const [analysisState, setAnalysisState] = useState({});
             const [uniquenessResults, setUniquenessResults] = useState({});
@@ -1506,7 +1508,7 @@
                 let summary = `Part 1: ICP & Positioning Blueprint\n======================================\n\n`;
                 summary += `## 1. Ideal Customer Profile (ICP)\n`;
                 summary += `- Common Needs: ${appState.positioningData.icp_common_needs || 'N/A'}\n`;
-                summary += `- Desired Business Value: ${appState.positioningData.icp_desired_business_value || 'N/A'}\n`;
+                summary += `- Desired Customer Value: ${appState.positioningData.icp_desired_business_value || 'N/A'}\n`;
                 summary += `- Problem Urgency: ${appState.positioningData.icp_problem_urgency || 'N/A'}\n`;
                 summary += `- Quick Decision Making: ${appState.positioningData.icp_quick_decision_making || 'N/A'}\n`;
                 summary += `- Prioritized Requirements: ${appState.positioningData.icp_prioritized_requirements || 'N/A'}\n`;
@@ -1599,7 +1601,7 @@
                                     
                                     {jtbdExpanded && (
                                         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                            <h4 className="font-bold mb-2 text-blue-900">9 JTBD Elements (B2B/Enterprise Language)</h4>
+                                            <h4 className="font-bold mb-2 text-blue-900">9 Jobs-to-be-Done Elements</h4>
                                             <ul className="list-disc pl-4 text-sm space-y-2 text-blue-800">
                                                 <li><b>Context:</b> The business situation or operating environment.<br/><em>Example: "Quarterly close process across distributed finance teams."</em></li>
                                                 <li><b>Struggling Moments:</b> Breakdowns, inefficiencies, or risks that trigger the search.<br/><em>Example: "Errors in revenue recognition delaying financial reporting."</em></li>
@@ -1657,7 +1659,30 @@
                                     </button>
                                 </div>
                                 <div>
-                                    <label className="block font-bold text-gray-700">Desired Business Value</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block font-bold text-gray-700">Desired Customer Value</label>
+                                        <button 
+                                            onClick={() => setCustomerValueExpanded(!customerValueExpanded)}
+                                            className="text-blue-500 text-sm hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                            <span className={`transition-transform ${customerValueExpanded ? 'rotate-90' : ''}`}>▶</span>
+                                            {customerValueExpanded ? 'Hide guide' : 'Show guide'}
+                                        </button>
+                                    </div>
+                                    
+                                    {customerValueExpanded && (
+                                        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <h4 className="font-bold mb-2 text-blue-900">5 Customer Value Elements</h4>
+                                            <ul className="list-disc pl-4 text-sm space-y-2 text-blue-800">
+                                                <li><b>Table Stakes:</b> The non-negotiables for credibility. If you don't have them, you're out. These are compliance, security, reliability, and integration standards every enterprise expects.<br/><em>Example: "SOC2 certification, ERP integration, 99.9% uptime SLAs."</em></li>
+                                                <li><b>Functional Value:</b> The tangible, measurable business outcomes. This is the hard ROI—efficiency gains, cost savings, revenue growth, or risk mitigation. It's where Strategic Objectives, Key Results, Value Drivers, KPIs, and Quantifiable Customer Value all live.<br/><em>Example: "$500K OpEx savings validated by faster close cycles and error-rate reduction."</em></li>
+                                                <li><b>Ease of Doing Business:</b> How simple you make adoption and use. Enterprise buyers weigh friction. A solution that's easier to buy, implement, and run often beats a "better" product.<br/><em>Example: "Fast implementation playbook, role-based onboarding, 24/7 enterprise support."</em></li>
+                                                <li><b>Individual Value:</b> What matters to each stakeholder in the buying group. Purchases are made by groups of 6–10 people, each with different roles and personas. Individual Value addresses what each one personally gains—status, confidence, workload relief, or career upside.<br/><em>Example: "CFO is seen as innovator; IT leader feels secure in system stability; end users save hours of manual work."</em></li>
+                                                <li><b>Aspirational Value:</b> Alignment with vision and purpose. Higher-order motivations that make a vendor strategic. These often tip the scale when rational benefits look similar across competitors.<br/><em>Example: "Supports ESG reporting goals; positions company as a digital leader; signals innovation to board and investors."</em></li>
+                                            </ul>
+                                        </div>
+                                    )}
+                                    
                                     <p className="text-sm text-gray-500 mb-2">How do they measure success? What are their core metrics?</p>
                                     <textarea 
                                         className="w-full mt-1 p-2 border border-gray-300 rounded-md"
@@ -1701,7 +1726,32 @@
                                     />
                                 </div>
                                 <div>
-                                    <label className="block font-bold text-gray-700">Willingness to Pay</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block font-bold text-gray-700">Willingness to Pay</label>
+                                        <button 
+                                            onClick={() => setWtpExpanded(!wtpExpanded)}
+                                            className="text-blue-500 text-sm hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                            <span className={`transition-transform ${wtpExpanded ? 'rotate-90' : ''}`}>▶</span>
+                                            {wtpExpanded ? 'Hide guide' : 'Show guide'}
+                                        </button>
+                                    </div>
+                                    
+                                    {wtpExpanded && (
+                                        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <h4 className="font-bold mb-2 text-blue-900">7 Willingness to Pay Elements</h4>
+                                            <ul className="list-disc pl-4 text-sm space-y-2 text-blue-800">
+                                                <li><b>Perceived Value vs. Alternatives:</b> How they view your solution compared to other options. If you look clearly better than "do nothing," manual work, or competitors, WTP increases.<br/><em>Example: "Cheaper and faster than consultants; more reliable than homegrown tools."</em></li>
+                                                <li><b>Budget Availability & Prioritization:</b> Whether funding exists and how high this is on their list. Even high-value solutions stall if there's no allocated budget or it's a low priority.<br/><em>Example: "Line item already in FY25 budget for compliance automation."</em></li>
+                                                <li><b>Economic Impact (ROI / Payback):</b> How quickly they see financial or operational returns. Shorter payback periods drive higher willingness to pay.<br/><em>Example: "Pays for itself in 12 months through $1M in annual cost avoidance."</em></li>
+                                                <li><b>Risk & Switching Costs:</b> How risky or painful the change feels. Perceived risk lowers WTP; clear risk reduction raises it.<br/><em>Example: "Migration takes days, not months; vendor assumes implementation risk."</em></li>
+                                                <li><b>Segment Characteristics:</b> Industry, company size, and procurement norms. Large enterprises expect to pay more; SMBs expect lean pricing.<br/><em>Example: "Fortune 500s budget $500K+ annually for compliance software."</em></li>
+                                                <li><b>Pricing Expectations & Reference Points:</b> Mental anchors shaped by market benchmarks. Buyers compare against what they've paid before or what competitors charge.<br/><em>Example: "Analytics platforms in this space usually run $100K–$150K annually."</em></li>
+                                                <li><b>Perceived Uniqueness / Differentiation:</b> How hard it is to get the same value elsewhere. If you're seen as unique, WTP rises; if commoditized, it falls.<br/><em>Example: "Only solution with proven AI accuracy above 95%."</em></li>
+                                            </ul>
+                                        </div>
+                                    )}
+                                    
                                     <p className="text-sm text-gray-500 mb-2">What is their budget and value perception for a solution like this?</p>
                                     <textarea 
                                         className="w-full mt-1 p-2 border border-gray-300 rounded-md"
