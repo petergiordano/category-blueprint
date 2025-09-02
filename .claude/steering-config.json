@@ -150,7 +150,7 @@
     "refine_steering": true,
     "project_history": {
       "enabled": true,
-      "storage_location": ".ai-context/project-history.json"
+      "storage_location": ".aicontext/project-history.json"
     }
   },
   "integration_hooks": {

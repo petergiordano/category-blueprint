@@ -119,6 +119,138 @@ The template tracks project state through:
 
 This architecture enables rapid prototyping ("vibe coding") while maintaining production-ready quality standards ("viable code") through structured AI assistance and automated quality gates.
 
+## Three-Way Collaboration Protocol
+
+This project uses a formal three-way collaboration between **Claude Code**, **User**, and **Gemini CLI**. This protocol ensures efficient coordination and prevents context loss across AI agents.
+
+### Critical Protocol Rules
+
+**IMPORTANT**: These collaboration rules OVERRIDE any default behavior and MUST be followed exactly as written.
+
+1. **Shared Context File**: `.aicontext/context.md` is our primary communication hub and state management system
+
+2. **Handoff Log**: Add timestamped entries in the `## Agent Handoff & Status Log` section at the end of `.aicontext/context.md`. **ALWAYS include the current git branch in every log entry.**
+
+3. **The Golden Rule**:
+   - **Read First**: ALWAYS read the entire `.aicontext/context.md` file at the start of every task or session
+   - **Write Last**: ALWAYS update the handoff log at the end of every completed task
+
+4. **Startup Acknowledgment**: When starting a new session, your first response must acknowledge the collaboration and confirm you have read the latest status from the handoff log
+
+### Multi-Agent Coordination
+
+- **Claude Code**: Follows this protocol via `CLAUDE.md` (this file)
+- **Gemini CLI**: Follows parallel protocol via `.gemini/GEMINI.md` on startup
+- **User**: Coordinates handoffs and provides strategic direction
+
+### Context Synchronization
+
+The `.aicontext/context.md` file contains:
+- Current project status and completed work
+- Active tasks and next steps
+- Technical context and decisions
+- Handoff log with timestamped agent updates
+
+**CRITICAL**: Never proceed with work without first reading `.aicontext/context.md`. This ensures all agents stay synchronized and prevents duplicate or conflicting work.
+
+## 🔴 MANDATORY HANDOFF CHECKPOINTS 🔴
+
+YOU MUST update `.aicontext/context.md` handoff log IMMEDIATELY when you:
+
+### Code Pattern Triggers
+- Type `"status": "completed"` in any TodoWrite update
+- Type `feat:` in a commit message
+- Complete any F-[number] feature (F-1, F-2, etc.)
+- Fix linting errors or warnings
+- Resolve merge conflicts
+- Write/modify 50+ lines of code
+- Receive validation feedback → Write `STATUS: VALIDATION_ACKNOWLEDGED`
+
+### Session & Connection Triggers
+- **VS Code Restart**: Workspace reopened → Write `STATUS: SESSION_RESUMED`
+- **Claude Code Restart**: User mentions restart → Write `STATUS: CLAUDE_RESTART`  
+- **Connection Lost**: File operations fail → Write `STATUS: CONNECTION_LOST`
+- **Context Warning**: See "running long" → Write `STATUS: CONTEXT_WARNING` with FULL state
+- **Session End**: About to stop work → Write `STATUS: SESSION_END`
+
+### Git Operation Triggers
+- **BEFORE** every `git push` → Write `STATUS: PRE_PUSH`
+- If push fails → Add `PUSH_PENDING: [reason]`
+- After major commits → Document what was committed
+
+## ⚠️ Handoff Entry Template ⚠️
+
+```markdown
+---
+**Timestamp:** 2025-XX-XXTXX:XX:XXZ
+**From:** Claude Code
+**To:** User/Gemini-CLI
+**Status:** [FEATURE_COMPLETE|TASK_COMPLETE|SESSION_RESUMED|CLAUDE_RESTART|CONNECTION_LOST|CONTEXT_WARNING|PRE_PUSH]
+**Branch:** [current git branch]
+**Summary:** [What you did or what happened]
+**Technical Details:**
+- Files modified: [list]
+- Functions/Components added: [list]
+- Dependencies: [what this builds on]
+**Context Preservation:** [Critical info that must survive context compaction]
+**Next:** [What should happen next]
+---
+```
+
+## 🔄 Context Compaction Survival Protocol 🔄
+
+When you see context warnings or get summarized:
+1. **IMMEDIATELY** write comprehensive handoff with `STATUS: CONTEXT_WARNING`
+2. Include `CONTEXT_RESET: [timestamp]` marker
+3. Document:
+   - `WORK_COMPLETED:` [comprehensive list]
+   - `WORK_PENDING:` [comprehensive list]
+   - `CRITICAL_STATE:` [must survive compaction]
+
+## ✅ TodoWrite Integration Rules
+
+Your todo list MUST ALWAYS include:
+1. **First item**: "Read .aicontext/context.md and check last handoff"
+2. **Last item**: "Update .aicontext/context.md handoff log"
+3. **Checkpoint items** for long tasks: "Checkpoint: Update handoff (30 min)"
+
+**RED FLAG**: If you mark other todos complete but not the handoff todo → Stop and update immediately
+
+## 🚨 Validation Checks
+
+Before ANY git push, verify:
+- [ ] `.aicontext/context.md` updated in last 3 commits?
+- [ ] Handoff includes current work?
+- [ ] Technical details documented?
+
+To test protocol compliance, use: `.aicontext/handoff-protocol-test.md`
+
+## 🔍 Validation Feedback Protocol
+
+When Gemini CLI provides validation feedback:
+
+### Receiving Discrepancy Reports
+If you receive `STATUS: DISCREPANCY_REPORT`, immediately:
+1. **Acknowledge receipt** → Write `STATUS: VALIDATION_ACKNOWLEDGED`
+2. **Review all discrepancies** in structured format:
+   - Issue Type: [PRD Mismatch/Acceptance Criteria Failure/etc.]
+   - Specifics: [Clear description with file:line references]  
+   - Impact: [Functional/Brand/Technical impact]
+   - Recommended Action: [Specific fix instructions]
+3. **Address each issue systematically**
+4. **Update handoff** after fixes with `STATUS: READY_FOR_REVALIDATION`
+
+### Validation Acknowledgment Template
+```markdown
+**Status:** VALIDATION_ACKNOWLEDGED
+**Discrepancies Received:** [Count and brief summary]
+**Action Plan:**
+- Issue 1: [Brief fix description]
+- Issue 2: [Brief fix description] 
+**Estimated Completion:** [Time estimate]
+**Ready for Re-validation:** [After completion]
+```
+
 ## Brand & Design Standards
 
 This project follows Scale Venture Partners brand guidelines as defined in `docs/specifications/scale_brand.md`:

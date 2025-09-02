@@ -86,7 +86,7 @@ class ProjectValidator:
             "scripts",
             ".claude",
             ".claude/commands",
-            ".ai-context",
+            ".aicontext",
         ]
         
         missing_dirs = []
@@ -117,8 +117,8 @@ class ProjectValidator:
             ".claude/commands/next-task.md",
             ".claude/commands/finalize-task.md",
             ".claude/commands/update-prd.md",
-            ".ai-context/AI_CONTEXT.md",
-            ".ai-context/WORKFLOW_GUIDE.md",
+            ".aicontext/context.md",
+            ".aicontext/WORKFLOW_GUIDE.md",
             "scripts/initialize-project.sh",
             "scripts/validate-setup.py",
         ]
@@ -146,11 +146,11 @@ class ProjectValidator:
                 self.warnings.append("PRD.md still contains template placeholders")
         
         # Check AI Context has been customized  
-        context_path = self.project_root / ".ai-context/AI_CONTEXT.md"
+        context_path = self.project_root / ".aicontext/context.md"
         if context_path.exists():
             content = context_path.read_text()
             if "[PROJECT NAME]" in content or "[CUSTOMIZE:" in content:
-                self.warnings.append("AI_CONTEXT.md still contains template placeholders")
+                self.warnings.append("context.md still contains template placeholders")
         
         print_success("Template customization check completed")
     

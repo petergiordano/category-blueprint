@@ -64,6 +64,8 @@
         .scale-gold-border { border-color: #e5a819; }
         .scale-green-text { color: #224f41; }
         .scale-green-bg { background-color: #224f41; }
+        .scale-blue-bg { background-color: #0d71a9; }
+        .scale-blue-text { color: #0d71a9; }
         .nav-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
@@ -124,9 +126,9 @@
 
     <script type="text/babel">
         /*
-         * ============================================================================================
+         * ============================================================================================ 
          * REACT SINGLE PAGE APPLICATION IMPLEMENTATION
-         * ============================================================================================
+         * ============================================================================================ 
          * 
          * This React application consolidates what was previously three separate HTML files:
          * 1. A simple index.html with navigation links
@@ -150,7 +152,7 @@
          * - Single codebase to maintain
          * - Better performance (no full page reloads)
          * - Easier to add new features that span multiple tools
-         * ============================================================================================
+         * ============================================================================================ 
          */
         
         const { useState, useEffect, useRef } = React;
@@ -223,7 +225,8 @@
             'market-context': '',
             'market-context-other': '',
             alternatives: [{ val1: '', val2: '' }],
-            values: [{ val1: '', val2: '', val3: '' }],
+            pillars: [{ id: 1, name: '', benefit: '' }],
+            values: [{ val1: '', val2: '', val3: '', pillarId: null }],
             trend1_desc: '',
             trend2_desc: '',
             trend3_desc: '',
@@ -349,29 +352,302 @@
             );
         };
 
+        // JTBD Analysis Modal Component
+        const JTBDModal = ({ isOpen, onClose, analysisData, setAnalysisData, onSave }) => {
+            if (!isOpen) return null;
+
+            const jtbdFields = [
+                { key: 'context', label: 'Context', description: 'The business situation or operating environment' },
+                { key: 'strugglingMoments', label: 'Struggling Moments', description: 'Breakdowns, inefficiencies, or risks that trigger the search' },
+                { key: 'pushesPulls', label: 'Pushes & Pulls', description: 'Internal and external forces moving toward or away from change' },
+                { key: 'anxietiesHabits', label: 'Anxieties & Habits', description: 'Concerns about new solutions and inertia with current processes' },
+                { key: 'desiredOutcomes', label: 'Desired Outcomes', description: 'Business goals and success metrics they want to achieve' },
+                { key: 'basicQuality', label: 'Basic Quality (Table Stakes)', description: 'Minimum standards a solution must meet to be considered' },
+                { key: 'hiringCriteria', label: 'Hiring Criteria', description: 'Differentiators that make them select one vendor' },
+                { key: 'firingCriteria', label: 'Firing Criteria', description: 'Triggers that get a vendor rejected or replaced' },
+                { key: 'keyTradeoffs', label: 'Key Trade-offs', description: 'Acceptable compromises or limits' }
+            ];
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <div>
+                                <h2 className="text-2xl font-bold scale-green-text">AI-Assisted JTBD Structuring</h2>
+                                <p className="text-sm text-gray-600 mt-1">Bottom-up breadcrumb analysis of your Common Needs text</p>
+                            </div>
+                            <button 
+                                onClick={onClose}
+                                className="text-gray-400 hover:text-gray-600 text-3xl font-light"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {/* Original Text Column */}
+                                <div>
+                                    <h3 className="text-lg font-bold mb-4">Original Text</h3>
+                                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 h-full min-h-[200px]">
+                                        <p className="text-gray-800 whitespace-pre-wrap">
+                                            {analysisData.originalText || 'No text provided'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* JTBD Elements Column */}
+                                <div>
+                                    <h3 className="text-lg font-bold mb-4">9 JTBD Elements</h3>
+                                    <div className="space-y-4">
+                                        {jtbdFields.map(field => (
+                                            <div key={field.key}>
+                                                <label className="block font-semibold text-gray-700 mb-1">
+                                                    {field.label}
+                                                </label>
+                                                <p className="text-xs text-gray-500 mb-2">{field.description}</p>
+                                                <textarea 
+                                                    className="w-full p-3 border border-gray-300 rounded-md text-sm"
+                                                    rows="3" 
+                                                    value={analysisData[field.key] || ''}
+                                                    onChange={(e) => setAnalysisData(prev => ({
+                                                        ...prev,
+                                                        [field.key]: e.target.value
+                                                    }))}
+                                                    placeholder={`AI analysis will appear here...`}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="flex justify-end space-x-4 p-6 border-t">
+                            <button 
+                                onClick={onClose}
+                                className="px-6 py-2 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={onSave}
+                                className="px-6 py-2 scale-green-bg text-white font-bold rounded-lg hover:bg-opacity-90"
+                            >
+                                Save Structured JTBD
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // F-8: Pillar Generation Modal Component
+        const PillarGenerationModal = ({ isOpen, onClose, pillarGenState, onGeneratePillars, onAcceptPillar, onRefinePillar, onRefinementInputChange }) => {
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold text-scale-dark-green">
+                                    AI-Powered Pillar Generation
+                                </h2>
+                                <button 
+                                    onClick={onClose}
+                                    className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-2">
+                                AI analyzes your value propositions to suggest strategic pillars with transparent reasoning.
+                            </p>
+                        </div>
+                        
+                        <div className="p-6">
+                            {/* Loading State */}
+                            {pillarGenState.isGenerating && (
+                                <div className="text-center py-8">
+                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-scale-dark-green"></div>
+                                    <p className="mt-4 text-gray-600">AI is analyzing your value propositions...</p>
+                                </div>
+                            )}
+                            
+                            {/* Error State */}
+                            {pillarGenState.error && (
+                                <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                                    <p className="text-red-800">{pillarGenState.error}</p>
+                                </div>
+                            )}
+                            
+                            {/* Pillar Suggestions */}
+                            {!pillarGenState.isGenerating && pillarGenState.suggestedPillars.length > 0 && (
+                                <div className="space-y-6">
+                                    <h3 className="text-lg font-bold text-scale-dark-green mb-4">
+                                        AI-Suggested Strategic Pillars
+                                    </h3>
+                                    
+                                    {pillarGenState.suggestedPillars.map((pillar, index) => (
+                                        <div key={pillar.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                            <div className="mb-4">
+                                                <h4 className="font-bold text-scale-dark-green text-lg mb-2">
+                                                    {pillar.pillarName}
+                                                </h4>
+                                                <p className="text-gray-700 mb-3">
+                                                    {pillar.benefitStatement}
+                                                </p>
+                                                
+                                                <div className="mb-3">
+                                                    <h5 className="font-semibold text-gray-800 mb-1">AI Rationale:</h5>
+                                                    <p className="text-sm text-gray-600 italic">
+                                                        {pillar.rationale}
+                                                    </p>
+                                                </div>
+                                                
+                                                <div>
+                                                    <h5 className="font-semibold text-gray-800 mb-2">Supporting Value Propositions:</h5>
+                                                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                                                        {pillar.supportingAttributeIds.map(id => {
+                                                            const prop = (appState.positioningData.values || [])[id];
+                                                            if (prop && (prop.val1 || prop.val2 || prop.val3)) {
+                                                                return (
+                                                                    <li key={id}>
+                                                                        <strong>Attribute:</strong> {prop.val1} →
+                                                                        <strong> Benefit:</strong> {prop.val2} →
+                                                                        <strong> Value:</strong> {prop.val3}
+                                                                    </li>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex flex-col space-y-3 pt-4 border-t border-gray-300">
+                                                <div className="flex space-x-3">
+                                                    <button 
+                                                        onClick={() => onAcceptPillar(pillar)}
+                                                        className="px-4 py-2 scale-green-bg text-white font-bold rounded-lg hover:bg-opacity-90"
+                                                    >
+                                                        Accept & Edit
+                                                    </button>
+                                                </div>
+                                                
+                                                <div className="flex flex-col space-y-2">
+                                                    <label className="text-sm font-semibold text-gray-700">
+                                                        Refine with AI:
+                                                    </label>
+                                                    <div className="flex space-x-2">
+                                                        <input
+                                                            type="text"
+                                                            className="flex-1 p-2 border border-gray-300 rounded-md focus-ring-gold"
+                                                            placeholder="e.g., 'Make this more technical' or 'Focus on cost savings'"
+                                                            value={pillarGenState.refinementInputs[pillar.id] || ''}
+                                                            onChange={(e) => onRefinementInputChange(pillar.id, e.target.value)}
+                                                        />
+                                                        <button 
+                                                            onClick={() => onRefinePillar(pillar, pillarGenState.refinementInputs[pillar.id])}
+                                                            disabled={!pillarGenState.refinementInputs[pillar.id]?.trim()}
+                                                            className="px-4 py-2 bg-scale-blue text-white font-bold rounded-lg hover:bg-opacity-90 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                        >
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Empty State */}
+                            {!pillarGenState.isGenerating && pillarGenState.suggestedPillars.length === 0 && !pillarGenState.error && (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-600 mb-4">
+                                        Click "Generate Strategic Pillars" to begin AI analysis of your value propositions.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                            <button 
+                                onClick={onClose}
+                                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // Dynamic Field Components
-        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2 }) => (
-            <div className="flex items-center space-x-2">
-                <input 
-                    type="text" 
-                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold" 
-                    placeholder={placeholder1}
-                    value={item.val1}
-                    onChange={(e) => onUpdate(index, 'val1', e.target.value)}
-                />
-                <textarea 
-                    className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold" 
-                    rows="3" 
-                    placeholder={placeholder2}
-                    value={item.val2}
-                    onChange={(e) => onUpdate(index, 'val2', e.target.value)}
-                ></textarea>
-                <button 
-                    onClick={() => onRemove(index)}
-                    className="text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors"
-                >
-                    ×
-                </button>
+        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2, onAnalyze, analysisResult }) => (
+            <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                    <input 
+                        type="text" 
+                        className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
+                        placeholder={placeholder1}
+                        value={item.val1}
+                        onChange={(e) => onUpdate(index, 'val1', e.target.value)}
+                    />
+                    <textarea 
+                        className="w-1/2 p-2 border border-gray-300 rounded-md focus-ring-gold"
+                        rows="3" 
+                        placeholder={placeholder2}
+                        value={item.val2}
+                        onChange={(e) => onUpdate(index, 'val2', e.target.value)}
+                    ></textarea>
+                    <div className="flex flex-col space-y-2">
+                        <button 
+                            onClick={() => onRemove(index)}
+                            className="text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors"
+                        >
+                            ×
+                        </button>
+                        {onAnalyze && (
+                            <button 
+                                onClick={() => onAnalyze(item, index)}
+                                disabled={analysisResult?.isAnalyzing}
+                                className="text-xs font-bold py-1 px-2 rounded transition-colors bg-blue-100 hover:bg-blue-200 text-blue-700 disabled:opacity-50"
+                            >
+                                {analysisResult?.isAnalyzing ? 'Analyzing...' : 'Analyze Weakness'}
+                            </button>
+                        )}
+                    </div>
+                </div>
+                
+                {analysisResult && !analysisResult.isAnalyzing && analysisResult.angles && (
+                    <div className="bg-white p-4 rounded-md border-l-4 border-blue-500 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-bold text-gray-800">Strategic Angles</h4>
+                            <span className="text-xs text-gray-500">{analysisResult.angles.length} talking points</span>
+                        </div>
+                        <ul className="space-y-2">
+                            {analysisResult.angles.map((angle, idx) => (
+                                <li key={idx} className="text-sm text-gray-700 flex items-start">
+                                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-3 mt-1.5 flex-shrink-0"></span>
+                                    <span>{angle}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <button 
+                            onClick={() => {
+                                const text = analysisResult.angles.join('\n• ');
+                                navigator.clipboard.writeText(`Strategic angles for ${item.val1}:\n• ${text}`);
+                            }}
+                            className="mt-3 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                            Copy talking points
+                        </button>
+                    </div>
+                )}
             </div>
         );
 
@@ -379,7 +655,7 @@
             <div className="flex items-center space-x-2">
                 <input 
                     type="text" 
-                    className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                    className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                     placeholder={placeholder}
                     value={item.value}
                     onChange={(e) => onUpdate(index, 'value', e.target.value)}
@@ -393,16 +669,16 @@
             </div>
         );
 
-        const RemovableTriple = ({ index, item, onUpdate, onRemove }) => (
+        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult, onAnalyzeUniqueness, uniquenessResult, pillars }) => (
             <div className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            Attribute: The Feature or Capability
+                            Truly Unique Attribute: The Feature or Capability
                         </label>
                         <input 
                             type="text" 
-                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                             placeholder="Example: Day-one insights from existing documents"
                             value={item.val1}
                             onChange={(e) => onUpdate(index, 'val1', e.target.value)}
@@ -420,7 +696,7 @@
                         Benefit: What the attribute enables for a customer
                     </label>
                     <textarea 
-                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                         rows="2" 
                         placeholder="Example: Enables immediate analysis without lengthy discovery interviews"
                         value={item.val2}
@@ -429,15 +705,98 @@
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Value: How the attribute maps to a goal the customer is trying to achieve
+                        Value: The metrics and KPIs the customer use to measure value created by this attribute
                     </label>
                     <input 
                         type="text" 
-                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold" 
+                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
                         placeholder="Example: Reduces transformation timeline by 6 months, saving $500k in consulting fees"
                         value={item.val3}
                         onChange={(e) => onUpdate(index, 'val3', e.target.value)}
                     />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Strategic Pillar
+                    </label>
+                    <select 
+                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                        value={item.pillarId || ''}
+                        onChange={(e) => onUpdate(index, 'pillarId', e.target.value ? parseInt(e.target.value) : null)}
+                    >
+                        <option value="">Select a pillar...</option>
+                        {(pillars || []).map((pillar) => (
+                            <option key={pillar.id} value={pillar.id}>
+                                {pillar.name || `Pillar ${pillar.id}`}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="pt-2 space-y-3">
+                    <div className="flex space-x-2">
+                        <button 
+                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50"
+                            onClick={() => onGrade(item, index)}
+                            disabled={gradingResult?.isGrading}
+                        >
+                            {gradingResult?.isGrading ? 'Grading...' : 'Grade Proposition'}
+                        </button>
+                        <button 
+                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                            onClick={() => onAnalyzeUniqueness(item.val1, index)}
+                            disabled={uniquenessResult?.isAnalyzing || !item.val1?.trim()}
+                        >
+                            {uniquenessResult?.isAnalyzing ? 'Analyzing market...' : 'Analyze Uniqueness'}
+                        </button>
+                    </div>
+                    
+                    {gradingResult && !gradingResult.isGrading && gradingResult.score && (
+                        <div className="bg-white p-3 rounded-md border border-gray-300">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-bold text-gray-700">AI Grade:</span>
+                                <span 
+                                    className={`text-lg font-bold px-2 py-1 rounded ${
+                                        gradingResult.score.startsWith('A') ? 'bg-green-100 text-green-800' :
+                                        gradingResult.score.startsWith('B') ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-red-100 text-red-800'
+                                    }`}
+                                >
+                                    {gradingResult.score}
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                                {gradingResult.feedback}
+                            </p>
+                        </div>
+                    )}
+
+                    {uniquenessResult && !uniquenessResult.isAnalyzing && (
+                        <div className="bg-white p-3 rounded-md border border-gray-300">
+                            <div className="mb-2">
+                                <span className="text-sm font-bold text-gray-700">Uniqueness Analysis:</span>
+                            </div>
+                            {uniquenessResult.error ? (
+                                <div className="text-sm text-red-600">
+                                    {uniquenessResult.error}
+                                </div>
+                            ) : uniquenessResult.results && uniquenessResult.results.length > 0 ? (
+                                <div className="space-y-2">
+                                    {uniquenessResult.results.slice(0, 3).map((result, idx) => (
+                                        <div key={idx} className="text-sm text-gray-600">
+                                            <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                {result.title}
+                                            </a>
+                                            <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-green-600 font-medium">
+                                    No similar claims found - this appears to be a unique attribute!
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -446,6 +805,667 @@
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [jtbdExpanded, setJtbdExpanded] = useState(false);
+            const [customerValueExpanded, setCustomerValueExpanded] = useState(false);
+            const [wtpExpanded, setWtpExpanded] = useState(false);
+            const [gradingState, setGradingState] = useState({});
+            const [analysisState, setAnalysisState] = useState({});
+            const [uniquenessResults, setUniquenessResults] = useState({});
+            const [trendAnalysisResults, setTrendAnalysisResults] = useState({});
+            const [jtbdModalOpen, setJtbdModalOpen] = useState(false);
+            const [jtbdAnalysisData, setJtbdAnalysisData] = useState({
+                originalText: '',
+                context: '',
+                strugglingMoments: '',
+                pushesPulls: '',
+                anxietiesHabits: '',
+                desiredOutcomes: '',
+                basicQuality: '',
+                hiringCriteria: '',
+                firingCriteria: '',
+                keyTradeoffs: ''
+            });
+            
+            // F-8: Pillar Generation Modal State
+            const [pillarGenModalOpen, setPillarGenModalOpen] = useState(false);
+            const [pillarGenState, setPillarGenState] = useState({
+                isGenerating: false,
+                suggestedPillars: [],
+                error: null,
+                refinementInputs: {}
+            });
+            
+            // Simulate AI grading for value propositions
+            const simulateAIGrading = async (proposition, index) => {
+                const { val1, val2, val3 } = proposition;
+                
+                // Set loading state
+                setGradingState(prev => ({
+                    ...prev,
+                    [index]: { isGrading: true, score: null, feedback: null }
+                }));
+                
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Analyze proposition quality
+                let score = 'C';
+                let feedback = [];
+                
+                // Check attribute quality
+                if (!val1 || val1.length < 10) {
+                    feedback.push('Attribute needs more specificity and detail');
+                } else if (val1.includes('AI') || val1.includes('intelligent') || val1.includes('automated')) {
+                    score = score < 'B' ? 'B' : score;
+                    feedback.push('Good use of compelling technology terms');
+                }
+                
+                // Check benefit quality
+                if (!val2 || val2.length < 15) {
+                    feedback.push('Benefit statement should explain customer impact more clearly');
+                } else if (val2.includes('reduces') || val2.includes('increases') || val2.includes('enables')) {
+                    score = score < 'B+' ? 'B+' : score;
+                    feedback.push('Strong benefit articulation with clear outcomes');
+                }
+                
+                // Check value quality
+                if (!val3 || val3.length < 10) {
+                    feedback.push('Value statement needs quantifiable outcomes or proof points');
+                } else if (val3.match(/\$|%|months?|weeks?|days?|hours?|\d+/)) {
+                    score = 'A-';
+                    feedback.push('Excellent quantifiable value with specific metrics');
+                }
+                
+                // Assign final score
+                if (val1 && val2 && val3 && val1.length > 10 && val2.length > 15 && val3.length > 15) {
+                    if (score === 'C') score = 'B';
+                }
+                
+                // Create final feedback
+                const finalFeedback = feedback.length > 0 
+                    ? feedback.join('. ') + '.'
+                    : 'Complete all three fields with more specific details for better grading.';
+                
+                // Update grading state with results
+                setGradingState(prev => ({
+                    ...prev,
+                    [index]: {
+                        isGrading: false,
+                        score,
+                        feedback: finalFeedback,
+                        timestamp: new Date().toISOString()
+                    }
+                }));
+            };
+
+            // Analyze uniqueness using web search API
+            const analyzeUniqueness = async (attributeText, index) => {
+                if (!attributeText || !attributeText.trim()) {
+                    return;
+                }
+
+                setUniquenessResults(prev => ({
+                    ...prev,
+                    [index]: { isAnalyzing: true, results: null }
+                }));
+
+                try {
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query: `"${attributeText.trim()}" software features capabilities`
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const searchData = await response.json();
+                    
+                    // Extract relevant results for display
+                    const results = searchData.web?.results?.slice(0, 3).map(result => ({
+                        title: result.title,
+                        description: result.description || result.snippet || 'No description available',
+                        url: result.url
+                    })) || [];
+
+                    setUniquenessResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            results,
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+
+                } catch (error) {
+                    console.error('Uniqueness analysis error:', error);
+                    setUniquenessResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            error: 'Analysis unavailable - please try again later',
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+                }
+            };
+            
+            // Analyze trend validation using web search
+            const analyzeTrend = async (trendText, index) => {
+                if (!trendText || !trendText.trim()) {
+                    return;
+                }
+
+                setTrendAnalysisResults(prev => ({
+                    ...prev,
+                    [index]: { isAnalyzing: true, results: null }
+                }));
+
+                try {
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query: `"${trendText.trim()}" market trend industry analysis`
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const searchData = await response.json();
+                    
+                    // Extract relevant results for display
+                    const results = searchData.web?.results?.slice(0, 3).map(result => ({
+                        title: result.title,
+                        description: result.description || result.snippet || 'No description available',
+                        url: result.url
+                    })) || [];
+
+                    setTrendAnalysisResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            results,
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+
+                } catch (error) {
+                    console.error('Trend analysis error:', error);
+                    setTrendAnalysisResults(prev => ({
+                        ...prev,
+                        [index]: {
+                            isAnalyzing: false,
+                            error: 'No strong evidence found for this trend. Consider rephrasing.',
+                            timestamp: new Date().toISOString()
+                        }
+                    }));
+                }
+            };
+            
+            // Simulate AI competitive weakness analysis
+            const simulateCompetitiveAnalysis = async (alternative, index) => {
+                const { val1, val2 } = alternative;
+                
+                setAnalysisState(prev => ({
+                    ...prev,
+                    [index]: { isAnalyzing: true, angles: null }
+                }));
+                
+                await new Promise(resolve => setTimeout(resolve, 1800));
+                
+                let angles = [];
+                
+                if (!val1 || !val2) {
+                    angles = ["Add competitor name and weakness for detailed analysis"];
+                } else {
+                    const weakness = val2.toLowerCase();
+                    
+                    if (weakness.includes("slow") || weakness.includes("outdated") || weakness.includes("legacy")) {
+                        angles.push(`Emphasize your speed advantage over ${val1}'s legacy systems`);
+                        angles.push(`Position as future-ready while ${val1} requires modernization`);
+                    }
+                    
+                    if (weakness.includes("expensive") || weakness.includes("cost") || weakness.includes("price")) {
+                        angles.push(`Highlight cost benefits vs ${val1}'s hidden fees`);
+                        angles.push(`Demonstrate faster ROI vs ${val1}'s expensive implementation`);
+                    }
+                    
+                    if (weakness.includes("complex") || weakness.includes("difficult") || weakness.includes("hard")) {
+                        angles.push(`Showcase intuitive UX vs ${val1}'s complexity`);
+                        angles.push(`Emphasize rapid deployment vs ${val1}'s lengthy setup`);
+                    }
+                    
+                    if (weakness.includes("limited") || weakness.includes("lacking") || weakness.includes("missing")) {
+                        angles.push(`Highlight comprehensive features vs ${val1}'s gaps`);
+                        angles.push(`Position as complete solution vs ${val1}'s limitations`);
+                    }
+                    
+                    angles.push(`Frame conversation around outcomes ${val1} struggles to deliver`);
+                    
+                    if (angles.length < 3) {
+                        angles.push(`Leverage ${val1}'s weakness in competitive positioning`);
+                        angles.push(`Use case studies showing success where ${val1} failed`);
+                    }
+                    
+                    angles = angles.slice(0, 4);
+                }
+                
+                setAnalysisState(prev => ({
+                    ...prev,
+                    [index]: {
+                        isAnalyzing: false,
+                        angles,
+                        timestamp: new Date().toISOString()
+                    }
+                }));
+            };
+
+            // Simulate AI JTBD analysis using bottom-up breadcrumb approach
+            const simulateJTBDAnalysis = async (originalText) => {
+                if (!originalText.trim()) {
+                    return {
+                        context: '',
+                        strugglingMoments: '',
+                        desiredOutcomes: '',
+                        currentSolutions: '',
+                        constraints: '',
+                        successCriteria: '',
+                        emotionalDrivers: '',
+                        socialDimensions: ''
+                    };
+                }
+
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Apply bottom-up breadcrumb approach - identify signals and cluster them
+                const text = originalText.toLowerCase();
+                const breadcrumbs = {
+                    contextClues: [],
+                    struggleSignals: [],
+                    outcomeSignals: [],
+                    solutionMentions: [],
+                    constraintSignals: [],
+                    metricSignals: [],
+                    emotionWords: [],
+                    stakeholderMentions: []
+                };
+
+                // Identify breadcrumbs (signals) in the text
+                if (text.includes('when') || text.includes('during') || text.includes('while')) {
+                    breadcrumbs.contextClues.push('timing-based triggers identified');
+                }
+                if (text.includes('need') || text.includes('require') || text.includes('must')) {
+                    breadcrumbs.struggleSignals.push('urgency language detected');
+                }
+                if (text.includes('achieve') || text.includes('reach') || text.includes('goal')) {
+                    breadcrumbs.outcomeSignals.push('outcome-oriented language');
+                }
+                if (text.includes('currently') || text.includes('using') || text.includes('tool')) {
+                    breadcrumbs.solutionMentions.push('existing solution references');
+                }
+                if (text.includes('budget') || text.includes('time') || text.includes('resource')) {
+                    breadcrumbs.constraintSignals.push('resource constraint mentions');
+                }
+                if (text.includes('measure') || text.includes('track') || text.includes('metric')) {
+                    breadcrumbs.metricSignals.push('measurement focus detected');
+                }
+                if (text.includes('frustrated') || text.includes('worried') || text.includes('confident')) {
+                    breadcrumbs.emotionWords.push('emotional language identified');
+                }
+                if (text.includes('team') || text.includes('stakeholder') || text.includes('customer')) {
+                    breadcrumbs.stakeholderMentions.push('multiple parties involved');
+                }
+
+                // Cluster breadcrumbs into 9 JTBD elements (B2B/Enterprise focused)
+                return {
+                    context: breadcrumbs.contextClues.length > 0 
+                        ? `Analysis reveals a complex business operating environment with interdependent systems and evolving regulatory requirements. Organizations are managing distributed teams and need solutions that integrate with existing infrastructure.`
+                        : `The business is operating in a dynamic market environment where manual processes and legacy systems are creating operational bottlenecks that impact competitiveness.`,
+                    
+                    strugglingMoments: breadcrumbs.struggleSignals.length > 0
+                        ? `Critical breakdowns are occurring in workflow efficiency, data accuracy, and compliance processes. These operational failures are triggering urgent evaluation of new solutions to prevent business disruption.`
+                        : `Organizations are experiencing systematic inefficiencies and increased error rates that signal their current approach is unsustainable and requires immediate modernization.`,
+                    
+                    pushesPulls: breadcrumbs.contextClues.length > 0 || breadcrumbs.stakeholderMentions.length > 0
+                        ? `Internal forces include executive mandates for digital transformation and team frustration with current tools. External pressures include competitive threats, regulatory changes, and customer expectations for faster service.`
+                        : `The organization faces internal pressure from leadership to reduce costs and external pressure from competitors who are moving faster with modern technology stacks.`,
+                    
+                    anxietiesHabits: breadcrumbs.emotionWords.length > 0
+                        ? `Teams express concerns about data migration risks, learning curve for new systems, and potential disruption to critical operations. There's organizational inertia around familiar but inefficient processes.`
+                        : `The organization worries about implementation failure, vendor lock-in, and change management challenges while showing strong attachment to existing workflows despite their limitations.`,
+                    
+                    desiredOutcomes: breadcrumbs.outcomeSignals.length > 0
+                        ? `Primary business goals include reducing operational costs by 30-40%, achieving 99.9% uptime, ensuring full regulatory compliance, and enabling data-driven decision making across all departments.`
+                        : `The organization seeks measurable improvements in efficiency metrics, reduced audit findings, faster time-to-market, and enhanced visibility into business operations.`,
+                    
+                    basicQuality: breadcrumbs.metricSignals.length > 0 || breadcrumbs.constraintSignals.length > 0
+                        ? `Non-negotiable requirements include SOC2/ISO certifications, 99.9% SLA guarantees, enterprise SSO, role-based access controls, API integrations with existing ERP/CRM systems, and 24/7 support.`
+                        : `Minimum viable standards include enterprise-grade security, compliance with industry regulations, seamless data migration capabilities, and proven scalability for growing organizations.`,
+                    
+                    hiringCriteria: breadcrumbs.solutionMentions.length > 0
+                        ? `Differentiating factors include industry-specific expertise, white-glove implementation services, reference customers in similar verticals, and demonstrated ROI within 6-12 months.`
+                        : `Selection criteria emphasize vendor financial stability, implementation methodology maturity, customer success track record, and ability to customize for unique business requirements.`,
+                    
+                    firingCriteria: breadcrumbs.struggleSignals.length > 0 || breadcrumbs.constraintSignals.length > 0
+                        ? `Deal-breakers include any unplanned downtime affecting operations, data security breaches, inability to meet compliance requirements, or lack of responsive technical support during critical issues.`
+                        : `Vendors get rejected for hidden costs, inability to scale with growth, poor integration capabilities, or failure to deliver promised functionality within agreed timelines.`,
+                    
+                    keyTradeoffs: breadcrumbs.constraintSignals.length > 0
+                        ? `The organization is willing to accept longer implementation timelines for better long-term fit, and may sacrifice some customization flexibility for faster time-to-value and lower TCO.`
+                        : `Acceptable compromises include adopting standard workflows over custom processes, phased rollouts over big-bang deployments, and cloud-based solutions over on-premise for better scalability.`
+                };
+            };
+
+            // F-8: AI-Powered Pillar Generation (Glass Box)
+            const generatePillarsFromValueProps = async (valueProps, refinementText = null, pillarIndex = null) => {
+                // Simulate AI thematic analysis and clustering
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Filter out empty value props
+                const validProps = valueProps.filter(prop => 
+                    prop.val1?.trim() || prop.val2?.trim() || prop.val3?.trim()
+                );
+                
+                if (validProps.length === 0) {
+                    throw new Error("No value propositions found. Please add some value propositions first.");
+                }
+                
+                if (validProps.length === 1) {
+                    // For single prop, create one pillar
+                    return [{
+                        id: 1,
+                        pillarName: "Core Value Driver",
+                        benefitStatement: "Our primary strategic advantage that delivers measurable business impact",
+                        rationale: "With only one value proposition defined, we've created a focused pillar that highlights your core differentiator.",
+                        supportingAttributeIds: [0]
+                    }];
+                }
+                
+                // For refinement, update only the specific pillar
+                if (refinementText && pillarIndex !== null) {
+                    // Simulate refined generation based on user feedback
+                    const refinedPillar = generateRefinedPillar(validProps, refinementText, pillarIndex);
+                    return [refinedPillar];
+                }
+                
+                // Perform thematic clustering for 2-3 pillars
+                const pillars = [];
+                const usedProps = new Set();
+                
+                // Analyze themes in value props
+                const themes = analyzeValuePropThemes(validProps);
+                
+                themes.forEach((theme, index) => {
+                    const supportingIds = theme.propIndices.filter(id => !usedProps.has(id));
+                    
+                    if (supportingIds.length > 0) {
+                        supportingIds.forEach(id => usedProps.add(id));
+                        
+                        pillars.push({
+                            id: index + 1,
+                            pillarName: theme.name,
+                            benefitStatement: theme.benefit,
+                            rationale: theme.rationale,
+                            supportingAttributeIds: supportingIds
+                        });
+                    }
+                });
+                
+                return pillars;
+            };
+            
+            const analyzeValuePropThemes = (valueProps) => {
+                const themes = [];
+                const categories = {
+                    technology: { keywords: ['AI', 'automated', 'intelligent', 'machine learning', 'algorithm', 'data', 'analytics', 'real-time'], props: [] },
+                    efficiency: { keywords: ['reduces', 'faster', 'streamlines', 'automates', 'eliminates', 'accelerates', 'optimizes'], props: [] },
+                    security: { keywords: ['secure', 'compliant', 'protected', 'encrypted', 'audit', 'governance', 'risk'], props: [] },
+                    scale: { keywords: ['scalable', 'enterprise', 'global', 'unlimited', 'massive', 'extensive'], props: [] },
+                    insight: { keywords: ['insights', 'visibility', 'analysis', 'intelligence', 'understanding', 'clarity'], props: [] },
+                    integration: { keywords: ['integrates', 'connects', 'unified', 'seamless', 'workflow', 'ecosystem'], props: [] }
+                };
+                
+                // Categorize props by theme
+                valueProps.forEach((prop, index) => {
+                    const text = `${prop.val1} ${prop.val2} ${prop.val3}`.toLowerCase();
+                    let bestMatch = null;
+                    let maxScore = 0;
+                    
+                    for (const [category, data] of Object.entries(categories)) {
+                        const score = data.keywords.reduce((count, keyword) => 
+                            count + (text.includes(keyword.toLowerCase()) ? 1 : 0), 0);
+                        
+                        if (score > maxScore) {
+                            maxScore = score;
+                            bestMatch = category;
+                        }
+                    }
+                    
+                    if (bestMatch && maxScore > 0) {
+                        categories[bestMatch].props.push(index);
+                    } else {
+                        // Default to efficiency theme
+                        categories.efficiency.props.push(index);
+                    }
+                });
+                
+                // Create themes from categories with props
+                const themeMap = {
+                    technology: {
+                        name: "Advanced Technology",
+                        benefit: "Leverages cutting-edge technology to deliver superior capabilities and outcomes",
+                        rationale: "These value propositions share a common theme of technological sophistication and innovation"
+                    },
+                    efficiency: {
+                        name: "Operational Excellence", 
+                        benefit: "Streamlines processes and eliminates inefficiencies to maximize productivity",
+                        rationale: "These value propositions focus on improving speed, reducing effort, and optimizing workflows"
+                    },
+                    security: {
+                        name: "Enterprise Security",
+                        benefit: "Ensures robust security and compliance without compromising functionality",
+                        rationale: "These value propositions emphasize security, compliance, and risk mitigation capabilities"
+                    },
+                    scale: {
+                        name: "Enterprise Scale",
+                        benefit: "Handles enterprise-level complexity and volume requirements effortlessly",
+                        rationale: "These value propositions highlight scalability and enterprise-grade capabilities"
+                    },
+                    insight: {
+                        name: "Strategic Intelligence",
+                        benefit: "Provides deep insights and visibility to enable data-driven decision making",
+                        rationale: "These value propositions center on delivering clarity, understanding, and actionable insights"
+                    },
+                    integration: {
+                        name: "Seamless Integration",
+                        benefit: "Connects seamlessly with existing systems and workflows",
+                        rationale: "These value propositions focus on integration capabilities and workflow connectivity"
+                    }
+                };
+                
+                // Build final themes (max 3)
+                const sortedCategories = Object.entries(categories)
+                    .filter(([_, data]) => data.props.length > 0)
+                    .sort(([_, a], [__, b]) => b.props.length - a.props.length)
+                    .slice(0, 3);
+                    
+                sortedCategories.forEach(([category, data]) => {
+                    themes.push({
+                        ...themeMap[category],
+                        propIndices: data.props
+                    });
+                });
+                
+                // If no clear themes, create default groupings
+                if (themes.length === 0) {
+                    const midpoint = Math.ceil(valueProps.length / 2);
+                    themes.push({
+                        name: "Core Capabilities",
+                        benefit: "Primary features that deliver essential business value",
+                        rationale: "These value propositions represent your core product capabilities",
+                        propIndices: valueProps.slice(0, midpoint).map((_, i) => i)
+                    });
+                    
+                    if (valueProps.length > midpoint) {
+                        themes.push({
+                            name: "Strategic Advantages",
+                            benefit: "Differentiating factors that provide competitive edge",
+                            rationale: "These value propositions highlight your unique competitive advantages",
+                            propIndices: valueProps.slice(midpoint).map((_, i) => i + midpoint)
+                        });
+                    }
+                }
+                
+                return themes;
+            };
+            
+            const generateRefinedPillar = (valueProps, refinementText, pillarIndex) => {
+                // Simple refinement simulation based on user input
+                const keywords = refinementText.toLowerCase().split(' ').filter(word => word.length > 3);
+                
+                let pillarName = "Refined Strategic Pillar";
+                let benefit = "Delivers strategic value aligned with your specific requirements";
+                let rationale = `Based on your feedback: "${refinementText}", we've adjusted this pillar to better reflect your strategic intent.`;
+                
+                // Try to incorporate user keywords into the name
+                if (keywords.includes('security') || keywords.includes('secure')) {
+                    pillarName = "Enhanced Security Framework";
+                    benefit = "Provides comprehensive security and compliance capabilities";
+                } else if (keywords.includes('efficiency') || keywords.includes('fast')) {
+                    pillarName = "Operational Efficiency Engine";
+                    benefit = "Maximizes operational efficiency and reduces time-to-value";
+                } else if (keywords.includes('scale') || keywords.includes('enterprise')) {
+                    pillarName = "Enterprise Scale Platform";
+                    benefit = "Handles enterprise-level requirements with seamless scalability";
+                } else if (keywords.includes('insight') || keywords.includes('analytics')) {
+                    pillarName = "Strategic Intelligence Hub";
+                    benefit = "Transforms data into actionable strategic insights";
+                } else if (keywords.includes('integration') || keywords.includes('connect')) {
+                    pillarName = "Unified Integration Layer";
+                    benefit = "Seamlessly integrates with existing systems and workflows";
+                }
+                
+                return {
+                    id: pillarIndex + 1,
+                    pillarName,
+                    benefitStatement: benefit,
+                    rationale,
+                    supportingAttributeIds: [pillarIndex] // Simplified for refinement
+                };
+            };
+            
+            // F-8: Handler for generating pillars
+            const handleGeneratePillars = async () => {
+                try {
+                    setPillarGenModalOpen(true);
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: true,
+                        suggestedPillars: [],
+                        error: null,
+                        refinementInputs: {}
+                    }));
+                    
+                    const suggestedPillars = await generatePillarsFromValueProps(appState.positioningData.values || []);
+                    
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: false,
+                        suggestedPillars,
+                        refinementInputs: Object.fromEntries(suggestedPillars.map(p => [p.id, '']))
+                    }));
+                    
+                } catch (error) {
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: false,
+                        error: error.message
+                    }));
+                }
+            };
+            
+            // F-8: Handler for accepting a pillar
+            const handleAcceptPillar = (pillar) => {
+                const maxId = Math.max(0, ...(appState.positioningData.pillars || []).map(p => p.id));
+                const newPillar = {
+                    id: maxId + 1,
+                    name: pillar.pillarName,
+                    benefit: pillar.benefitStatement
+                };
+                
+                // Add pillar to state
+                const newPillars = [...(appState.positioningData.pillars || []), newPillar];
+                
+                // Update pillarId for supporting value props
+                const newValues = (appState.positioningData.values || []).map((val, index) => {
+                    if (pillar.supportingAttributeIds.includes(index)) {
+                        return { ...val, pillarId: newPillar.id };
+                    }
+                    return val;
+                });
+                
+                setAppState(prev => ({
+                    ...prev,
+                    positioningData: {
+                        ...prev.positioningData,
+                        pillars: newPillars,
+                        values: newValues
+                    }
+                }));
+                
+                // Close modal
+                setPillarGenModalOpen(false);
+            };
+            
+            // F-8: Handler for refining a pillar
+            const handleRefinePillar = async (pillarId, refinementText) => {
+                if (!refinementText.trim()) return;
+                
+                try {
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: true
+                    }));
+                    
+                    const refinedPillars = await generatePillarsFromValueProps(
+                        appState.positioningData.values || [],
+                        refinementText,
+                        pillarId - 1
+                    );
+                    
+                    if (refinedPillars.length > 0) {
+                        const refinedPillar = refinedPillars[0];
+                        
+                        setPillarGenState(prev => ({
+                            ...prev,
+                            isGenerating: false,
+                            suggestedPillars: prev.suggestedPillars.map(p => 
+                                p.id === pillarId ? { ...refinedPillar, id: pillarId } : p
+                            ),
+                            refinementInputs: {
+                                ...prev.refinementInputs,
+                                [pillarId]: ''
+                            }
+                        }));
+                    }
+                } catch (error) {
+                    setPillarGenState(prev => ({
+                        ...prev,
+                        isGenerating: false,
+                        error: error.message
+                    }));
+                }
+            };
 
             const updateNestedValue = (section, index, key, value) => {
                 const newData = { ...appState.positioningData };
@@ -467,6 +1487,17 @@
                 if (newData[section]) {
                     newData[section].splice(index, 1);
                     setAppState(prev => ({ ...prev, positioningData: newData }));
+                    // Clear grading state for removed item
+                    setGradingState(prev => {
+                        const newState = { ...prev };
+                        delete newState[index];
+                        return newState;
+                    });
+                    setAnalysisState(prev => {
+                        const newState = { ...prev };
+                        delete newState[index];
+                        return newState;
+                    });
                 }
             };
 
@@ -477,7 +1508,7 @@
                 let summary = `Part 1: ICP & Positioning Blueprint\n======================================\n\n`;
                 summary += `## 1. Ideal Customer Profile (ICP)\n`;
                 summary += `- Common Needs: ${appState.positioningData.icp_common_needs || 'N/A'}\n`;
-                summary += `- Desired Business Value: ${appState.positioningData.icp_desired_business_value || 'N/A'}\n`;
+                summary += `- Desired Customer Value: ${appState.positioningData.icp_desired_business_value || 'N/A'}\n`;
                 summary += `- Problem Urgency: ${appState.positioningData.icp_problem_urgency || 'N/A'}\n`;
                 summary += `- Quick Decision Making: ${appState.positioningData.icp_quick_decision_making || 'N/A'}\n`;
                 summary += `- Prioritized Requirements: ${appState.positioningData.icp_prioritized_requirements || 'N/A'}\n`;
@@ -496,7 +1527,7 @@
                 if (appState.positioningData.trend2_desc) trendsContent += `- Industry Trend 2: ${appState.positioningData.trend2_desc}\n`;
                 if (appState.positioningData.trend3_desc) trendsContent += `- Industry Trend 3: ${appState.positioningData.trend3_desc}\n`;
                 if (appState.positioningData.trend4_desc) trendsContent += `- Industry Trend 4: ${appState.positioningData.trend4_desc}\n`;
-                summary += formatSection('7. Relevant Trends', trendsContent || 'N/A');
+                summary += formatSection('4. Relevant Trends', trendsContent || 'N/A');
 
                 setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
             };
@@ -536,8 +1567,9 @@
                                     <ul className="space-y-1">
                                         <li><a href="#section-1" className="nav-link block p-2 rounded text-gray-700 font-semibold">1. Define Your ICP</a></li>
                                         <li><a href="#section-2" className="nav-link block p-2 rounded text-gray-700 font-semibold">2. Competitive Alternatives</a></li>
-                                        <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Value and Proof</a></li>
-                                        <li><a href="#section-7" className="nav-link block p-2 rounded text-gray-700 font-semibold">7. Relevant Trends</a></li>
+                                        <li><a href="#section-3" className="nav-link block p-2 rounded text-gray-700 font-semibold">3. Value and Proof</a></li>
+                                        <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Relevant Trends</a></li>
+                                        <li><a href="#section-5" className="nav-link block p-2 rounded text-gray-700 font-semibold">5. Strategic Pillars</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
                                         <button onClick={() => onNavigate('category')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
@@ -569,17 +1601,18 @@
                                     
                                     {jtbdExpanded && (
                                         <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                            <h4 className="font-bold mb-2 text-blue-900">8 Elements of a JTBD:</h4>
-                                            <ul className="list-disc pl-4 text-sm space-y-1 text-blue-800">
-                                                <li><b>Context:</b> What's going on in the person's life.</li>
-                                                <li><b>Struggling Moments:</b> Realization that something can be better.</li>
-                                                <li><b>Pushes and Pulls:</b> Forces for and against change.</li>
-                                                <li><b>Anxieties and Habits:</b> Concerns about the new and attachment to the old.</li>
-                                                <li><b>Desired Outcomes:</b> The vision for a better future.</li>
-                                                <li><b>Hiring/Firing Criteria:</b> What the solution must do, and what it must not do.</li>
-                                                <li><b>Key Trade-offs:</b> What the person is willing to give up.</li>
-                                                <li><b>Basic Quality:</b> The essential things the job requires.</li>
-                                            </ul>
+                                            <h4 className="font-bold mb-2 text-blue-900">9 Jobs-to-be-Done Elements</h4>
+                                            <ol className="list-decimal pl-4 text-sm space-y-2 text-blue-800">
+                                                <li><b>Context:</b> The business situation or operating environment.<br/><em>Example: "Quarterly close process across distributed finance teams."</em></li>
+                                                <li><b>Struggling Moments:</b> Breakdowns, inefficiencies, or risks that trigger the search.<br/><em>Example: "Errors in revenue recognition delaying financial reporting."</em></li>
+                                                <li><b>Pushes & Pulls:</b> Internal and external forces moving them toward or away from change.<br/><em>Example: "CFO pressure to modernize systems vs. IT reluctance to add new vendors."</em></li>
+                                                <li><b>Anxieties & Habits:</b> Concerns about adopting something new, and inertia with current processes/tools.<br/><em>Example: "Fear of migration failure; comfort with spreadsheets."</em></li>
+                                                <li><b>Desired Outcomes:</b> Business goals and success metrics they want to achieve.<br/><em>Example: "Reduce audit prep time by 50%; ensure SOX compliance."</em></li>
+                                                <li><b>Basic Quality (Table Stakes):</b> Minimum standards a solution must meet to even be considered.<br/><em>Example: "SOC2 compliance, API integrations with ERP, enterprise-grade security."</em></li>
+                                                <li><b>Hiring Criteria:</b> Differentiators that make them select one vendor.<br/><em>Example: "Proven implementation playbook; reference customers in financial services."</em></li>
+                                                <li><b>Firing Criteria:</b> Triggers that get a vendor rejected or replaced.<br/><em>Example: "System downtime; lack of role-based access control."</em></li>
+                                                <li><b>Key Trade-offs:</b> Acceptable compromises or limits.<br/><em>Example: "May sacrifice customization for faster time to value."</em></li>
+                                            </ol>
                                             <a href="https://therewiredgroup.com/learn/complete-guide-jobs-to-be-done/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm block mt-3">
                                                 Learn more about Jobs-to-be-Done →
                                             </a>
@@ -588,18 +1621,71 @@
                                     
                                     <p className="text-sm text-gray-500 mb-2">What specific, high-stakes task are they trying to accomplish?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: We need to de-risk a critical NetSuite to Oracle ERP migration by getting an accurate 'as-is' of all current business processes."
                                         value={appState.positioningData.icp_common_needs || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, icp_common_needs: e.target.value } }))}
                                     />
+                                    <button 
+                                        onClick={async () => {
+                                            const originalText = appState.positioningData.icp_common_needs || '';
+                                            if (!originalText.trim()) {
+                                                alert('Please enter some text in the Common Needs field before analyzing.');
+                                                return;
+                                            }
+                                            
+                                            setJtbdAnalysisData(prev => ({
+                                                ...prev,
+                                                originalText
+                                            }));
+                                            
+                                            setJtbdModalOpen(true);
+                                            
+                                            try {
+                                                const analysisResult = await simulateJTBDAnalysis(originalText);
+                                                setJtbdAnalysisData(prev => ({
+                                                    ...prev,
+                                                    ...analysisResult
+                                                }));
+                                            } catch (error) {
+                                                console.error('Failed to analyze JTBD:', error);
+                                                alert('Failed to analyze JTBD. Please try again.');
+                                            }
+                                        }}
+                                        className="mt-2 text-sm scale-blue-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90"
+                                    >
+                                        Analyze JTBD
+                                    </button>
                                 </div>
                                 <div>
-                                    <label className="block font-bold text-gray-700">Desired Business Value</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block font-bold text-gray-700">Desired Customer Value</label>
+                                        <button 
+                                            onClick={() => setCustomerValueExpanded(!customerValueExpanded)}
+                                            className="text-blue-500 text-sm hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                            <span className={`transition-transform ${customerValueExpanded ? 'rotate-90' : ''}`}>▶</span>
+                                            {customerValueExpanded ? 'Hide guide' : 'Show guide'}
+                                        </button>
+                                    </div>
+                                    
+                                    {customerValueExpanded && (
+                                        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <h4 className="font-bold mb-2 text-blue-900">5 Customer Value Elements</h4>
+                                            <ol className="list-decimal pl-4 text-sm space-y-2 text-blue-800">
+                                                <li><b>Table Stakes:</b> The non-negotiables for credibility. If you don't have them, you're out. These are compliance, security, reliability, and integration standards every enterprise expects.<br/><em>Example: "SOC2 certification, ERP integration, 99.9% uptime SLAs."</em></li>
+                                                <li><b>Functional Value:</b> The tangible, measurable business outcomes. This is the hard ROI—efficiency gains, cost savings, revenue growth, or risk mitigation. It's where Strategic Objectives, Key Results, Value Drivers, KPIs, and Quantifiable Customer Value all live.<br/><em>Example: "$500K OpEx savings validated by faster close cycles and error-rate reduction."</em></li>
+                                                <li><b>Ease of Doing Business:</b> How simple you make adoption and use. Enterprise buyers weigh friction. A solution that's easier to buy, implement, and run often beats a "better" product.<br/><em>Example: "Fast implementation playbook, role-based onboarding, 24/7 enterprise support."</em></li>
+                                                <li><b>Individual Value:</b> What matters to each stakeholder in the buying group. Purchases are made by groups of 6–10 people, each with different roles and personas. Individual Value addresses what each one personally gains—status, confidence, workload relief, or career upside.<br/><em>Example: "CFO is seen as innovator; IT leader feels secure in system stability; end users save hours of manual work."</em></li>
+                                                <li><b>Aspirational Value:</b> Alignment with vision and purpose. Higher-order motivations that make a vendor strategic. These often tip the scale when rational benefits look similar across competitors.<br/><em>Example: "Supports ESG reporting goals; positions company as a digital leader; signals innovation to board and investors."</em></li>
+                                            </ol>
+                                        </div>
+                                    )}
+                                    
                                     <p className="text-sm text-gray-500 mb-2">How do they measure success? What are their core metrics?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Success is measured by (1) reducing the migration timeline by at least 50%, (2) cutting external consulting fees by $500k+, and (3) zero critical process failures post-launch."
                                         value={appState.positioningData.icp_desired_business_value || ''}
@@ -610,7 +1696,7 @@
                                     <label className="block font-bold text-gray-700">Problem Urgency</label>
                                     <p className="text-sm text-gray-500 mb-2">Why do they need to solve this problem *now*?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: The migration is a board-level priority for this fiscal year. Any delay directly impacts our ability to scale and report earnings accurately."
                                         value={appState.positioningData.icp_problem_urgency || ''}
@@ -621,7 +1707,7 @@
                                     <label className="block font-bold text-gray-700">Quick Decision Making</label>
                                     <p className="text-sm text-gray-500 mb-2">Who is the economic buyer and can they approve the purchase efficiently?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: The VP of Finance is the economic buyer. They have budget authority up to $250k for transformation projects and can sign off without a lengthy committee review."
                                         value={appState.positioningData.icp_quick_decision_making || ''}
@@ -632,7 +1718,7 @@
                                     <label className="block font-bold text-gray-700">Prioritized Requirements</label>
                                     <p className="text-sm text-gray-500 mb-2">What do they value most in a solution for this problem?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Speed-to-insight is #1. We cannot wait 6 months for consultants. #2 is accuracy; the data must be audit-grade. #3 is ease of use for our internal team."
                                         value={appState.positioningData.icp_prioritized_requirements || ''}
@@ -640,10 +1726,33 @@
                                     />
                                 </div>
                                 <div>
-                                    <label className="block font-bold text-gray-700">Willingness to Pay</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block font-bold text-gray-700">Willingness to Pay</label>
+                                        <button 
+                                            onClick={() => setWtpExpanded(!wtpExpanded)}
+                                            className="text-blue-500 text-sm hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                            <span className={`transition-transform ${wtpExpanded ? 'rotate-90' : ''}`}>▶</span>
+                                            {wtpExpanded ? 'Hide guide' : 'Show guide'}
+                                        </button>
+                                    </div>
+                                    
+                                    {wtpExpanded && (
+                                        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <h4 className="font-bold mb-2 text-blue-900">5 Willingness to Pay Elements</h4>
+                                            <ol className="list-decimal pl-4 text-sm space-y-2 text-blue-800">
+                                                <li><b>Ability to Pay:</b> Whether the customer has budget and capacity to spend. Even high-value solutions fail without available budget or a way to fund them.<br/><em>Example: "Line item already approved in FY25 budget for compliance automation."</em></li>
+                                                <li><b>Economic Justification:</b> Whether the ROI and payback case makes financial sense. Customers want proof the investment will pay for itself within an acceptable time horizon.<br/><em>Example: "Pays for itself in under 12 months through $1M annual cost avoidance."</em></li>
+                                                <li><b>Relative Value vs. Alternatives:</b> How your solution compares to competitors or the status quo. If your product delivers clearer, differentiated outcomes, willingness to pay rises.<br/><em>Example: "Automates 80% of manual work versus consultant-heavy models."</em></li>
+                                                <li><b>Risk & Switching Costs:</b> How much risk or friction they see in making the change. Higher risk perception or switching pain lowers willingness to pay; clear mitigation raises it.<br/><em>Example: "Migration takes days, not months; vendor assumes implementation risk."</em></li>
+                                                <li><b>Market Reference Points:</b> The pricing anchors customers bring from prior spend or competitors. Buyers rarely assess value in a vacuum; they benchmark against what "similar" tools cost.<br/><em>Example: "Analytics platforms in this space usually run $100K–$150K annually."</em></li>
+                                            </ol>
+                                        </div>
+                                    )}
+                                    
                                     <p className="text-sm text-gray-500 mb-2">What is their budget and value perception for a solution like this?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: They've already budgeted $1M for consultants, so they perceive high value in a tech solution that can deliver better results for a fraction of that cost. Willing to pay $150k-$200k for a solution that guarantees success."
                                         value={appState.positioningData.icp_willingness_to_pay || ''}
@@ -654,7 +1763,7 @@
                                     <label className="block font-bold text-gray-700">Implementation Readiness</label>
                                     <p className="text-sm text-gray-500 mb-2">Can they adopt and get value from the product today?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: They have a dedicated transformation team ready to start. All relevant contracts and process documents are digitized and accessible."
                                         value={appState.positioningData.icp_implementation_readiness || ''}
@@ -665,7 +1774,7 @@
                                     <label className="block font-bold text-gray-700">Firmographic</label>
                                     <p className="text-sm text-gray-500 mb-2">What are the key company attributes (size, industry, revenue)?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Publicly traded B2B SaaS company, >$1B in annual revenue, 2000+ employees. Headquartered in North America."
                                         value={appState.positioningData.icp_firmographic || ''}
@@ -676,7 +1785,7 @@
                                     <label className="block font-bold text-gray-700">Technographic</label>
                                     <p className="text-sm text-gray-500 mb-2">What is their current technology stack?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: Currently using NetSuite, Salesforce, and Coupa. Moving to Oracle Fusion. Internal BI uses Tableau."
                                         value={appState.positioningData.icp_technographic || ''}
@@ -687,7 +1796,7 @@
                                     <label className="block font-bold text-gray-700">Behavioral</label>
                                     <p className="text-sm text-gray-500 mb-2">How do they act, buy, and use technology?</p>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="3" 
                                         placeholder="Example: They are early adopters of AI technology in their finance stack. They prefer to buy best-of-breed solutions over suite extensions. They have a history of successful, large-scale software implementations."
                                         value={appState.positioningData.icp_behavioral || ''}
@@ -709,6 +1818,8 @@
                                         onRemove={(idx) => removeItem('alternatives', idx)}
                                         placeholder1="Alternative"
                                         placeholder2="Why it's inadequate"
+                                        onAnalyze={(item, idx) => simulateCompetitiveAnalysis(item, idx)}
+                                        analysisResult={analysisState[index]}
                                     />
                                 ))}
                                 <button 
@@ -720,20 +1831,92 @@
                             </div>
                         </div>
 
-                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">4. Value and Proof</h2>
-                            <div className="space-y-4">
-                                {(appState.positioningData.values || []).map((item, index) => (
-                                    <RemovableTriple 
-                                        key={index}
-                                        index={index}
-                                        item={item}
-                                        onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
-                                        onRemove={(idx) => removeItem('values', idx)}
-                                    />
-                                ))}
+                        <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">3. Value and Proof</h2>
+                            <div className="space-y-6">
+                                {(() => {
+                                    // Group values by pillarId
+                                    const groupedValues = {};
+                                    const ungroupedValues = [];
+                                    
+                                    (appState.positioningData.values || []).forEach((item, index) => {
+                                        if (item.pillarId) {
+                                            if (!groupedValues[item.pillarId]) {
+                                                groupedValues[item.pillarId] = [];
+                                            }
+                                            groupedValues[item.pillarId].push({ item, index });
+                                        } else {
+                                            ungroupedValues.push({ item, index });
+                                        }
+                                    });
+                                    
+                                    return (
+                                        <>
+                                            {/* Render ungrouped values first */}
+                                            {ungroupedValues.length > 0 && (
+                                                <div className="space-y-4">
+                                                    {ungroupedValues.length > 0 && (
+                                                        <div className="text-sm font-medium text-gray-500 border-b border-gray-200 pb-2 mb-4">
+                                                            Unassigned Value Propositions
+                                                        </div>
+                                                    )}
+                                                    {ungroupedValues.map(({ item, index }) => (
+                                                        <RemovableTriple 
+                                                            key={index}
+                                                            index={index}
+                                                            item={item}
+                                                            onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
+                                                            onRemove={(idx) => removeItem('values', idx)}
+                                                            onGrade={(item, idx) => simulateAIGrading(item, idx)}
+                                                            gradingResult={gradingState[index]}
+                                                            onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
+                                                            uniquenessResult={uniquenessResults[index]}
+                                                            pillars={appState.positioningData.pillars}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+                                            
+                                            {/* Render grouped values by pillar */}
+                                            {(appState.positioningData.pillars || []).map((pillar) => {
+                                                const pillarValues = groupedValues[pillar.id] || [];
+                                                if (pillarValues.length === 0) return null;
+                                                
+                                                return (
+                                                    <div key={pillar.id} className="space-y-4">
+                                                        <div className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                                                            <h3 className="text-lg font-bold text-gray-800">
+                                                                {pillar.name || `Strategic Pillar ${pillar.id}`}
+                                                            </h3>
+                                                            {pillar.benefit && (
+                                                                <p className="text-sm text-gray-600 mt-1">{pillar.benefit}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className="space-y-4 ml-4">
+                                                            {pillarValues.map(({ item, index }) => (
+                                                                <RemovableTriple 
+                                                                    key={index}
+                                                                    index={index}
+                                                                    item={item}
+                                                                    onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
+                                                                    onRemove={(idx) => removeItem('values', idx)}
+                                                                    onGrade={(item, idx) => simulateAIGrading(item, idx)}
+                                                                    gradingResult={gradingState[index]}
+                                                                    onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
+                                                                    uniquenessResult={uniquenessResults[index]}
+                                                                    pillars={appState.positioningData.pillars}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </>
+                                    );
+                                })()}
+                                
                                 <button 
-                                    onClick={() => addItem('values', { val1: '', val2: '', val3: '' })}
+                                    onClick={() => addItem('values', { val1: '', val2: '', val3: '', pillarId: null })}
                                     className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
                                 >
                                     + Add Value Point
@@ -741,50 +1924,296 @@
                             </div>
                         </div>
 
-                        <div id="section-7" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">7. Relevant Trends</h2>
+                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">4. Relevant Trends</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What macro trends create urgency for our solution *right now*?</p>
                             <p className="text-gray-600 mb-6">Guidance: Tying your solution to an undeniable trend creates urgency.</p>
                             <div className="space-y-6">
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 1</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend aligns with and enhances your product"
                                         value={appState.positioningData.trend1_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend1_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend1_desc, 0)}
+                                            disabled={trendAnalysisResults[0]?.isAnalyzing || !appState.positioningData.trend1_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[0]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[0] && !trendAnalysisResults[0].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[0].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[0].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[0].results && trendAnalysisResults[0].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[0].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 2</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend makes your product more appealing"
                                         value={appState.positioningData.trend2_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend2_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend2_desc, 1)}
+                                            disabled={trendAnalysisResults[1]?.isAnalyzing || !appState.positioningData.trend2_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[1]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[1] && !trendAnalysisResults[1].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[1].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[1].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[1].results && trendAnalysisResults[1].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[1].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 3 (Optional)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend creates urgency for your product"
                                         value={appState.positioningData.trend3_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend3_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend3_desc, 2)}
+                                            disabled={trendAnalysisResults[2]?.isAnalyzing || !appState.positioningData.trend3_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[2]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[2] && !trendAnalysisResults[2].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[2].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[2].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[2].results && trendAnalysisResults[2].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[2].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">Industry Trend 4 (Optional)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="2" 
                                         placeholder="How this trend impacts the need for your product"
                                         value={appState.positioningData.trend4_desc || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend4_desc: e.target.value } }))}
                                     />
+                                    <div className="mt-2 space-y-3">
+                                        <button 
+                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
+                                            onClick={() => analyzeTrend(appState.positioningData.trend4_desc, 3)}
+                                            disabled={trendAnalysisResults[3]?.isAnalyzing || !appState.positioningData.trend4_desc?.trim()}
+                                        >
+                                            {trendAnalysisResults[3]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
+                                        </button>
+                                        
+                                        {trendAnalysisResults[3] && !trendAnalysisResults[3].isAnalyzing && (
+                                            <div className="bg-white p-3 rounded-md border border-gray-300">
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
+                                                </div>
+                                                {trendAnalysisResults[3].error ? (
+                                                    <div className="text-sm text-red-600">
+                                                        {trendAnalysisResults[3].error}
+                                                    </div>
+                                                ) : trendAnalysisResults[3].results && trendAnalysisResults[3].results.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {trendAnalysisResults[3].results.slice(0, 3).map((result, idx) => (
+                                                            <div key={idx} className="text-sm text-gray-600">
+                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                                    {result.title}
+                                                                </a>
+                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-red-600">
+                                                        No strong evidence found for this trend. Consider rephrasing.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">5. Strategic Pillars</h2>
+                            <p className="text-gray-600 mb-6">Organize your value propositions under strategic pillars to create a coherent narrative. Each pillar represents a core benefit theme that groups related value propositions.</p>
+                            <div className="space-y-4">
+                                {(appState.positioningData.pillars || []).map((pillar, index) => (
+                                    <div key={pillar.id} className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-grow space-y-3">
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                                        Pillar Name
+                                                    </label>
+                                                    <input 
+                                                        type="text" 
+                                                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                                                        placeholder="Example: Enterprise-Grade Security"
+                                                        value={pillar.name || ''}
+                                                        onChange={(e) => {
+                                                            const newPillars = [...(appState.positioningData.pillars || [])];
+                                                            newPillars[index] = { ...newPillars[index], name: e.target.value };
+                                                            setAppState(prev => ({
+                                                                ...prev,
+                                                                positioningData: { ...prev.positioningData, pillars: newPillars }
+                                                            }));
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                                        Benefit Statement
+                                                    </label>
+                                                    <textarea 
+                                                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                                                        rows="2"
+                                                        placeholder="Example: Ensures your data meets the highest security standards without slowing down innovation"
+                                                        value={pillar.benefit || ''}
+                                                        onChange={(e) => {
+                                                            const newPillars = [...(appState.positioningData.pillars || [])];
+                                                            newPillars[index] = { ...newPillars[index], benefit: e.target.value };
+                                                            setAppState(prev => ({
+                                                                ...prev,
+                                                                positioningData: { ...prev.positioningData, pillars: newPillars }
+                                                            }));
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {(appState.positioningData.pillars || []).length > 1 && (
+                                                <button 
+                                                    onClick={() => {
+                                                        const newPillars = appState.positioningData.pillars.filter((_, i) => i !== index);
+                                                        // Reset pillarId for any values that were assigned to this pillar
+                                                        const newValues = appState.positioningData.values.map(val => 
+                                                            val.pillarId === pillar.id ? { ...val, pillarId: null } : val
+                                                        );
+                                                        setAppState(prev => ({
+                                                            ...prev,
+                                                            positioningData: { 
+                                                                ...prev.positioningData, 
+                                                                pillars: newPillars,
+                                                                values: newValues
+                                                            }
+                                                        }));
+                                                    }}
+                                                    className="ml-3 text-red-500 hover:text-red-700 font-bold text-lg"
+                                                >
+                                                    ×
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="flex space-x-3">
+                                    <button 
+                                        onClick={handleGeneratePillars}
+                                        className="text-sm bg-scale-blue text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90"
+                                    >
+                                        🤖 Generate Strategic Pillars
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            const maxId = Math.max(0, ...(appState.positioningData.pillars || []).map(p => p.id));
+                                            const newPillar = { id: maxId + 1, name: '', benefit: '' };
+                                            setAppState(prev => ({
+                                                ...prev,
+                                                positioningData: {
+                                                    ...prev.positioningData,
+                                                    pillars: [...(prev.positioningData.pillars || []), newPillar]
+                                                }
+                                            }));
+                                        }}
+                                        className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
+                                    >
+                                        + Add Strategic Pillar
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -810,6 +2239,88 @@
                         appState={appState}
                         filename="positioning-blueprint"
                     />
+                    
+                    <PillarGenerationModal 
+                        isOpen={pillarGenModalOpen}
+                        onClose={() => setPillarGenModalOpen(false)}
+                        pillarGenState={pillarGenState}
+                        onGeneratePillars={handleGeneratePillars}
+                        onAcceptPillar={handleAcceptPillar}
+                        onRefinePillar={handleRefinePillar}
+                        onRefinementInputChange={(pillarId, value) => {
+                            setPillarGenState(prev => ({
+                                ...prev,
+                                refinementInputs: { ...prev.refinementInputs, [pillarId]: value }
+                            }));
+                        }}
+                    />
+                    
+                    <JTBDModal
+                        isOpen={jtbdModalOpen}
+                        onClose={() => setJtbdModalOpen(false)}
+                        analysisData={jtbdAnalysisData}
+                        setAnalysisData={setJtbdAnalysisData}
+                        onSave={() => {
+                            // Format the structured JTBD analysis
+                            const structuredJTBD = `**STRUCTURED JTBD ANALYSIS (B2B/ENTERPRISE)**
+
+**1. Context (Business Situation):**
+${jtbdAnalysisData.context}
+
+**2. Struggling Moments (Operational Breakdowns):**
+${jtbdAnalysisData.strugglingMoments}
+
+**3. Pushes & Pulls (Change Forces):**
+${jtbdAnalysisData.pushesPulls}
+
+**4. Anxieties & Habits (Change Resistance):**
+${jtbdAnalysisData.anxietiesHabits}
+
+**5. Desired Outcomes (Business Goals & Metrics):**
+${jtbdAnalysisData.desiredOutcomes}
+
+**6. Basic Quality (Table Stakes Requirements):**
+${jtbdAnalysisData.basicQuality}
+
+**7. Hiring Criteria (Vendor Selection):**
+${jtbdAnalysisData.hiringCriteria}
+
+**8. Firing Criteria (Deal Breakers):**
+${jtbdAnalysisData.firingCriteria}
+
+**9. Key Trade-offs (Acceptable Compromises):**
+${jtbdAnalysisData.keyTradeoffs}
+
+---
+*Analysis generated using bottom-up breadcrumb approach with enterprise context*`;
+
+                            // Update the original Common Needs field
+                            setAppState(prev => ({
+                                ...prev,
+                                positioningData: {
+                                    ...prev.positioningData,
+                                    icp_common_needs: structuredJTBD
+                                }
+                            }));
+                            
+                            // Close the modal
+                            setJtbdModalOpen(false);
+                            
+                            // Reset analysis data
+                            setJtbdAnalysisData({
+                                originalText: '',
+                                context: '',
+                                strugglingMoments: '',
+                                pushesPulls: '',
+                                anxietiesHabits: '',
+                                desiredOutcomes: '',
+                                basicQuality: '',
+                                hiringCriteria: '',
+                                firingCriteria: '',
+                                keyTradeoffs: ''
+                            });
+                        }}
+                    />
                 </div>
             );
         };
@@ -817,6 +2328,43 @@
         // CategoryDesignTool Component
         const CategoryDesignTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+            const [showSuggestions, setShowSuggestions] = useState(false);
+            const [isLoadingNames, setIsLoadingNames] = useState(false);
+            const [suggestedNames, setSuggestedNames] = useState([]);
+            
+            // Simulate AI API call for category name generation
+            const simulateAIBrainstorming = async (context) => {
+                // Construct prompt based on strategic inputs
+                const { icpSummary, valueProps, fromStatement, toStatement } = context;
+                
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Generate contextually relevant names based on inputs
+                // In a real implementation, this would call an AI API
+                const baseNames = [
+                    'Revenue Process Automation',
+                    'Predictive Market-Fit', 
+                    'Continuous Value Alignment',
+                    'Intelligent Growth Operations',
+                    'Adaptive Business Intelligence',
+                    'Strategic Orchestration Platform'
+                ];
+                
+                // If we have good context, return more tailored names
+                if (fromStatement && toStatement) {
+                    return baseNames.slice(0, 5);
+                }
+                
+                // Fallback to generic names if context is limited
+                return [
+                    'Digital Transformation Platform',
+                    'Business Intelligence Suite',
+                    'Operational Excellence System',
+                    'Market Innovation Engine',
+                    'Growth Acceleration Framework'
+                ];
+            };
 
             const handleExport = () => {
                 const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
@@ -826,10 +2374,10 @@
                 summary += `- ICP Summary: ${appState.positioningData.icp_summary || 'N/A'}\n`;
                 summary += `- Unique Value: ${appState.positioningData.values ? appState.positioningData.values.map(v => v.val2).join('; ') : 'N/A'}\n\n`;
 
-                summary += `## 8. The Point of View (From/To)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
-                summary += formatSection('9. The New Opportunity', appState.categoryData['new-opportunity']);
-                summary += `## 10. Category Name & Definition\n- Name: ${appState.categoryData['category-name'] || 'N/A'}\n- Definition: ${appState.categoryData['category-definition'] || 'N/A'}\n\n`;
-                summary += formatSection('11. The Manifesto', appState.categoryData['manifesto']);
+                summary += `## 5. The Point of View (From/To)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
+                summary += formatSection('6. The New Opportunity', appState.categoryData['new-opportunity']);
+                summary += `## 7. Category Name & Definition\n- Name: ${appState.categoryData['category-name'] || 'N/A'}\n- Definition: ${appState.categoryData['category-definition'] || 'N/A'}\n\n`;
+                summary += formatSection('8. The Manifesto', appState.categoryData['manifesto']);
 
                 setExportModal({ isOpen: true, content: summary, title: 'Category Design Summary' });
             };
@@ -867,10 +2415,10 @@
                                 <div className="bg-white p-4 rounded-lg shadow-md">
                                     <h3 className="font-bold scale-green-text mb-2 text-lg">Sections</h3>
                                     <ul className="space-y-1">
-                                        <li><a href="#section-8" className="nav-link block p-2 rounded text-gray-700 font-semibold">8. The Point of View</a></li>
-                                        <li><a href="#section-9" className="nav-link block p-2 rounded text-gray-700 font-semibold">9. The New Opportunity</a></li>
-                                        <li><a href="#section-10" className="nav-link block p-2 rounded text-gray-700 font-semibold">10. Category Name</a></li>
-                                        <li><a href="#section-11" className="nav-link block p-2 rounded text-gray-700 font-semibold">11. The Manifesto</a></li>
+                                        <li><a href="#section-5" className="nav-link block p-2 rounded text-gray-700 font-semibold">5. The Point of View</a></li>
+                                        <li><a href="#section-6" className="nav-link block p-2 rounded text-gray-700 font-semibold">6. The New Opportunity</a></li>
+                                        <li><a href="#section-7" className="nav-link block p-2 rounded text-gray-700 font-semibold">7. Category Name</a></li>
+                                        <li><a href="#section-8" className="nav-link block p-2 rounded text-gray-700 font-semibold">8. The Manifesto</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
                                         <button onClick={() => onNavigate('positioning')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
@@ -903,14 +2451,14 @@
                             </div>
                         </div>
 
-                        <div id="section-8" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">8. The Point of View (The "From/To" Shift)</h2>
+                        <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">5. The Point of View (The "From/To" Shift)</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is the old, broken way of thinking, and what is our new, better way?</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block font-bold text-gray-700">From (The Old, Broken Way)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="4" 
                                         placeholder="Example: Business transformation is a series of slow, high-risk, episodic projects."
                                         value={appState.categoryData['from-statement'] || ''}
@@ -920,7 +2468,7 @@
                                 <div>
                                     <label className="block font-bold text-gray-700">To (Our New, Better Way)</label>
                                     <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         rows="4" 
                                         placeholder="Example: Operational excellence is a continuous, automated, data-driven business function."
                                         value={appState.categoryData['to-statement'] || ''}
@@ -930,11 +2478,11 @@
                             </div>
                         </div>
 
-                        <div id="section-9" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">9. The New Opportunity</h2>
+                        <div id="section-6" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">6. The New Opportunity</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What becomes possible for businesses that adopt our point of view?</p>
                             <textarea 
-                                className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                 rows="4" 
                                 placeholder="Example: Businesses can now move beyond reactive, crisis-driven change and achieve continuous transformation..."
                                 value={appState.categoryData['new-opportunity'] || ''}
@@ -942,24 +2490,98 @@
                             />
                         </div>
 
-                        <div id="section-10" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">10. Category Name & Definition</h2>
+                        <div id="section-7" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">7. Category Name & Definition</h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block font-bold text-gray-700">Category Name</label>
-                                    <input 
-                                        type="text" 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
-                                        placeholder="Example: Continuous Transformation"
-                                        value={appState.categoryData['category-name'] || ''}
-                                        onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
-                                    />
+                                    <div className="flex gap-2 mt-1">
+                                        <input 
+                                            type="text" 
+                                            className="flex-1 p-2 border border-gray-300 rounded-md"
+                                            placeholder="Example: Continuous Transformation"
+                                            value={appState.categoryData['category-name'] || ''}
+                                            onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
+                                        />
+                                        <button 
+                                            className="px-4 py-2 text-white font-bold rounded-md transition-colors hover:opacity-90 disabled:opacity-50"
+                                            style={{backgroundColor: '#224f41'}}
+                                            onClick={async () => {
+                                                // Gather strategic inputs from appState
+                                                const icpSummary = appState.positioningData.icp_summary || '';
+                                                const valueProps = appState.positioningData.values 
+                                                    ? appState.positioningData.values
+                                                        .filter(v => v.val3)
+                                                        .map(v => v.val3)
+                                                    : [];
+                                                const fromStatement = appState.categoryData['from-statement'] || '';
+                                                const toStatement = appState.categoryData['to-statement'] || '';
+                                                
+                                                // Construct context for AI
+                                                const context = {
+                                                    icpSummary,
+                                                    valueProps,
+                                                    fromStatement,
+                                                    toStatement
+                                                };
+                                                
+                                                // Show loading state
+                                                setShowSuggestions(true);
+                                                setIsLoadingNames(true);
+                                                
+                                                try {
+                                                    // Simulate AI API call
+                                                    const names = await simulateAIBrainstorming(context);
+                                                    setSuggestedNames(names);
+                                                } catch (error) {
+                                                    console.error('Failed to generate names:', error);
+                                                    setSuggestedNames(['Error generating names']);
+                                                } finally {
+                                                    setIsLoadingNames(false);
+                                                }
+                                            }}
+                                            disabled={isLoadingNames}
+                                        >
+                                            {isLoadingNames ? 'Brainstorming...' : 'Brainstorm with AI'}
+                                        </button>
+                                    </div>
+                                    {showSuggestions && (
+                                        <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                                            {isLoadingNames ? (
+                                                <p className="text-sm text-gray-600 italic">Analyzing your strategic context and generating category names...</p>
+                                            ) : (
+                                                <>
+                                                    <p className="text-sm font-medium text-gray-700 mb-2">Select a category name:</p>
+                                                    <div className="space-y-1">
+                                                        {suggestedNames.map((name, index) => (
+                                                    <button
+                                                        key={index}
+                                                        className="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors"
+                                                        onClick={() => {
+                                                            setAppState(prev => ({ 
+                                                                ...prev, 
+                                                                categoryData: { 
+                                                                    ...prev.categoryData, 
+                                                                    'category-name': name 
+                                                                } 
+                                                            }));
+                                                            setShowSuggestions(false);
+                                                        }}
+                                                    >
+                                                        {name}
+                                                    </button>
+                                                ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">One-Sentence Definition</label>
                                     <input 
                                         type="text" 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                         placeholder="Example: The practice of using AI to continuously analyze and optimize business processes in real-time."
                                         value={appState.categoryData['category-definition'] || ''}
                                         onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-definition': e.target.value } }))}
@@ -968,11 +2590,11 @@
                             </div>
                         </div>
 
-                        <div id="section-11" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">11. The Manifesto</h2>
+                        <div id="section-8" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">8. The Manifesto</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is our story?</p>
                             <textarea 
-                                className="w-full mt-1 p-2 border border-gray-300 rounded-md" 
+                                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                                 rows="8" 
                                 placeholder="Enter your manifesto here..."
                                 value={appState.categoryData['manifesto'] || ''}
@@ -1025,8 +2647,9 @@
             return <div>{renderCurrentView()}</div>;
         };
 
-        // Render the app
-        ReactDOM.render(<App />, document.getElementById('root'));
+        // Render the app using React 18 createRoot API
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>

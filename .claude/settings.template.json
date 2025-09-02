@@ -3,9 +3,9 @@
   "description": "[PROJECT_DESCRIPTION]",
   "claude": {
     "contextFiles": [
-      ".ai-context/AI_CONTEXT.md",
+      ".aicontext/context.md",
       "docs/specifications/PRD.md",
-      ".ai-context/WORKFLOW_GUIDE.md",
+      ".aicontext/WORKFLOW_GUIDE.md",
       "docs/architecture/SLC_Principles.md"
     ],
     "persona": ".claude/persona.md",
