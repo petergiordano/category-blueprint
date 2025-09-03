@@ -16,7 +16,7 @@
     CURRENT ARCHITECTURE (1 file):
     - index.html (this file) - Complete SPA containing all functionality:
       * Home page with navigation cards
-      * Full Positioning Tool (Part 1)
+      * Full ICPDefinitionTool (Part 1)
       * Full Category Design Tool (Part 2)
       * Unified state management with localStorage persistence
       * Seamless navigation between all views
@@ -137,10 +137,11 @@
          * 
          * KEY COMPONENTS:
          * - HomeView: Landing page with navigation cards (replaces old index.html content)
-         * - PositioningTool: Complete Part 1 functionality (replaces positioning.html)
-         * - CategoryDesignTool: Complete Part 2 functionality (replaces category_design.html)
+         * - SegmentFoundationTool: Placeholder for Part 1
+         * - ICPDefinitionTool: Complete Part 2 functionality (replaces positioning.html)
+         * - CategoryDesignTool: Complete Part 3 functionality (replaces category_design.html)
          * - App: Main component that manages routing and global state
-         * 
+         * p
          * STATE MANAGEMENT:
          * - All form data is stored in a unified appState object
          * - State persists to localStorage automatically on changes
@@ -249,39 +250,16 @@
                 <div className="min-h-screen flex flex-col items-center justify-center">
                     <header className="text-center mb-12">
                         <h1 className="text-4xl md:text-5xl font-bold scale-green-text">Interactive GTM Blueprint Series</h1>
-                        <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">A hands-on workshop to define your market position and design your category. Select a module to begin.</p>
+                        <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">A guided, step-by-step workshop to define your market segment, ideal customer, and category.</p>
                     </header>
 
-                    <main className="w-full max-w-4xl">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div 
-                                onClick={() => onNavigate('positioning')}
-                                className="nav-card bg-white rounded-xl shadow-lg p-8 cursor-pointer text-left group"
-                            >
-                                <div className="mb-4">
-                                    <span className="scale-gold-bg scale-green-text text-xs font-bold font-work-sans px-3 py-1 rounded-full">Part 1</span>
-                                </div>
-                                <h2 className="text-2xl font-bold scale-green-text mb-2">ICP & Positioning Blueprint</h2>
-                                <p className="text-gray-600 mb-6">Define your ideal customer, analyze the market, and nail your unique value proposition to build a solid foundation for growth.</p>
-                                <div className="font-bold scale-green-text group-hover:scale-gold-text transition-colors">
-                                    Start Positioning Workshop →
-                                </div>
-                            </div>
-
-                            <div 
-                                onClick={() => onNavigate('category')}
-                                className="nav-card bg-white rounded-xl shadow-lg p-8 cursor-pointer text-left group"
-                            >
-                                <div className="mb-4">
-                                    <span className="scale-gold-bg scale-green-text text-xs font-bold font-work-sans px-3 py-1 rounded-full">Part 2</span>
-                                </div>
-                                <h2 className="text-2xl font-bold scale-green-text mb-2">Category Design Blueprint</h2>
-                                <p className="text-gray-600 mb-6">Use your positioning foundation to forge a new category, build a provocative market narrative, and establish yourself as the leader.</p>
-                                <div className="font-bold scale-green-text group-hover:scale-gold-text transition-colors">
-                                    Start Category Workshop →
-                                </div>
-                            </div>
-                        </div>
+                    <main className="w-full max-w-md text-center">
+                        <button 
+                            onClick={() => onNavigate('segment')}
+                            className="w-full scale-green-bg text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:bg-opacity-90 transition-transform transform hover:scale-105"
+                        >
+                            Start the Blueprint →
+                        </button>
                     </main>
 
                     <p className="text-sm text-gray-500 mt-8 text-center max-w-2xl mx-auto">
@@ -755,7 +733,7 @@
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-bold text-gray-700">AI Grade:</span>
                                 <span 
-                                    className={`text-lg font-bold px-2 py-1 rounded ${
+                                    className={`text-lg font-bold px-2 py-1 rounded ${ 
                                         gradingResult.score.startsWith('A') ? 'bg-green-100 text-green-800' :
                                         gradingResult.score.startsWith('B') ? 'bg-yellow-100 text-yellow-800' :
                                         'bg-red-100 text-red-800'
@@ -801,8 +779,34 @@
             </div>
         );
 
-        // PositioningTool Component
-        const PositioningTool = ({ appState, setAppState, onNavigate }) => {
+        // SegmentFoundationTool Component
+        const SegmentFoundationTool = ({ onNavigate }) => {
+            return (
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen pb-16">
+                    <header className="sticky-header">
+                        <div className="flex justify-between items-center py-3">
+                            <div className="flex items-center space-x-4">
+                                <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
+                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 1: Segment Foundation</h1>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <button onClick={() => onNavigate('icp')} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Continue to Part 2: ICP Definition →</button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="w-full mt-8">
+                        <div className="bg-white p-8 rounded-lg shadow-md">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">Define Your Target Market Segment</h2>
+                            <p className="text-gray-600 mb-6">This is a placeholder for the Segment Foundation tool. The detailed input fields and logic will be implemented in a future task (SEG-FEAT-001).</p>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        // ICPDefinitionTool Component
+        const ICPDefinitionTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [jtbdExpanded, setJtbdExpanded] = useState(false);
             const [customerValueExpanded, setCustomerValueExpanded] = useState(false);
@@ -1537,8 +1541,8 @@
                     <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
-                                <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
-                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 1: ICP & Positioning</h1>
+                                <button onClick={() => onNavigate('segment')} className="text-gray-600 hover:scale-gold-text">← Back to Segment Foundation</button>
+                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 2: ICP Definition</h1>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <button
@@ -1573,7 +1577,7 @@
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
                                         <button onClick={() => onNavigate('category')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
-                                            Continue to Part 2 →
+                                            Continue to Part 3: Category Design →
                                         </button>
                                     </div>
                                 </div>
@@ -2223,7 +2227,7 @@
                                 onClick={() => onNavigate('category')}
                                 className="scale-gold-bg text-white font-bold py-4 px-8 rounded-lg hover:bg-opacity-90 text-lg"
                             >
-                                Continue to Part 2: Category Design →
+                                Continue to Part 3: Category Design →
                             </button>
                         </div>
                                 </div>
@@ -2262,37 +2266,7 @@
                         setAnalysisData={setJtbdAnalysisData}
                         onSave={() => {
                             // Format the structured JTBD analysis
-                            const structuredJTBD = `**STRUCTURED JTBD ANALYSIS (B2B/ENTERPRISE)**
-
-**1. Context (Business Situation):**
-${jtbdAnalysisData.context}
-
-**2. Struggling Moments (Operational Breakdowns):**
-${jtbdAnalysisData.strugglingMoments}
-
-**3. Pushes & Pulls (Change Forces):**
-${jtbdAnalysisData.pushesPulls}
-
-**4. Anxieties & Habits (Change Resistance):**
-${jtbdAnalysisData.anxietiesHabits}
-
-**5. Desired Outcomes (Business Goals & Metrics):**
-${jtbdAnalysisData.desiredOutcomes}
-
-**6. Basic Quality (Table Stakes Requirements):**
-${jtbdAnalysisData.basicQuality}
-
-**7. Hiring Criteria (Vendor Selection):**
-${jtbdAnalysisData.hiringCriteria}
-
-**8. Firing Criteria (Deal Breakers):**
-${jtbdAnalysisData.firingCriteria}
-
-**9. Key Trade-offs (Acceptable Compromises):**
-${jtbdAnalysisData.keyTradeoffs}
-
----
-*Analysis generated using bottom-up breadcrumb approach with enterprise context*`;
+                            const structuredJTBD = `**STRUCTURED JTBD ANALYSIS (B2B/ENTERPRISE)**\n\n**1. Context (Business Situation):**\n${jtbdAnalysisData.context}\n\n**2. Struggling Moments (Operational Breakdowns):**\n${jtbdAnalysisData.strugglingMoments}\n\n**3. Pushes & Pulls (Change Forces):**\n${jtbdAnalysisData.pushesPulls}\n\n**4. Anxieties & Habits (Change Resistance):**\n${jtbdAnalysisData.anxietiesHabits}\n\n**5. Desired Outcomes (Business Goals & Metrics):**\n${jtbdAnalysisData.desiredOutcomes}\n\n**6. Basic Quality (Table Stakes Requirements):**\n${jtbdAnalysisData.basicQuality}\n\n**7. Hiring Criteria (Vendor Selection):**\n${jtbdAnalysisData.hiringCriteria}\n\n**8. Firing Criteria (Deal Breakers):**\n${jtbdAnalysisData.firingCriteria}\n\n**9. Key Trade-offs (Acceptable Compromises):**\n${jtbdAnalysisData.keyTradeoffs}\n\n---\n*Analysis generated using bottom-up breadcrumb approach with enterprise context*`;
 
                             // Update the original Common Needs field
                             setAppState(prev => ({
@@ -2344,7 +2318,7 @@ ${jtbdAnalysisData.keyTradeoffs}
                 // In a real implementation, this would call an AI API
                 const baseNames = [
                     'Revenue Process Automation',
-                    'Predictive Market-Fit', 
+                    'Predictive Market-Fit',
                     'Continuous Value Alignment',
                     'Intelligent Growth Operations',
                     'Adaptive Business Intelligence',
@@ -2374,7 +2348,7 @@ ${jtbdAnalysisData.keyTradeoffs}
                 summary += `- ICP Summary: ${appState.positioningData.icp_summary || 'N/A'}\n`;
                 summary += `- Unique Value: ${appState.positioningData.values ? appState.positioningData.values.map(v => v.val2).join('; ') : 'N/A'}\n\n`;
 
-                summary += `## 5. The Point of View (From/To)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
+                summary += `## 5. The Point of View (The "From/To" Shift)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
                 summary += formatSection('6. The New Opportunity', appState.categoryData['new-opportunity']);
                 summary += `## 7. Category Name & Definition\n- Name: ${appState.categoryData['category-name'] || 'N/A'}\n- Definition: ${appState.categoryData['category-definition'] || 'N/A'}\n\n`;
                 summary += formatSection('8. The Manifesto', appState.categoryData['manifesto']);
@@ -2387,8 +2361,8 @@ ${jtbdAnalysisData.keyTradeoffs}
                     <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
-                                <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
-                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 2: Category Design</h1>
+                                <button onClick={() => onNavigate('icp')} className="text-gray-600 hover:scale-gold-text">← Back to ICP Definition</button>
+                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 3: Category Design</h1>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <button
@@ -2421,8 +2395,8 @@ ${jtbdAnalysisData.keyTradeoffs}
                                         <li><a href="#section-8" className="nav-link block p-2 rounded text-gray-700 font-semibold">8. The Manifesto</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
-                                        <button onClick={() => onNavigate('positioning')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
-                                            ← Back to Part 1
+                                        <button onClick={() => onNavigate('icp')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
+                                            ← Back to Part 2: ICP Definition
                                         </button>
                                     </div>
                                 </div>
@@ -2558,12 +2532,12 @@ ${jtbdAnalysisData.keyTradeoffs}
                                                         key={index}
                                                         className="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors"
                                                         onClick={() => {
-                                                            setAppState(prev => ({ 
+                                                            setAppState(prev => ({
                                                                 ...prev, 
-                                                                categoryData: { 
+                                                                categoryData: {
                                                                     ...prev.categoryData, 
                                                                     'category-name': name 
-                                                                } 
+                                                                }
                                                             }));
                                                             setShowSuggestions(false);
                                                         }}
@@ -2635,8 +2609,10 @@ ${jtbdAnalysisData.keyTradeoffs}
 
             const renderCurrentView = () => {
                 switch (appState.currentView) {
-                    case 'positioning':
-                        return <PositioningTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                    case 'segment':
+                        return <SegmentFoundationTool onNavigate={navigate} />;
+                    case 'icp':
+                        return <ICPDefinitionTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'category':
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     default:
