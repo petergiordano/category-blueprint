@@ -3232,7 +3232,7 @@
 
                         <div className="text-center mt-12 pb-24">
                             <button 
-                                onClick={() => onNavigate('category')}
+                                onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
                                 className="scale-gold-bg text-white font-bold py-4 px-8 rounded-lg hover:bg-opacity-90 text-lg"
                             >
                                 Continue to Part 3: Category Design →
