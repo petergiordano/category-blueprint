@@ -10,9 +10,10 @@
 | 1.5     | 2025-09-03 | Gemini/Pete   | Added ICP-VIS-001 feature definition.                                    |
 | 1.6     | 2025-09-03 | Gemini/Pete   | Completed SEG-FEAT-007 and UX fix for Part 2 placeholder text.           |
 | 1.7     | 2025-09-03 | Gemini/Pete   | Completed SEG-TASK-001 and SEG-FEAT-001.                                 |
+| 1.8     | 2025-09-04 | Claude/Pete   | Completed ICP-REFACTOR-001 - removed redundant fields and added segment summary to Part 2. |
 
-**Version:** 1.7
-**Date:** 2025-09-03
+**Version:** 1.8
+**Date:** 2025-09-04
 **Status:** Approved for Implementation
 
 ## 1. Objective: The "Klarity" Mandate
@@ -70,7 +71,7 @@ This epic is governed by the following strategic decisions:
 
 ### Phase 3: Integrated AI Positioning Analysis
 * **Goal:** Merge the workshop tool's functionality with the new segment data structure inside the main SPA.
-* **`ICP-REFACTOR-001: Overhaul ICP Definition Page`**
+* **`ICP-REFACTOR-001: Overhaul ICP Definition Page`** ✅ **COMPLETE**
     * **Description:** A strategic refactor to remove redundant ICP fields from Part 2 and replace them with a read-only summary of the data from the Segment Foundation (Part 1).
 * **`POS-TASK-001: Integrate Simulator UI into Main App`**
     * **Description:** Refactor the UI and logic from `positioning2x2sim.html` into a new React component within the "Part 2 (ICP)" section of `index.html`.
