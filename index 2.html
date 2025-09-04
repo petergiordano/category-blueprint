@@ -783,25 +783,14 @@
         // SegmentFoundationTool Component
         const SegmentFoundationTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModalOpen, setExportModalOpen] = useState(false);
-            const [exportContent, setExportContent] = useState('');
             
-            // AI Draft State Variables
-            const [aiDraftLoading, setAiDraftLoading] = useState(false);
-            const [aiDraftsAvailable, setAiDraftsAvailable] = useState(false);
-            const [aiDraftError, setAiDraftError] = useState(null);
-            
-            // WTP AI Draft State Variables
-            const [wtpDraftLoading, setWtpDraftLoading] = useState(false);
-            const [wtpDraftsAvailable, setWtpDraftsAvailable] = useState(false);
-            const [wtpDraftError, setWtpDraftError] = useState(null);
-
             const handleReset = () => {
                 if (window.confirm('Are you sure you want to reset all segment data? This action cannot be undone.')) {
                     setAppState(prev => ({ ...prev, segmentData: {} }));
                 }
             };
-
-            const generateExportContent = () => {
+            
+            const handleExport = () => {
                 const formatSection = (title, fields) => {
                     let section = `## ${title}\n`;
                     fields.forEach(field => {
@@ -816,8 +805,8 @@
                 summary += formatSection('Jobs To Be Done', [
                     'Context',
                     'Struggling Moments', 
-                    'Pushes & Pulls',
-                    'Anxieties & Habits',
+                    'Pushes',
+                    'Anxieties',
                     'Desired Outcomes',
                     'Basic Quality (Table Stakes)',
                     'Hiring Criteria',
@@ -841,136 +830,10 @@
                     'Market Reference Points'
                 ]);
                 
+                setExportModalOpen(true);
                 return summary;
             };
             
-            const handleExport = () => {
-                const content = generateExportContent();
-                setExportContent(content);
-                setExportModalOpen(true);
-            };
-            
-            // AI Customer Value Generation Handler
-            const handleGenerateCustomerValue = async () => {
-                setAiDraftLoading(true);
-                setAiDraftError(null);
-                
-                try {
-                    const jtbdFields = ['Context', 'Struggling Moments', 'Pushes & Pulls', 'Anxieties & Habits', 'Desired Outcomes', 'Basic Quality (Table Stakes)', 'Hiring Criteria', 'Firing Criteria', 'Key Trade-offs'];
-                    const filledFields = jtbdFields.filter(field => appState.segmentData[field]?.trim());
-                    
-                    if (filledFields.length < 3) {
-                        setAiDraftError('Please complete at least 3 Jobs-to-be-Done fields before using the AI assistant.');
-                        setAiDraftLoading(false);
-                        return;
-                    }
-                    
-                    const response = await fetch('/api/draft-customer-value', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            jtbdData: appState.segmentData
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`API call failed: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    
-                    if (data.success && data.drafts) {
-                        // Update segmentData with AI-generated drafts
-                        setAppState(prev => ({
-                            ...prev,
-                            segmentData: {
-                                ...prev.segmentData,
-                                'Table Stakes': data.drafts['Table Stakes'],
-                                'Functional Value': data.drafts['Functional Value'],
-                                'Ease of Doing Business': data.drafts['Ease of Doing Business'],
-                                'Individual Value': data.drafts['Individual Value'],
-                                'Aspirational Value': data.drafts['Aspirational Value']
-                            }
-                        }));
-                        
-                        setAiDraftsAvailable(true);
-                    } else {
-                        throw new Error(data.error || 'AI generation failed');
-                    }
-                } catch (error) {
-                    console.error('AI Customer Value Generation Error:', error);
-                    setAiDraftError(error.message || 'AI assistant is currently unavailable. Please try again later.');
-                }
-                
-                setAiDraftLoading(false);
-            };
-            
-            // AI WTP Generation Handler
-            const handleGenerateWTP = async () => {
-                setWtpDraftLoading(true);
-                setWtpDraftError(null);
-                
-                try {
-                    const customerValueFields = ['Table Stakes', 'Functional Value', 'Ease of Doing Business', 'Individual Value', 'Aspirational Value'];
-                    const hasCustomerValue = customerValueFields.some(field => appState.segmentData[field]?.trim());
-                    
-                    if (!hasCustomerValue) {
-                        setWtpDraftError('Please complete the Customer Value section first before generating WTP drivers.');
-                        setWtpDraftLoading(false);
-                        return;
-                    }
-                    
-                    const response = await fetch('/api/draft-wtp-value', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            jtbdData: appState.segmentData,
-                            customerValueData: {
-                                'Table Stakes': appState.segmentData['Table Stakes'],
-                                'Functional Value': appState.segmentData['Functional Value'],
-                                'Ease of Doing Business': appState.segmentData['Ease of Doing Business'],
-                                'Individual Value': appState.segmentData['Individual Value'],
-                                'Aspirational Value': appState.segmentData['Aspirational Value']
-                            }
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`API call failed: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    
-                    if (data.success && data.drafts) {
-                        // Update segmentData with AI-generated WTP drafts
-                        setAppState(prev => ({
-                            ...prev,
-                            segmentData: {
-                                ...prev.segmentData,
-                                'Ability to Pay': data.drafts['Ability to Pay'],
-                                'Economic Justification': data.drafts['Economic Justification'],
-                                'Relative Value vs. Alternatives': data.drafts['Relative Value vs. Alternatives'],
-                                'Risk': data.drafts['Risk'],
-                                'Market Reference Points': data.drafts['Market Reference Points']
-                            }
-                        }));
-                        
-                        setWtpDraftsAvailable(true);
-                    } else {
-                        throw new Error(data.error || 'AI generation failed');
-                    }
-                } catch (error) {
-                    console.error('AI WTP Generation Error:', error);
-                    setWtpDraftError(error.message || 'AI assistant is currently unavailable. Please try again later.');
-                }
-                
-                setWtpDraftLoading(false);
-            };
-
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen pb-16">
                     <header className="sticky-header">
@@ -981,8 +844,10 @@
                             </div>
                             <div className="flex items-center space-x-2">
                                 <button onClick={handleReset} className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Reset</button>
-                                <button onClick={handleExport} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 mr-2">Export</button>
-                                <button onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Continue to Part 2: ICP Definition →</button>
+                                <button onClick={() => {
+                                    const summary = handleExport();
+                                }} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 mr-2">Export</button>
+                                <button onClick={() => onNavigate('icp')} className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Continue to Part 2: ICP Definition →</button>
                             </div>
                         </div>
                     </header>
@@ -993,13 +858,12 @@
                                 <div className="bg-white p-4 rounded-lg shadow-md">
                                     <h3 className="font-bold scale-green-text mb-2 text-lg">Sections</h3>
                                     <ul className="space-y-1">
-                                        <li><a href="#segment-definition-section" className="nav-link block p-2 rounded text-gray-700 font-semibold">0. How Segments are Designed</a></li>
                                         <li><a href="#jtbd-section" className="nav-link block p-2 rounded text-gray-700 font-semibold">1. Jobs To Be Done</a></li>
                                         <li><a href="#value-section" className="nav-link block p-2 rounded text-gray-700 font-semibold">2. Customer Value</a></li>
                                         <li><a href="#wtp-section" className="nav-link block p-2 rounded text-gray-700 font-semibold">3. Willingness to Pay</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
-                                        <button onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
+                                        <button onClick={() => onNavigate('icp')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
                                             Continue to Part 2: ICP Definition →
                                         </button>
                                     </div>
@@ -1009,7 +873,7 @@
                             <main className="w-full lg:w-3/4">
                                 <div className="space-y-8">
                         {/* Market Segment Definition Header */}
-                        <div id="segment-definition-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <div className="bg-white p-8 rounded-lg shadow-md">
                             <div className="text-center mb-8">
                                 <p className="text-lg text-gray-700 mb-8 max-w-4xl mx-auto">
                                     A true market segment is composed of customers who share a common Job to be Done, 
@@ -1134,14 +998,14 @@
                                 </div>
 
                                 <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Pushes & Pulls</label>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Pushes</label>
                                     <p className="text-gray-600 text-sm mb-3">Internal and external forces moving them toward or away from change.</p>
                                     <textarea
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         rows="3"
-                                        value={appState.segmentData['Pushes & Pulls'] || ''}
+                                        value={appState.segmentData['Pushes'] || ''}
                                         onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Pushes & Pulls': e.target.value };
+                                            const newSegmentData = { ...appState.segmentData, 'Pushes': e.target.value };
                                             setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
                                         }}
                                         placeholder="CFO pressure to modernize systems vs. IT reluctance to add new vendors."
@@ -1149,14 +1013,14 @@
                                 </div>
 
                                 <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Anxieties & Habits</label>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Anxieties</label>
                                     <p className="text-gray-600 text-sm mb-3">Concerns about adopting something new, and inertia with current processes/tools.</p>
                                     <textarea
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         rows="3"
-                                        value={appState.segmentData['Anxieties & Habits'] || ''}
+                                        value={appState.segmentData['Anxieties'] || ''}
                                         onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Anxieties & Habits': e.target.value };
+                                            const newSegmentData = { ...appState.segmentData, 'Anxieties': e.target.value };
                                             setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
                                         }}
                                         placeholder="Fear of migration failure; comfort with spreadsheets."
@@ -1165,7 +1029,7 @@
 
                                 <div>
                                     <label className="block text-lg font-semibold text-gray-800 mb-2">Desired Outcomes</label>
-                                    <p className="text-gray-600 text-sm mb-3">We will refine this outcome into specific types of value in the **Customer Value** section</p>
+                                    <p className="text-gray-600 text-sm mb-3">Business goals and success metrics they want to achieve.</p>
                                     <textarea
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         rows="3"
@@ -1252,375 +1116,181 @@
                                 </p>
                             </div>
                             
-                            {/* AI Assistant State: Before Analysis */}
-                            {!aiDraftsAvailable && !aiDraftLoading && (
-                                <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <div className="flex items-start space-x-4">
-                                        <div className="flex-shrink-0">
-                                            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                                <span className="text-white font-bold text-sm">AI</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-semibold text-blue-900 mb-2">AI Customer Value Drafter</h3>
-                                            <p className="text-blue-700 mb-4">Let AI analyze your Jobs-to-be-Done insights and draft Customer Value propositions tailored to your segment. You can edit all AI-generated content afterward.</p>
-                                            <button 
-                                                onClick={handleGenerateCustomerValue}
-                                                className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
-                                            >
-                                                Analyze JTBD & Draft Customer Value
-                                            </button>
-                                            <p className="text-blue-600 text-sm mt-2">Requires at least 3 completed Jobs-to-be-Done fields</p>
-                                        </div>
-                                    </div>
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Table Stakes</label>
+                                    <p className="text-gray-600 text-sm mb-3">The non-negotiables for credibility. If you don't have them, you're out. These are compliance, security, reliability, and integration standards every enterprise expects.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Table Stakes'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Table Stakes': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="SOC2 certification, ERP integration, 99.9% uptime SLAs."
+                                    />
                                 </div>
-                            )}
-                            
-                            {/* AI Assistant State: Loading */}
-                            {aiDraftLoading && (
-                                <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <div className="flex items-start space-x-4">
-                                        <div className="flex-shrink-0">
-                                            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                                <div className="animate-spin">
-                                                    <span className="text-white font-bold text-sm">⚡</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-semibold text-blue-900 mb-2">Analyzing Your Market Segment...</h3>
-                                            <div className="space-y-2 text-blue-700 text-sm">
-                                                <p>• Analyzing Jobs-to-be-Done context and pain points</p>
-                                                <p>• Researching industry value proposition patterns</p>
-                                                <p>• Generating tailored Customer Value drafts</p>
-                                            </div>
-                                            <div className="mt-3 bg-blue-200 rounded-full h-2">
-                                                <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{width: '75%'}}></div>
-                                            </div>
-                                        </div>
-                                    </div>
+
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Functional Value</label>
+                                    <p className="text-gray-600 text-sm mb-3">The tangible, measurable business outcomes. This is the hard ROI—efficiency gains, cost savings, revenue growth, or risk mitigation.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Functional Value'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Functional Value': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="$500K OpEx savings validated by faster close cycles and error-rate reduction."
+                                    />
                                 </div>
-                            )}
-                            
-                            {/* AI Assistant State: Error */}
-                            {aiDraftError && (
-                                <div className="mb-8 p-6 bg-red-50 border border-red-200 rounded-lg">
-                                    <div className="flex items-start space-x-4">
-                                        <div className="flex-shrink-0">
-                                            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                                                <span className="text-white font-bold text-sm">!</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-semibold text-red-900 mb-2">AI Assistant Unavailable</h3>
-                                            <p className="text-red-700 mb-4">{aiDraftError}</p>
-                                            <button 
-                                                onClick={() => {
-                                                    setAiDraftError(null);
-                                                    handleGenerateCustomerValue();
-                                                }}
-                                                className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors mr-3"
-                                            >
-                                                Try Again
-                                            </button>
-                                            <button 
-                                                onClick={() => setAiDraftError(null)}
-                                                className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
-                                            >
-                                                Continue Manually
-                                            </button>
-                                        </div>
-                                    </div>
+
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Ease of Doing Business</label>
+                                    <p className="text-gray-600 text-sm mb-3">How simple you make adoption and use. Enterprise buyers weigh friction. A solution that's easier to buy, implement, and run often beats a "better" product.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Ease of Doing Business'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Ease of Doing Business': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="Fast implementation playbook, role-based onboarding, 24/7 enterprise support."
+                                    />
                                 </div>
-                            )}
-                            
-                            {/* Customer Value Fields - Always show if AI drafts available or manual mode */}
-                            {(aiDraftsAvailable || aiDraftError) && (
-                                <>
-                                    {aiDraftsAvailable && (
-                                        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                            <div className="flex items-center space-x-2">
-                                                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                                                    <span className="text-white font-bold text-xs">✓</span>
-                                                </div>
-                                                <p className="text-green-700 font-medium">AI drafts generated! Review and edit the content below as needed.</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                    
-                                    <div className="space-y-6">
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Table Stakes</label>
-                                            <p className="text-gray-600 text-sm mb-3">The non-negotiables for credibility. If you don't have them, you're out. These are compliance, security, reliability, and integration standards every enterprise expects.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Table Stakes'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Table Stakes': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="SOC2 certification, ERP integration, 99.9% uptime SLAs."
-                                            />
-                                        </div>
 
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Functional Value</label>
-                                            <p className="text-gray-600 text-sm mb-3">The tangible, measurable business outcomes. This is the hard ROI—efficiency gains, cost savings, revenue growth, or risk mitigation.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Functional Value'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Functional Value': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="\$500K OpEx savings validated by faster close cycles and error-rate reduction."
-                                            />
-                                        </div>
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Individual Value</label>
+                                    <p className="text-gray-600 text-sm mb-3">What matters to each stakeholder in the buying group. Individual Value addresses what each one personally gains—status, confidence, workload relief, or career upside.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Individual Value'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Individual Value': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="CFO is seen as innovator; IT leader feels secure in system stability; end users save hours of manual work."
+                                    />
+                                </div>
 
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Ease of Doing Business</label>
-                                            <p className="text-gray-600 text-sm mb-3">How simple you make adoption and use. Enterprise buyers weigh friction. A solution that's easier to buy, implement, and run often beats a "better" product.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Ease of Doing Business'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Ease of Doing Business': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="Fast implementation playbook, role-based onboarding, 24/7 enterprise support."
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Individual Value</label>
-                                            <p className="text-gray-600 text-sm mb-3">What matters to each stakeholder in the buying group. Individual Value addresses what each one personally gains—status, confidence, workload relief, or career upside.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Individual Value'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Individual Value': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="CFO is seen as innovator; IT leader feels secure in system stability; end users save hours of manual work."
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Aspirational Value</label>
-                                            <p className="text-gray-600 text-sm mb-3">Alignment with vision and purpose. Higher-order motivations that make a vendor strategic.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Aspirational Value'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Aspirational Value': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="Supports ESG reporting goals; positions company as a digital leader; signals innovation to board and investors."
-                                            />
-                                        </div>
-                                    </div>
-                                </>
-                            )}
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Aspirational Value</label>
+                                    <p className="text-gray-600 text-sm mb-3">Alignment with vision and purpose. Higher-order motivations that make a vendor strategic.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Aspirational Value'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Aspirational Value': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="Supports ESG reporting goals; positions company as a digital leader; signals innovation to board and investors."
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* Willingness to Pay Section */}
                         <div id="wtp-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-6">Willingness to Pay</h2>
-                            
-                            {/* Pre-analysis State: Show button when WTP data is empty */}
-                            {!wtpDraftsAvailable && !wtpDraftLoading && !wtpDraftError && (
-                                <div className="text-center py-12">
-                                    <div className="mb-6">
-                                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <span className="text-2xl">💰</span>
-                                        </div>
-                                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Ready to Draft WTP Drivers</h3>
-                                        <p className="text-gray-600 max-w-2xl mx-auto">
-                                            I'll analyze your refined Customer Value propositions alongside your JTBD context to generate contextual Willingness to Pay drivers with industry pricing intelligence.
-                                        </p>
-                                    </div>
-                                    <button
-                                        onClick={handleGenerateWTP}
-                                        disabled={wtpDraftLoading}
-                                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <span className="mr-2">🧠</span>
-                                        Analyze Value & Draft WTP Drivers
-                                    </button>
-                                    <p className="text-sm text-gray-500 mt-3">
-                                        Requires completed JTBD and Customer Value sections
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Ability to Pay</label>
+                                    <p className="text-gray-600 text-sm mb-3">Whether the customer has budget and capacity to spend. Even high-value solutions fail without available budget or a way to fund them.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Ability to Pay'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Ability to Pay': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="Line item already approved in FY25 budget for compliance automation."
+                                    />
+                                </div>
+
+                                {/* Golden Thread: Customer Value → WTP (Functional) */}
+                                <div className="mb-4 p-3 bg-gray-50 border-l-4 border-blue-500 rounded-r-lg">
+                                    <p className="text-sm font-medium text-blue-700 mb-1">Source: Functional Value</p>
+                                    <p className="text-sm text-gray-600 italic">
+                                        {appState.segmentData['Functional Value'] || 'No content yet...'}
                                     </p>
                                 </div>
-                            )}
 
-                            {/* Loading State */}
-                            {wtpDraftLoading && (
-                                <div className="text-center py-12">
-                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600 mb-4"></div>
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Generating WTP Analysis...</h3>
-                                    <p className="text-gray-600">Analyzing pricing intelligence and market benchmarks</p>
-                                    <div className="mt-4 bg-gray-50 rounded-lg p-4 max-w-md mx-auto">
-                                        <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-                                            <span className="animate-pulse">🔍 Researching market pricing data...</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Error State */}
-                            {wtpDraftError && (
-                                <div className="text-center py-12">
-                                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <span className="text-2xl">⚠️</span>
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Generation Failed</h3>
-                                    <p className="text-gray-600 mb-4">{wtpDraftError}</p>
-                                    <button
-                                        onClick={handleGenerateWTP}
-                                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 mr-3"
-                                    >
-                                        Try Again
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setWtpDraftError(null);
-                                            setWtpDraftsAvailable(false);
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Economic Justification</label>
+                                    <p className="text-gray-600 text-sm mb-3">Whether the ROI and payback case makes financial sense. Customers want proof the investment will pay for itself within an acceptable time horizon.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Economic Justification'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Economic Justification': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
                                         }}
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                                    >
-                                        Fill Manually
-                                    </button>
+                                        placeholder="Pays for itself in under 12 months through $1M annual cost avoidance."
+                                    />
                                 </div>
-                            )}
 
-                            {/* Success State: Show AI-generated content in editable textareas */}
-                            {wtpDraftsAvailable && !wtpDraftLoading && (
-                                <>
-                                    {/* Success Header */}
-                                    <div className="mb-6">
-                                        <div className="flex items-center justify-center mb-4">
-                                            <div className="flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full">
-                                                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-2">
-                                                    <span className="text-white font-bold text-xs">✓</span>
-                                                </div>
-                                                <p className="text-green-700 font-medium">WTP drafts generated! Review and edit the content below as needed.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="space-y-6">
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Ability to Pay</label>
-                                            <p className="text-gray-600 text-sm mb-3">Whether the customer has budget and capacity to spend. Even high-value solutions fail without available budget or a way to fund them.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Ability to Pay'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Ability to Pay': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="Line item already approved in FY25 budget for compliance automation."
-                                            />
-                                        </div>
-
-                                        {/* Golden Thread: Customer Value → WTP (Functional) */}
-                                        <div className="mb-4 p-3 bg-gray-50 border-l-4 border-blue-500 rounded-r-lg">
-                                            <p className="text-sm font-medium text-blue-700 mb-1">Source: Functional Value</p>
-                                            <p className="text-sm text-gray-600 italic">
-                                                {appState.segmentData['Functional Value'] || 'No content yet...'}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Economic Justification</label>
-                                            <p className="text-gray-600 text-sm mb-3">Whether the ROI and payback case makes financial sense. Customers want proof the investment will pay for itself within an acceptable time horizon.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Economic Justification'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Economic Justification': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="Pays for itself in under 12 months through \$1M annual cost avoidance."
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Relative Value vs. Alternatives</label>
-                                            <p className="text-gray-600 text-sm mb-3">How your solution compares to competitors or the status quo. If your product delivers clearer, differentiated outcomes, willingness to pay rises.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Relative Value vs. Alternatives'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Relative Value vs. Alternatives': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="Automates 80% of manual work versus consultant-heavy models."
-                                            />
-                                        </div>
-
-                                        {/* Golden Thread: Customer Value → WTP (Ease) */}
-                                        <div className="mb-6 p-3 bg-gray-50 border-l-4 border-blue-500 rounded-r-lg">
-                                            <p className="text-sm font-medium text-blue-700 mb-1">Source: Ease of Doing Business</p>
-                                            <p className="text-sm text-gray-600 italic">
-                                                {appState.segmentData['Ease of Doing Business'] || 'No content yet...'}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Risk</label>
-                                            <p className="text-gray-600 text-sm mb-3">How much risk or friction they see in making the change. Higher risk perception or switching pain lowers willingness to pay; clear mitigation raises it.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Risk'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Risk': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="Migration takes days, not months; vendor assumes implementation risk."
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-lg font-semibold text-gray-800 mb-2">Market Reference Points</label>
-                                            <p className="text-gray-600 text-sm mb-3">The pricing anchors customers bring from prior spend or competitors. Buyers rarely assess value in a vacuum; they benchmark against what "similar" tools cost.</p>
-                                            <textarea
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                rows="3"
-                                                value={appState.segmentData['Market Reference Points'] || ''}
-                                                onChange={(e) => {
-                                                    const newSegmentData = { ...appState.segmentData, 'Market Reference Points': e.target.value };
-                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                }}
-                                                placeholder="Analytics platforms in this space usually run $100K–$150K annually."
-                                            />
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Relative Value vs. Alternatives</label>
+                                    <p className="text-gray-600 text-sm mb-3">How your solution compares to competitors or the status quo. If your product delivers clearer, differentiated outcomes, willingness to pay rises.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Relative Value vs. Alternatives'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Relative Value vs. Alternatives': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="Automates 80% of manual work versus consultant-heavy models."
+                                    />
                                 </div>
-                            </main>
-                        </div>
-                    </div>
 
-                    <ExportModal 
-                        isOpen={exportModalOpen}
-                        onClose={() => setExportModalOpen(false)}
-                        title="Segment Foundation Summary"
-                        content={exportContent}
-                        appState={appState}
-                        filename="segment-foundation-export"
-                    />
+                                {/* Golden Thread: Customer Value → WTP (Ease) */}
+                                <div className="mb-4 p-3 bg-gray-50 border-l-4 border-blue-500 rounded-r-lg">
+                                    <p className="text-sm font-medium text-blue-700 mb-1">Source: Ease of Doing Business</p>
+                                    <p className="text-sm text-gray-600 italic">
+                                        {appState.segmentData['Ease of Doing Business'] || 'No content yet...'}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Risk</label>
+                                    <p className="text-gray-600 text-sm mb-3">How much risk or friction they see in making the change. Higher risk perception or switching pain lowers willingness to pay; clear mitigation raises it.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Risk'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Risk': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="Migration takes days, not months; vendor assumes implementation risk."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Market Reference Points</label>
+                                    <p className="text-gray-600 text-sm mb-3">The pricing anchors customers bring from prior spend or competitors. Buyers rarely assess value in a vacuum; they benchmark against what "similar" tools cost.</p>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        rows="3"
+                                        value={appState.segmentData['Market Reference Points'] || ''}
+                                        onChange={(e) => {
+                                            const newSegmentData = { ...appState.segmentData, 'Market Reference Points': e.target.value };
+                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                        }}
+                                        placeholder="Analytics platforms in this space usually run $100K–$150K annually."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </main>
                 </div>
             );
         };
@@ -2394,10 +2064,11 @@
                                         <li><a href="#section-3" className="nav-link block p-2 rounded text-gray-700 font-semibold">3. Value and Proof</a></li>
                                         <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Relevant Trends</a></li>
                                         <li><a href="#section-5" className="nav-link block p-2 rounded text-gray-700 font-semibold">5. Strategic Pillars</a></li>
+                                        <li><a href="#section-6" className="nav-link block p-2 rounded text-gray-700 font-semibold">6. Positioning Simulator</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
-                                        <button onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
-                                            Continue to Part 2: ICP Definition →
+                                        <button onClick={() => onNavigate('category')} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
+                                            Continue to Part 3: Category Design →
                                         </button>
                                     </div>
                                 </div>
@@ -3042,6 +2713,9 @@
                             </div>
                         </div>
 
+                        {/* Positioning Simulator Section */}
+                        <PositioningSimulator />
+
                         <div className="text-center mt-12 pb-24">
                             <button 
                                 onClick={() => onNavigate('category')}
@@ -3119,6 +2793,342 @@
             );
         };
 
+        // PositioningSimulator Component
+        const PositioningSimulator = () => {
+            const canvasRef = useRef(null);
+            const legendRef = useRef(null);
+            const [simulationState, setSimulationState] = useState('idle'); // 'idle', 'simulating', 'finished'
+            const [companies, setCompanies] = useState([]);
+            const [p5Instance, setP5Instance] = useState(null);
+            
+            // Demo personas data from positioning2x2sim.html
+            const demoPersonas = [
+                { 
+                    personaName: "Ideal Adopter", 
+                    attributes: [
+                        { name: "Unique A", type: 'unique', value: 9 }, 
+                        { name: "Unique B", type: 'unique', value: 8 },
+                        { name: "Common X", type: 'common', value: 5 }, 
+                        { name: "Common Y", type: 'common', value: 4 }
+                    ]
+                },
+                {
+                    personaName: "Status Quo Buyer",
+                    attributes: [
+                        { name: "Unique A", type: 'unique', value: 2 }, 
+                        { name: "Unique B", type: 'unique', value: 3 },
+                        { name: "Common X", type: 'common', value: 9 }, 
+                        { name: "Common Y", type: 'common', value: 8 }
+                    ]
+                },
+                {
+                    personaName: "Bargain Hunter",
+                    attributes: [
+                        { name: "Unique A", type: 'unique', value: 6 }, 
+                        { name: "Unique B", type: 'unique', value: 5 },
+                        { name: "Common X", type: 'common', value: 6 }, 
+                        { name: "Common Y", type: 'common', value: 7 }
+                    ]
+                },
+                {
+                    personaName: "Legacy Loyalist",
+                    attributes: [
+                        { name: "Unique A", type: 'unique', value: 1 }, 
+                        { name: "Unique B", type: 'unique', value: 1 },
+                        { name: "Common X", type: 'common', value: 10 }, 
+                        { name: "Common Y", type: 'common', value: 9 }
+                    ]
+                },
+                {
+                    personaName: "Indifferent Buyer",
+                    attributes: [
+                        { name: "Unique A", type: 'unique', value: 1 }, 
+                        { name: "Unique B", type: 'unique', value: 2 },
+                        { name: "Common X", type: 'common', value: 3 }, 
+                        { name: "Common Y", type: 'common', value: 4 }
+                    ]
+                }
+            ];
+
+            // Company class equivalent
+            class Company {
+                constructor(name, color) {
+                    this.name = name;
+                    this.color = color;
+                    this.attributes = [];
+                    this.visible = false;
+                    this.isIdeal = false;
+                }
+                
+                addAttribute(x, y, name, type) {
+                    this.attributes.push({x, y, name, type});
+                }
+                
+                display(p) {
+                    if (!this.visible) return;
+                    
+                    // Loop through each attribute of the company
+                    for (const attr of this.attributes) {
+                        // If the company is an ideal target, first draw a halo
+                        if(this.isIdeal) {
+                            p.fill(251, 191, 36, 150); // amber-400
+                            p.noStroke();
+                            p.ellipse(attr.x, attr.y, 16, 16);
+                        }
+                        
+                        // Then, draw the actual attribute dot on top
+                        p.fill(this.color);
+                        p.noStroke();
+                        p.ellipse(attr.x, attr.y, 10, 10);
+                    }
+                }
+            }
+
+            const startSimulation = () => {
+                setSimulationState('simulating');
+                
+                let companyIndex = 0;
+                const interval = setInterval(() => {
+                    if (companyIndex < companies.length) {
+                        setCompanies(prevCompanies => {
+                            const updatedCompanies = [...prevCompanies];
+                            updatedCompanies[companyIndex].visible = true;
+                            return updatedCompanies;
+                        });
+                        companyIndex++;
+                    } else {
+                        clearInterval(interval);
+                        // Analyze and highlight ideal companies
+                        setCompanies(prevCompanies => {
+                            return prevCompanies.map(company => {
+                                let uniqueValueScore = 0;
+                                let uniqueAttrCount = 0;
+
+                                for (const attr of company.attributes) {
+                                    if (attr.type === 'unique') {
+                                        uniqueAttrCount++;
+                                        if (attr.y < p5Instance.height / 2) {
+                                            uniqueValueScore++;
+                                        }
+                                    }
+                                }
+
+                                company.isIdeal = uniqueAttrCount > 0 && (uniqueValueScore / uniqueAttrCount) >= 0.5;
+                                return company;
+                            });
+                        });
+                        setSimulationState('finished');
+                    }
+                }, 600);
+            };
+
+            const resetSimulation = () => {
+                setSimulationState('idle');
+                // Reset companies from personas data
+                const newCompanies = createCompaniesFromPersonas();
+                setCompanies(newCompanies);
+            };
+
+            const createCompaniesFromPersonas = () => {
+                const companyColors = [
+                    [59, 130, 246], // blue
+                    [16, 185, 129], // green  
+                    [239, 68, 68], // red
+                    [139, 92, 246], // purple
+                    [245, 158, 11] // orange
+                ];
+                
+                return demoPersonas.map((persona, index) => {
+                    const company = new Company(persona.personaName, companyColors[index % companyColors.length]);
+                    persona.attributes.forEach(attr => {
+                        if (p5Instance) {
+                            const valueY = p5Instance.map(attr.value, 0, 10, p5Instance.height * 0.95, p5Instance.height * 0.05);
+                            const typeX = (attr.type === 'unique') ? 
+                                p5Instance.random(p5Instance.width * 0.55, p5Instance.width * 0.95) : 
+                                p5Instance.random(p5Instance.width * 0.05, p5Instance.width * 0.45);
+                            company.addAttribute(typeX, valueY, attr.name, attr.type);
+                        }
+                    });
+                    return company;
+                });
+            };
+
+            // Setup p5.js canvas
+            useEffect(() => {
+                if (typeof window.p5 === 'undefined') {
+                    // p5.js not loaded yet
+                    return;
+                }
+
+                const sketch = (p) => {
+                    p.setup = () => {
+                        const wrapper = canvasRef.current;
+                        if (!wrapper) return;
+                        
+                        let canvasWidth = wrapper.offsetWidth || 800;
+                        if (window.innerWidth < 768) {
+                            canvasWidth = window.innerWidth * 0.85;
+                        }
+                        const canvasHeight = canvasWidth * 0.75;
+                        
+                        const canvas = p.createCanvas(canvasWidth, canvasHeight);
+                        canvas.parent(canvasRef.current);
+                        p.frameRate(60);
+                        
+                        // Store p5 instance for other functions
+                        setP5Instance(p);
+                    };
+
+                    p.draw = () => {
+                        p.background(255);
+                        drawGrid(p);
+                        
+                        if (simulationState === 'finished') {
+                            highlightTargetZone(p);
+                        }
+
+                        for (const company of companies) {
+                            company.display(p);
+                        }
+                        
+                        drawLabels(p);
+                    };
+
+                    const drawGrid = (p) => {
+                        p.stroke(226, 232, 240); 
+                        p.strokeWeight(2);
+                        p.line(p.width / 2, 0, p.width / 2, p.height);
+                        p.line(0, p.height / 2, p.width, p.height / 2);
+                    };
+
+                    const drawLabels = (p) => {
+                        p.noStroke(); 
+                        p.fill(100, 116, 139); 
+                        p.textAlign(p.CENTER, p.CENTER); 
+                        p.textSize(16);
+                        
+                        p.push(); 
+                        p.translate(25, p.height / 4); 
+                        p.rotate(-p.HALF_PI);
+                        p.text("High Customer Value", 0, 0); 
+                        p.pop();
+                        
+                        p.push(); 
+                        p.translate(25, p.height * 3 / 4); 
+                        p.rotate(-p.HALF_PI);
+                        p.text("Low Customer Value", 0, 0); 
+                        p.pop();
+                        
+                        p.text("Common Attributes", p.width / 4, p.height - 20);
+                        p.text("Your Unique Attributes", p.width * 3 / 4, p.height - 20);
+                    };
+
+                    const highlightTargetZone = (p) => {
+                        p.fill(251, 191, 36, 20); // amber-400 with low opacity
+                        p.stroke(251, 191, 36, 100); 
+                        p.strokeWeight(2);
+                        p.rect(p.width / 2, 0, p.width / 2, p.height / 2);
+                    };
+                };
+
+                const p5sketch = new window.p5(sketch);
+                
+                // Initialize companies
+                setTimeout(() => {
+                    const initialCompanies = createCompaniesFromPersonas();
+                    setCompanies(initialCompanies);
+                }, 100);
+
+                return () => {
+                    p5sketch.remove();
+                };
+            }, []);
+
+            // Update companies when simulation state or p5Instance changes
+            useEffect(() => {
+                if (p5Instance && simulationState === 'idle') {
+                    const newCompanies = createCompaniesFromPersonas();
+                    setCompanies(newCompanies);
+                }
+            }, [simulationState, p5Instance]);
+
+            return (
+                <div id="section-6" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                    <h2 className="text-2xl font-bold scale-green-text mb-4">6. Positioning Simulator</h2>
+                    <p className="text-gray-600 mb-6">
+                        This simulation visualizes how different customer personas value your unique vs common attributes. 
+                        Look for the <span className="font-bold text-yellow-600">gold highlighted</span> companies—these are your ideal targets 
+                        who place the highest value on your unique features.
+                    </p>
+                    
+                    {/* Canvas and Legend Container */}
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div className="flex flex-col lg:flex-row gap-6">
+                            {/* Canvas Area */}
+                            <div className="flex-grow">
+                                <div ref={canvasRef} className="w-full"></div>
+                            </div>
+                            
+                            {/* Legend */}
+                            <div className="w-full lg:w-48">
+                                <h4 className="font-bold text-gray-700 mb-3">Customer Personas</h4>
+                                <div ref={legendRef} className="space-y-2">
+                                    {companies.map((company, index) => {
+                                        const colorStyle = {
+                                            backgroundColor: `rgb(${company.color[0]}, ${company.color[1]}, ${company.color[2]})`
+                                        };
+                                        const haloClass = company.isIdeal ? 'ring-2 ring-offset-1 ring-amber-400' : '';
+                                        
+                                        return (
+                                            <div key={index} className="flex items-center text-sm">
+                                                <div 
+                                                    className={`w-4 h-4 rounded-full mr-2 ${haloClass}`}
+                                                    style={colorStyle}
+                                                ></div>
+                                                <span className="text-gray-700">{company.name}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Controls */}
+                        <div className="text-center mt-6 space-x-4">
+                            <button 
+                                onClick={startSimulation}
+                                disabled={simulationState === 'simulating'}
+                                className={`px-6 py-3 font-bold rounded-lg shadow-md transition-all ${
+                                    simulationState === 'simulating' 
+                                        ? 'bg-gray-400 text-white cursor-not-allowed'
+                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                }`}
+                            >
+                                {simulationState === 'simulating' ? 'Running...' : 'Run Demo Simulation'}
+                            </button>
+                            <button 
+                                onClick={resetSimulation}
+                                className="px-6 py-3 bg-gray-600 text-white font-bold rounded-lg shadow-md hover:bg-gray-700"
+                            >
+                                Reset
+                            </button>
+                        </div>
+                        
+                        {/* Explanation */}
+                        {simulationState === 'finished' && (
+                            <div className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                                <h3 className="font-bold text-2xl text-blue-800 mb-2">Analysis Complete</h3>
+                                <p className="text-lg text-blue-700">
+                                    The simulation is finished. Your ideal target companies—those who value your unique features most—are now 
+                                    highlighted with a <span className="font-bold text-yellow-600">gold halo</span>. Focus your efforts on them!
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
         // CategoryDesignTool Component
         const CategoryDesignTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
@@ -3126,49 +3136,38 @@
             const [isLoadingNames, setIsLoadingNames] = useState(false);
             const [suggestedNames, setSuggestedNames] = useState([]);
             
-            // AI Category State Variables
-            const [aiCategoryLoading, setAiCategoryLoading] = useState(false);
-            const [aiCategoryError, setAiCategoryError] = useState(null);
-            
-            // AI Category Drafter API Integration
-            const handleGenerateCategory = async (context) => {
-                setAiCategoryLoading(true);
-                setAiCategoryError(null);
+            // Simulate AI API call for category name generation
+            const simulateAIBrainstorming = async (context) => {
+                // Construct prompt based on strategic inputs
+                const { icpSummary, valueProps, fromStatement, toStatement } = context;
                 
-                try {
-                    const response = await fetch('/api/draft-category', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            icpSummary: context.icpSummary,
-                            valueProps: context.valueProps,
-                            fromStatement: context.fromStatement,
-                            toStatement: context.toStatement
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    return data.categories || [];
-                } catch (error) {
-                    console.error('Category generation failed:', error);
-                    setAiCategoryError(error.message);
-                    // Fallback names on error
-                    return [
-                        'Digital Transformation Platform',
-                        'Business Intelligence Suite', 
-                        'Operational Excellence System',
-                        'Market Innovation Engine',
-                        'Growth Acceleration Framework'
-                    ];
-                } finally {
-                    setAiCategoryLoading(false);
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Generate contextually relevant names based on inputs
+                // In a real implementation, this would call an AI API
+                const baseNames = [
+                    'Revenue Process Automation',
+                    'Predictive Market-Fit',
+                    'Continuous Value Alignment',
+                    'Intelligent Growth Operations',
+                    'Adaptive Business Intelligence',
+                    'Strategic Orchestration Platform'
+                ];
+                
+                // If we have good context, return more tailored names
+                if (fromStatement && toStatement) {
+                    return baseNames.slice(0, 5);
                 }
+                
+                // Fallback to generic names if context is limited
+                return [
+                    'Digital Transformation Platform',
+                    'Business Intelligence Suite',
+                    'Operational Excellence System',
+                    'Market Innovation Engine',
+                    'Growth Acceleration Framework'
+                ];
             };
 
             const handleExport = () => {
@@ -3192,7 +3191,7 @@
                     <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
-                                <button onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }} className="text-gray-600 hover:scale-gold-text">← Back to ICP Definition</button>
+                                <button onClick={() => onNavigate('icp')} className="text-gray-600 hover:scale-gold-text">← Back to ICP Definition</button>
                                 <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 3: Category Design</h1>
                             </div>
                             <div className="flex items-center space-x-2">
@@ -3310,7 +3309,7 @@
                                         />
                                         <button 
                                             className="px-4 py-2 text-white font-bold rounded-md transition-colors hover:opacity-90 disabled:opacity-50"
-                                            style={{backgroundColor: '#e5a819'}}
+                                            style={{backgroundColor: '#224f41'}}
                                             onClick={async () => {
                                                 // Gather strategic inputs from appState
                                                 const icpSummary = appState.positioningData.icp_summary || '';
@@ -3335,8 +3334,8 @@
                                                 setIsLoadingNames(true);
                                                 
                                                 try {
-                                                    // Call AI Category Drafter API
-                                                    const names = await handleGenerateCategory(context);
+                                                    // Simulate AI API call
+                                                    const names = await simulateAIBrainstorming(context);
                                                     setSuggestedNames(names);
                                                 } catch (error) {
                                                     console.error('Failed to generate names:', error);

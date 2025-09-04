@@ -9,8 +9,9 @@
 | 1.4     | 2025-09-03 | Gemini/Pete   | Completed NAV-FIX-001, SEG-FEAT-006, and added SEG-FEAT-007.             |
 | 1.5     | 2025-09-03 | Gemini/Pete   | Added ICP-VIS-001 feature definition.                                    |
 | 1.6     | 2025-09-03 | Gemini/Pete   | Completed SEG-FEAT-007 and UX fix for Part 2 placeholder text.           |
+| 1.7     | 2025-09-03 | Gemini/Pete   | Completed SEG-TASK-001 and SEG-FEAT-001.                                 |
 
-**Version:** 1.6
+**Version:** 1.7
 **Date:** 2025-09-03
 **Status:** Approved for Implementation
 
@@ -47,10 +48,13 @@ This epic is governed by the following strategic decisions:
 ### Phase 2: The Segment Foundation
 * **Goal:** Re-architect the main `index.html` SPA to be Segment-first, creating the foundation for all future positioning work.
 * **`SEG-TASK-001: Refactor index.html to a Three-Part Structure`**
+    * **Status:** ✅ **COMPLETE**
     * **Description:** Restructure the application's navigation and components to support a `Home -> Part 1 (Segment) -> Part 2 (ICP) -> Part 3 (Category)` flow.
 * **`SEG-FEAT-001: Build the "Segment Foundation" UI`**
+    * **Status:** ✅ **COMPLETE**
     * **Description:** Implement the new "Part 1" component with detailed input fields for the 19 core elements of a market segment (JTBD, Customer Value, and WTP).
 * **`SEG-FEAT-004: Enhance Part 1 Usability`**
+    * **Status:** ✅ **COMPLETE**
     * **Description:** Add key usability features to the Segment Foundation page, including header buttons, a sticky side-nav, and improved helper text.
 * **`SEG-FEAT-005: Implement AI-Powered Value Drafter`**
     * **Status:** ✅ **COMPLETE**
