@@ -11,8 +11,11 @@
 | 1.6     | 2025-09-03 | Gemini/Pete   | Completed SEG-FEAT-007 and UX fix for Part 2 placeholder text.           |
 | 1.7     | 2025-09-03 | Gemini/Pete   | Completed SEG-TASK-001 and SEG-FEAT-001.                                 |
 | 1.8     | 2025-09-04 | Claude/Pete   | Completed ICP-REFACTOR-001 - removed redundant fields and added segment summary to Part 2. |
+| 1.9     | 2025-09-04 | Claude/Pete   | Added Phase 4 specifications for Company Context Setup (CC-FEAT-001) and JTBD Validation (VAL-FEAT-001). |
+| 2.0     | 2025-09-04 | Claude/Pete   | Added detailed specifications for CC-FEAT-001 and VAL-FEAT-001 with complete implementation details. |
+| 2.1     | 2025-09-04 | Claude/Pete   | Reorganized phases for logical implementation flow - CC-FEAT-001 moved to Phase 4, VAL-FEAT-001 to Phase 5. |
 
-**Version:** 1.8
+**Version:** 2.1
 **Date:** 2025-09-04
 **Status:** Approved for Implementation
 
@@ -40,13 +43,13 @@ This epic is governed by the following strategic decisions:
 
 ## 4. Phased Implementation Roadmap
 
-### Phase 1: Standalone Workshop Accelerator
+### Phase 1: The Segment Foundation ✅ COMPLETE
 * **Goal:** Provide an immediate, high-value tool for facilitated workshops.
 * **`POS-FEAT-001: Standalone Positioning Simulator`**
     * **Status:** ✅ **COMPLETE**
     * **Deliverable:** The existing `positioning2x2sim.html` file, which allows for manual and AI-driven 2x2 value plotting.
 
-### Phase 2: The Segment Foundation
+### Phase 2: AI Quick Wins for Positioning ✅ COMPLETE  
 * **Goal:** Re-architect the main `index.html` SPA to be Segment-first, creating the foundation for all future positioning work.
 * **`SEG-TASK-001: Refactor index.html to a Three-Part Structure`**
     * **Status:** ✅ **COMPLETE**
@@ -64,31 +67,34 @@ This epic is governed by the following strategic decisions:
 * **`SEG-FEAT-006: Implement AI-Powered WTP Drafter`**
     * **Status:** ✅ **COMPLETE**
     * **Description:** Transform the "Willingness to Pay" section into an AI-powered assistant that drafts the 5 WTP drivers based on the user's refined Customer Value propositions.
-
+* **`SEG-FEAT-007: Implement AI-Powered Category Drafter`**
+    * **Status:** ✅ **COMPLETE**
+    * **Description:** Transform the "Category Design" section into an AI-powered assistant that drafts category names and definitions based on the user's Point of View inputs.
 * **`NAV-FIX-001: Correct Segment to ICP Navigation`**
     * **Status:** ✅ **COMPLETE**
     * **Description:** A high-priority bug fix to ensure the "Continue to Part 2" button navigates the user to the top of the ICP Definition page.
 
-### Phase 3: Integrated AI Positioning Analysis
-* **Goal:** Merge the workshop tool's functionality with the new segment data structure inside the main SPA.
+### Phase 3: Integrated Positioning Analysis 🚧 IN PROGRESS
+* **Goal:** Transform scattered insights into cohesive positioning strategy.
 * **`ICP-REFACTOR-001: Overhaul ICP Definition Page`** ✅ **COMPLETE**
     * **Description:** A strategic refactor to remove redundant ICP fields from Part 2 and replace them with a read-only summary of the data from the Segment Foundation (Part 1).
-* **`POS-TASK-001: Integrate Simulator UI into Main App`**
-    * **Description:** Refactor the UI and logic from `positioning2x2sim.html` into a new React component within the "Part 2 (ICP)" section of `index.html`.
-* **`POS-FEAT-002: Add AI Analysis Logic`**
-    * **Description:** Implement the "Run AI Analysis" functionality, allowing users to automatically score and plot their value propositions against their defined segment.
+* **`ICP-VIS-001: Interactive ICP Visualizer`** 📝 **PLANNED**
+    * **Description:** Visual representation mapping ICP characteristics to value propositions.
 
-* **`SEG-FEAT-007: Implement AI-Powered Category Drafter`**
-    * **Status:** ✅ **COMPLETE**
-    * **Description:** Transform the "Category Design" section into an AI-powered assistant that drafts category names and definitions based on the user's Point of View inputs.
+### Phase 4: Company Context Foundation
+* **Goal:** Establish company context for enhanced AI capabilities.
+* **`CC-FEAT-001: Company Context Setup Modal`** 📝 **PLANNED**
+    * **Description:** One-time welcome modal that captures essential company information for enhanced AI searches and validations.
 
-* **`ICP-VIS-001: Segment-to-ICP Strategic Flow Visualization`**
-    * **Description:** Implement a custom SVG visualization that educates users on the strategic progression from foundational market segments to actionable ICPs, while visually connecting Part 1 (Positioning) to Part 2 (Category Design) in a way that reinforces the core GTM methodology.
+### Phase 5: Market Intelligence & Validation
+* **Goal:** Add market validation capabilities using real-world data.
+* **`VAL-FEAT-001: JTBD Element Market Validation`** 📝 **PLANNED**
+    * **Description:** Individual validation buttons for each JTBD element that perform intelligent market searches.
 
-### Phase 4: The AI Research Engine (Future Vision)
+### Phase 6: The AI Research Engine (Future Vision)
 * **Goal:** Evolve the tool into a proactive, generative research engine.
-* **`RES-FEAT-001: Outside-In JTBD Discovery Agent`**
-    * **Description:** A long-term feature to perform automated, outside-in research on target companies to generate data-driven JTBD hypotheses. Specs to be defined in a future epic.
+* **`RES-FEAT-001: Outside-In JTBD Discovery Agent`** 📝 **FUTURE**
+    * **Description:** Automated research on target companies to generate data-driven JTBD hypotheses.
 
 ## 5. Detailed Feature Specifications
 
@@ -268,3 +274,66 @@ This epic is governed by the following strategic decisions:
 *   **Current Project Status:** Enhanced Feature Definition Complete
 *   **Next Required Action for Project Director:** This refined feature definition provides a comprehensive blueprint that balances strategic education with elegant visual design. The specification is ready for Gemini to convert into detailed implementation steps, ensuring the visualization effectively communicates the GTM methodology while seamlessly integrating into our existing SPA architecture.
 The design emphasizes the strategic insight that an ICP isn't just demographics—it's the layered result of combining market understanding with product-market fit and business model validation. This educational component will significantly enhance user comprehension of the GTM Blueprint methodology.
+
+### CC-FEAT-001: Company Context Setup Modal
+* **Description:** A one-time welcome modal that captures essential company information on first visit, storing it for use throughout the application, particularly for AI-powered searches and validations.
+* **Implementation Details:**
+    * **Modal Trigger:** Appears automatically on first visit when `companyContext.isSetupComplete` is false
+    * **Required Fields:**
+        - Company Name (2-100 characters)
+        - Company Website (valid URL with http:// or https://)
+        - Industry (dropdown: SaaS/Software, Financial Services, Healthcare, E-commerce, Manufacturing, Professional Services, Other)
+        - Product/Service Name (2-100 characters)
+        - Target Market (radio buttons: B2B/B2C)
+    * **Optional Fields:**
+        - Case Study URLs (dynamic list with add/remove buttons)
+        - Documentation URLs (dynamic list with add/remove buttons)
+        - Top 3 Competitors (3 text input fields)
+    * **Data Storage:** All data saved to `appState.companyContext` in localStorage
+    * **UI Requirements:**
+        - Fixed position overlay covering entire screen
+        - Cannot be dismissed without completing required fields
+        - Clean professional design matching green theme
+        - Form validation with error messages
+        - Progress indicator showing required vs optional fields
+* **Acceptance Criteria:**
+    * Modal appears on first visit and blocks access until completed
+    * All required field validations work correctly
+    * Data persists to localStorage
+    * "Edit Company Info" button added to HomeView header
+    * Modal can be reopened via Edit button
+    * Company context accessible throughout application
+
+### VAL-FEAT-001: JTBD Element Market Validation
+* **Description:** Add individual "Validate Against Market" buttons next to each of the 9 JTBD elements that perform intelligent web searches to compare user input against market reality.
+* **Implementation Details:**
+    * **UI Changes:**
+        - Add validation button next to each JTBD field in modal
+        - Button states: gray (default), blue (validating), green/yellow/orange (results)
+        - Results display below each field with collapsible insights
+    * **Search Strategy:**
+        - Uses company context + field-specific templates + user input
+        - 3 query variations per field (primary, secondary, tertiary)
+        - Searches include: product reviews, forums, case studies, competitor comparisons
+    * **Query Templates:** Field-specific patterns for each JTBD element
+        - Context: operational challenges, workflow bottlenecks
+        - Struggling Moments: customer complaints, issues, problems
+        - Pushes & Pulls: migration stories, switching announcements
+        - Anxieties & Habits: implementation concerns, change resistance
+        - Desired Outcomes: ROI metrics, success stories
+        - Basic Quality: RFP requirements, compliance standards
+        - Hiring Criteria: vendor selection, decision factors
+        - Firing Criteria: switching reasons, deal breakers
+        - Key Trade-offs: limitations, compromises accepted
+    * **Results Analysis:**
+        - Extract signals from search results
+        - Calculate alignment score (0-100%)
+        - Identify market language patterns
+        - Generate refinement suggestions
+* **Acceptance Criteria:**
+    * Each JTBD field has working validation button
+    * Searches use company context effectively
+    * Results show alignment score and insights
+    * Visual feedback indicates validation status
+    * No impact on existing JTBD analysis functionality
+    * API calls handle errors gracefully
