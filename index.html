@@ -182,7 +182,8 @@
             if (parsedState && 
                 typeof parsedState === 'object' && 
                 parsedState.hasOwnProperty('positioningData') && 
-                parsedState.hasOwnProperty('categoryData')) {
+                parsedState.hasOwnProperty('categoryData') &&
+                parsedState.hasOwnProperty('segmentData')) {
               return parsedState;
             }
             
@@ -242,6 +243,17 @@
             'manifesto': ''
           },
           segmentData: {},
+          companyContext: {
+            isSetupComplete: false,
+            companyName: '',
+            companyWebsite: '',
+            industry: '',
+            productName: '',
+            targetMarket: 'B2B',
+            caseStudyUrls: [],
+            documentationUrls: [],
+            competitorNames: ['', '', '']
+          },
           currentView: 'home'
         });
 
@@ -330,6 +342,8 @@
                 </div>
             );
         };
+
+        // CompanySetupModal Component - temporarily removed for debugging
 
         // JTBD Analysis Modal Component
         const JTBDModal = ({ isOpen, onClose, analysisData, setAnalysisData, onSave }) => {
@@ -782,6 +796,7 @@
 
         // SegmentFoundationTool Component
         const SegmentFoundationTool = ({ appState, setAppState, onNavigate }) => {
+            console.log('SegmentFoundationTool rendering, appState:', appState);
             const [exportModalOpen, setExportModalOpen] = useState(false);
             const [exportContent, setExportContent] = useState('');
             
