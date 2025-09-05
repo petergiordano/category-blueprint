@@ -2664,6 +2664,10 @@
 
                             <main className="w-full lg:w-3/4">
                                 <div className="space-y-8">
+                        
+                        {/* ICP Flow Visualization */}
+                        <ICPFlowVisualization appState={appState} />
+                        
                         <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">1. Define Your Ideal Customer Profile (ICP)</h2>
                             <p className="text-gray-600 mb-6">This is the foundation. A precise ICP provides the lens through which all other positioning elements are viewed. Be specific and use data where possible.</p>
@@ -3289,6 +3293,154 @@
                         }}
                     />
                     
+                </div>
+            );
+        };
+
+        // ICPFlowVisualization Component
+        const ICPFlowVisualization = ({ appState }) => {
+            // Check if Part 1 (Segment Foundation) is completed
+            const isSegmentComplete = appState.segmentData && 
+                Object.values(appState.segmentData).some(value => value && value.trim().length > 0);
+            
+            return (
+                <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">Strategic Flow: From Market Segment to Actionable ICP</h3>
+                    
+                    {/* Desktop and Tablet Layout */}
+                    <div className="hidden md:block">
+                        <svg
+                            viewBox="0 0 800 300"
+                            className="w-full h-auto max-w-4xl mx-auto"
+                            role="img"
+                            aria-labelledby="icp-flow-title"
+                            aria-describedby="icp-flow-desc"
+                        >
+                            <title id="icp-flow-title">Strategic ICP Development Flow</title>
+                            <desc id="icp-flow-desc">Visual representation of the progression from market segment to actionable ICP through product and business model fit</desc>
+                            
+                            {/* Market Segment Box (Left) */}
+                            <rect
+                                x="30"
+                                y="100"
+                                width="150"
+                                height="100"
+                                rx="8"
+                                fill={isSegmentComplete ? "#059669" : "#9CA3AF"}
+                                opacity={isSegmentComplete ? "1" : "0.5"}
+                            />
+                            <text x="105" y="125" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="Work Sans, sans-serif">Market Segment</text>
+                            <text x="105" y="145" textAnchor="middle" fill="white" fontSize="12" fontFamily="Outfit, sans-serif">JTBD • Value • WTP</text>
+                            <text x="105" y="165" textAnchor="middle" fill="white" fontSize="10" fontFamily="Outfit, sans-serif">Foundation Complete</text>
+                            <text x="105" y="180" textAnchor="middle" fill="white" fontSize="10" fontFamily="Outfit, sans-serif">{isSegmentComplete ? "✓" : "○"}</text>
+                            
+                            {/* Bridge Arrow */}
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#6B7280" />
+                                </marker>
+                            </defs>
+                            
+                            {/* Arrow Line */}
+                            <line x1="180" y1="150" x2="380" y2="150" stroke="#6B7280" strokeWidth="3" markerEnd="url(#arrowhead)" />
+                            
+                            {/* Bridge Content Box */}
+                            <rect x="220" y="60" width="180" height="80" rx="6" fill="#F3F4F6" stroke="#6B7280" strokeWidth="1" />
+                            <text x="310" y="80" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Add Product &amp; Business</text>
+                            <text x="310" y="95" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Model Fit</text>
+                            <text x="310" y="115" textAnchor="middle" fill="#6B7280" fontSize="10" fontFamily="Outfit, sans-serif">Product-Problem Fit</text>
+                            <text x="310" y="128" textAnchor="middle" fill="#6B7280" fontSize="10" fontFamily="Outfit, sans-serif">Scalable Business Model</text>
+                            
+                            {/* Actionable ICP Container (Right) */}
+                            <rect x="420" y="50" width="350" height="200" rx="8" fill="#F9FAFB" stroke="#D1D5DB" strokeWidth="1" />
+                            
+                            {/* Header */}
+                            <text x="595" y="75" textAnchor="middle" fill="#111827" fontSize="16" fontWeight="bold" fontFamily="Work Sans, sans-serif">Actionable ICP</text>
+                            
+                            {/* Strategic Why Section (Left Half) */}
+                            <rect x="440" y="90" width="155" height="140" rx="6" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1" />
+                            <text x="517.5" y="110" textAnchor="middle" fill="#166534" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Strategic Why</text>
+                            <text x="455" y="130" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Jobs to be Done</text>
+                            <text x="455" y="145" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Value Drivers</text>
+                            <text x="455" y="160" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Buyer Motivations</text>
+                            <text x="517.5" y="185" textAnchor="middle" fill="#059669" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">For messaging</text>
+                            <text x="517.5" y="200" textAnchor="middle" fill="#059669" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">&amp; positioning</text>
+                            
+                            {/* Operational Where Section (Right Half) */}
+                            <rect x="610" y="90" width="155" height="140" rx="6" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="1" />
+                            <text x="687.5" y="110" textAnchor="middle" fill="#92400E" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Operational Where</text>
+                            <text x="625" y="130" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Firmographics</text>
+                            <text x="625" y="145" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Technographics</text>
+                            <text x="625" y="160" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Behavioral Signals</text>
+                            <text x="687.5" y="185" textAnchor="middle" fill="#D97706" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">For targeting</text>
+                            <text x="687.5" y="200" textAnchor="middle" fill="#D97706" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">&amp; campaigns</text>
+                        </svg>
+                    </div>
+                    
+                    {/* Mobile Layout */}
+                    <div className="md:hidden space-y-6">
+                        {/* Market Segment */}
+                        <div className={`p-4 rounded-lg text-center ${isSegmentComplete ? 'bg-green-600 text-white' : 'bg-gray-400 text-white opacity-50'}`}>
+                            <h4 className="font-bold text-lg mb-1">Market Segment</h4>
+                            <p className="text-sm">JTBD • Value • WTP</p>
+                            <p className="text-xs mt-2">Foundation {isSegmentComplete ? '✓ Complete' : '○ Pending'}</p>
+                        </div>
+                        
+                        {/* Arrow Down */}
+                        <div className="text-center">
+                            <div className="inline-block w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                                <span className="text-white font-bold">↓</span>
+                            </div>
+                        </div>
+                        
+                        {/* Bridge */}
+                        <div className="bg-gray-100 border border-gray-300 p-4 rounded-lg text-center">
+                            <h4 className="font-bold text-gray-800 mb-2">Add Product & Business Model Fit</h4>
+                            <p className="text-sm text-gray-600">Product-Problem Fit</p>
+                            <p className="text-sm text-gray-600">Scalable Business Model</p>
+                        </div>
+                        
+                        {/* Arrow Down */}
+                        <div className="text-center">
+                            <div className="inline-block w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                                <span className="text-white font-bold">↓</span>
+                            </div>
+                        </div>
+                        
+                        {/* Actionable ICP */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-bold text-gray-800 text-center mb-4">Actionable ICP</h4>
+                            
+                            {/* Strategic Why */}
+                            <div className="bg-green-50 border border-green-200 p-3 rounded-lg mb-3">
+                                <h5 className="font-bold text-green-700 text-center mb-2">Strategic Why</h5>
+                                <ul className="text-sm text-green-600 space-y-1">
+                                    <li>• Jobs to be Done</li>
+                                    <li>• Value Drivers</li>
+                                    <li>• Buyer Motivations</li>
+                                </ul>
+                                <p className="text-xs text-green-600 text-center mt-2 italic">For messaging & positioning</p>
+                            </div>
+                            
+                            {/* Operational Where */}
+                            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                                <h5 className="font-bold text-yellow-700 text-center mb-2">Operational Where</h5>
+                                <ul className="text-sm text-yellow-600 space-y-1">
+                                    <li>• Firmographics</li>
+                                    <li>• Technographics</li>
+                                    <li>• Behavioral Signals</li>
+                                </ul>
+                                <p className="text-xs text-yellow-600 text-center mt-2 italic">For targeting & campaigns</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Educational Context */}
+                    <div className="mt-4 text-center">
+                        <p className="text-sm text-gray-600 italic">
+                            This visualization shows how your market segment analysis transforms into targeted ICP insights for both strategic messaging and operational execution.
+                        </p>
+                    </div>
                 </div>
             );
         };
