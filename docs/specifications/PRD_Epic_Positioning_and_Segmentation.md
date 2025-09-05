@@ -14,8 +14,13 @@
 | 1.9     | 2025-09-04 | Claude/Pete   | Added Phase 4 specifications for Company Context Setup (CC-FEAT-001) and JTBD Validation (VAL-FEAT-001). |
 | 2.0     | 2025-09-04 | Claude/Pete   | Added detailed specifications for CC-FEAT-001 and VAL-FEAT-001 with complete implementation details. |
 | 2.1     | 2025-09-04 | Claude/Pete   | Reorganized phases for logical implementation flow - CC-FEAT-001 moved to Phase 4, VAL-FEAT-001 to Phase 5. |
+| 2.2     | 2025-09-04 | Gemini/Pete   | Marked CC-FEAT-001 as complete.                                            |
+| 2.3     | 2025-09-04 | Gemini/Pete   | Added DEV-FEAT-001 for a developer-only company context reset button.      |
+| 2.4     | 2025-09-04 | Gemini/Pete   | Added VAL-ENH-001 to refactor JTBD validation with intelligent query generation. |
+| 2.5     | 2025-09-04 | Gemini/Pete   | Added VAL-ENH-002 to upgrade validation scoring to "Signal Confidence" and implement "Smart Suggestions". |
+| 2.6     | 2025-09-04 | Gemini/Pete   | Added UX-FIX-001 to disable the JTBD validation button for empty inputs.     |
 
-**Version:** 2.1
+**Version:** 2.6
 **Date:** 2025-09-04
 **Status:** Approved for Implementation
 
@@ -88,8 +93,14 @@ This epic is governed by the following strategic decisions:
 
 ### Phase 5: Market Intelligence & Validation
 * **Goal:** Add market validation capabilities using real-world data.
+* **`UX-FIX-001: Implement Input Validation for JTBD Buttons`**
+    * **Description:** A usability enhancement to disable the "Validate Against Market" button when its corresponding text field is empty, preventing unnecessary errors.
+* **`DEV-FEAT-001: Add Developer Reset for Company Context`**
+    * **Description:** A developer-only utility to reset the company context, making it easier to test features that depend on the initial setup modal.
 * **`VAL-FEAT-001: JTBD Element Market Validation`** 📝 **PLANNED**
     * **Description:** Individual validation buttons for each JTBD element that perform intelligent market searches.
+* **`VAL-ENH-001: Intelligent Query Generation for JTBD Validation`**
+    * **Description:** A critical enhancement to the `VAL-FEAT-001` backend logic. Replaces the simple search with a multi-step AI process: keyword extraction, dynamic query formulation, and aggregated analysis.
 
 ### Phase 6: The AI Research Engine (Future Vision)
 * **Goal:** Evolve the tool into a proactive, generative research engine.
@@ -337,3 +348,41 @@ The design emphasizes the strategic insight that an ICP isn't just demographics�
     * Visual feedback indicates validation status
     * No impact on existing JTBD analysis functionality
     * API calls handle errors gracefully
+
+### DEV-FEAT-001: Add Developer Reset for Company Context
+* **Description:** This is a developer/testing experience enhancement. It adds a button to the UI that allows for easily resetting the `companyContext` state, which re-triggers the appearance of the `CompanySetupModal` on the home page.
+* **Implementation Details:**
+    * **UI Element:** Add a simple `<button>` or `<a>` tag to the footer of the `HomeView` component.
+    * **Label:** The button text should be "Dev Tools: Reset Company Context".
+    * **Conditional Rendering:** The button **must only be visible** when `window.location.hostname === 'localhost'`. This is a critical safety requirement to prevent it from appearing in production.
+    * **Functionality:** The `onClick` handler should perform two actions:
+        1. Update the application state by setting `appState.companyContext.isSetupComplete` to `false`.
+        2. Call `onNavigate('home')` to ensure the home page component re-evaluates its state and displays the modal.
+* **Acceptance Criteria:**
+    * When running the app on `localhost`, a "Dev Tools: Reset Company Context" button is visible in the footer of the home page.
+    * Clicking the button sets `isSetupComplete` to `false` in `localStorage` and makes the `CompanySetupModal` reappear.
+    * The button is **not visible** when the application is accessed from any other domain or IP address.
+
+### VAL-ENH-001: Intelligent Query Generation for JTBD Validation ✅ **COMPLETE**
+* **Description:** This is a critical enhancement to the `api/validate-jtbd.js` serverless function. It replaces the current brittle, single-query logic with a more intelligent, multi-step analysis pipeline to produce more accurate and valuable market validation results.
+* **Implementation Details:**
+    * The `api/validate-jtbd.js` function must be refactored to perform the following sequence:
+    1.  **AI Keyword Extraction:** Upon receiving the `userInput`, make an initial generative AI call to extract the 2-3 core semantic concepts from the text.
+    2.  **Dynamic Query Formulation:** Use the extracted keywords to dynamically generate a portfolio of 3-5 flexible search queries for the Brave Search API. These queries should explore different angles (e.g., problems, solutions, forums).
+    3.  **Aggregated Analysis:** Execute all generated queries. Aggregate the search results into a single corpus of text. Perform the final analysis (alignment score, market language, suggestions) on this aggregated corpus.
+* **Acceptance Criteria:** ✅ **ALL MET**
+    * ✅ The backend logic for `VAL-FEAT-001` is updated to the new three-step process.
+    * ✅ Validation attempts in the UI produce more meaningful alignment scores (i.e., not always 0%).
+    * ✅ The suggestions provided are more specific and contextually relevant, based on the aggregated search results.
+    * ✅ The debugging output in the console now shows the keyword extraction and dynamic query generation steps.
+
+### UX-FIX-001: Implement Input Validation for JTBD Buttons
+* **Description:** This is a user experience fix to prevent errors and provide clear feedback on the "Validate Against Market" buttons within the `SegmentFoundationTool`.
+* **Implementation Details:**
+    1.  **Disable Button:** The "Validate Against Market" button for each JTBD element must be disabled if its corresponding textarea input is empty or contains only whitespace. This can be achieved by adding a `disabled` attribute to the button element based on the input's value.
+    2.  **Visual State:** When disabled, the button's styling should visually indicate its inactive state (e.g., lower opacity, `cursor-not-allowed`).
+    3.  **Update Error Message:** As a fallback, update the error message logic. If an API call fails for reasons other than an empty input (e.g., network error), the message should be more specific, like "Error: Validation service is unavailable. Please try again later."
+* **Acceptance Criteria:**
+    * The "Validate Against Market" button is visibly disabled and not clickable when its associated textarea is empty.
+    * The button becomes enabled as soon as the user types text into the textarea.
+    * If the button is clicked when enabled and an API error occurs, a more helpful error message is displayed.

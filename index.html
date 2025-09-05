@@ -296,6 +296,25 @@
 
                         <footer className="text-center text-sm text-gray-500 py-8 mt-12">
                             Scale Venture Partners
+                            {window.location.hostname === 'localhost' && (
+                                <div className="mt-2">
+                                    <button 
+                                        onClick={() => {
+                                            setAppState(prev => ({
+                                                ...prev,
+                                                companyContext: {
+                                                    ...prev.companyContext,
+                                                    isSetupComplete: false
+                                                }
+                                            }));
+                                            onNavigate('home');
+                                        }}
+                                        className="text-xs text-gray-400 hover:text-gray-600 underline cursor-pointer transition-colors"
+                                    >
+                                        Dev Tools: Reset Company Context
+                                    </button>
+                                </div>
+                            )}
                         </footer>
                     </div>
 
@@ -1040,6 +1059,7 @@
             console.log('SegmentFoundationTool rendering, appState:', appState);
             const [exportModalOpen, setExportModalOpen] = useState(false);
             const [exportContent, setExportContent] = useState('');
+            const [validationState, setValidationState] = useState({});
             
             // AI Draft State Variables
             const [aiDraftLoading, setAiDraftLoading] = useState(false);
@@ -1050,6 +1070,102 @@
             const [wtpDraftLoading, setWtpDraftLoading] = useState(false);
             const [wtpDraftsAvailable, setWtpDraftsAvailable] = useState(false);
             const [wtpDraftError, setWtpDraftError] = useState(null);
+
+            const handleValidateJtbd = async (jtbdElementName, userInput) => {
+                // Check if company context is properly set up
+                if (!appState.companyContext?.industry || !appState.companyContext?.productName) {
+                    setValidationState(prev => ({ 
+                        ...prev, 
+                        [jtbdElementName]: { 
+                            status: 'error', 
+                            result: {
+                                alignmentScore: 0,
+                                marketLanguage: [],
+                                refinementSuggestions: ['Please complete the Company Context setup first by clicking "Dev Tools: Reset Company Context" in the footer and filling out your company information.']
+                            }
+                        }
+                    }));
+                    return;
+                }
+                
+                setValidationState(prev => ({ ...prev, [jtbdElementName]: { status: 'validating' } }));
+                try {
+                    const response = await fetch('/api/validate-jtbd?debug=true', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            companyContext: appState.companyContext,
+                            jtbdElementName,
+                            userInput
+                        })
+                    });
+                    if (!response.ok) {
+                        throw new Error('Validation failed');
+                    }
+                    const results = await response.json();
+                    
+                    // Log debug information to console
+                    console.log(`🔍 VAL-FEAT-001 Debug: ${jtbdElementName}`, {
+                        userInput: userInput,
+                        queries: results.debug?.queries,
+                        searchResults: {
+                            snippetCount: results.debug?.searchResultsCount.snippets,
+                            titleCount: results.debug?.searchResultsCount.titles,
+                            sampleSnippets: results.debug?.sampleSnippets
+                        },
+                        analysis: {
+                            alignmentScore: results.alignmentScore,
+                            marketLanguage: results.marketLanguage,
+                            suggestions: results.refinementSuggestions
+                        }
+                    });
+                    
+                    setValidationState(prev => ({ ...prev, [jtbdElementName]: { status: 'success', results } }));
+                } catch (error) {
+                    console.error(`❌ VAL-FEAT-001 Error: ${jtbdElementName}`, error);
+                    setValidationState(prev => ({ ...prev, [jtbdElementName]: { status: 'error', error: error.message } }));
+                }
+            };
+
+            const renderValidationResult = (elementName) => {
+                const state = validationState[elementName];
+                if (!state) return null;
+
+                if (state.status === 'validating') {
+                    return <div className="text-sm text-gray-500 italic mt-2">Validating...</div>;
+                }
+
+                if (state.status === 'error') {
+                    return <div className="text-sm text-red-500 mt-2">Error: {state.error}</div>;
+                }
+
+                if (state.status === 'success' && state.results) {
+                    const { alignmentScore, marketLanguage, refinementSuggestions } = state.results;
+                    return (
+                        <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                            <h4 className="text-sm font-bold text-gray-700 mb-2">
+                                Validation Results 
+                                <span className="ml-2 text-xs text-blue-600 cursor-help" title="Check browser console for detailed analysis">
+                                    (Debug: Check Console)
+                                </span>
+                            </h4>
+                            <p className="text-sm text-gray-600"><strong>Alignment Score:</strong> {alignmentScore}%</p>
+                            <p className="text-sm text-gray-600"><strong>Market Language:</strong> {marketLanguage.join(', ')}</p>
+                            <div>
+                                <p className="text-sm font-bold text-gray-700 mt-2">Suggestions:</p>
+                                <ul className="list-disc list-inside text-sm text-gray-600">
+                                    {refinementSuggestions.map((suggestion, index) => (
+                                        <li key={index}>{suggestion}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    );
+                }
+                return null;
+            };
 
             const handleReset = () => {
                 if (window.confirm('Are you sure you want to reset all segment data? This action cannot be undone.')) {
@@ -1359,140 +1475,42 @@
                         <div id="jtbd-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-6">Jobs To Be Done</h2>
                             <div className="space-y-6">
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Context</label>
-                                    <p className="text-gray-600 text-sm mb-3">The business situation or operating environment.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Context'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Context': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="Quarterly close process across distributed finance teams."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Struggling Moments</label>
-                                    <p className="text-gray-600 text-sm mb-3">Breakdowns, inefficiencies, or risks that trigger the search.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Struggling Moments'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Struggling Moments': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="Errors in revenue recognition delaying financial reporting."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Pushes & Pulls</label>
-                                    <p className="text-gray-600 text-sm mb-3">Internal and external forces moving them toward or away from change.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Pushes & Pulls'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Pushes & Pulls': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="CFO pressure to modernize systems vs. IT reluctance to add new vendors."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Anxieties & Habits</label>
-                                    <p className="text-gray-600 text-sm mb-3">Concerns about adopting something new, and inertia with current processes/tools.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Anxieties & Habits'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Anxieties & Habits': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="Fear of migration failure; comfort with spreadsheets."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Desired Outcomes</label>
-                                    <p className="text-gray-600 text-sm mb-3">We will refine this outcome into specific types of value in the **Customer Value** section</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Desired Outcomes'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Desired Outcomes': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="Reduce audit prep time by 50%; ensure SOX compliance."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Basic Quality (Table Stakes)</label>
-                                    <p className="text-gray-600 text-sm mb-3">Minimum standards a solution must meet to even be considered.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Basic Quality (Table Stakes)'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Basic Quality (Table Stakes)': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="SOC2 compliance, API integrations with ERP, enterprise-grade security."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Hiring Criteria</label>
-                                    <p className="text-gray-600 text-sm mb-3">Differentiators that make them select one vendor.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Hiring Criteria'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Hiring Criteria': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="Proven implementation playbook; reference customers in financial services."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Firing Criteria</label>
-                                    <p className="text-gray-600 text-sm mb-3">Triggers that get a vendor rejected or replaced.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Firing Criteria'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Firing Criteria': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="System downtime; lack of role-based access control."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800 mb-2">Key Trade-offs</label>
-                                    <p className="text-gray-600 text-sm mb-3">Acceptable compromises or limits.</p>
-                                    <textarea
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        rows="3"
-                                        value={appState.segmentData['Key Trade-offs'] || ''}
-                                        onChange={(e) => {
-                                            const newSegmentData = { ...appState.segmentData, 'Key Trade-offs': e.target.value };
-                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                        }}
-                                        placeholder="May sacrifice customization for faster time to value."
-                                    />
-                                </div>
+                                {
+                                    [
+                                        { name: 'Context', description: 'The business situation or operating environment.', placeholder: 'Quarterly close process across distributed finance teams.' },
+                                        { name: 'Struggling Moments', description: 'Breakdowns, inefficiencies, or risks that trigger the search.', placeholder: 'Errors in revenue recognition delaying financial reporting.' },
+                                        { name: 'Pushes & Pulls', description: 'Internal and external forces moving them toward or away from change.', placeholder: 'CFO pressure to modernize systems vs. IT reluctance to add new vendors.' },
+                                        { name: 'Anxieties & Habits', description: 'Concerns about adopting something new, and inertia with current processes/tools.', placeholder: 'Fear of migration failure; comfort with spreadsheets.' },
+                                        { name: 'Desired Outcomes', description: 'We will refine this outcome into specific types of value in the **Customer Value** section', placeholder: 'Reduce audit prep time by 50%; ensure SOX compliance.' },
+                                        { name: 'Basic Quality (Table Stakes)', description: 'Minimum standards a solution must meet to even be considered.', placeholder: 'SOC2 compliance, API integrations with ERP, enterprise-grade security.' },
+                                        { name: 'Hiring Criteria', description: 'Differentiators that make them select one vendor.', placeholder: 'Proven implementation playbook; reference customers in financial services.' },
+                                        { name: 'Firing Criteria', description: 'Triggers that get a vendor rejected or replaced.', placeholder: 'System downtime; lack of role-based access control.' },
+                                        { name: 'Key Trade-offs', description: 'Acceptable compromises or limits.', placeholder: 'May sacrifice customization for faster time to value.' }
+                                    ].map(field => (
+                                        <div key={field.name}>
+                                            <label className="block text-lg font-semibold text-gray-800 mb-2">{field.name}</label>
+                                            <p className="text-gray-600 text-sm mb-3">{field.description}</p>
+                                            <textarea
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                rows="3"
+                                                value={appState.segmentData[field.name] || ''}
+                                                onChange={(e) => {
+                                                    const newSegmentData = { ...appState.segmentData, [field.name]: e.target.value };
+                                                    setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                }}
+                                                placeholder={field.placeholder}
+                                            />
+                                            <button
+                                                onClick={() => handleValidateJtbd(field.name, appState.segmentData[field.name])}
+                                                className="mt-2 text-sm bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700"
+                                                disabled={validationState[field.name]?.status === 'validating'}
+                                            >
+                                                {validationState[field.name]?.status === 'validating' ? 'Validating...' : 'Validate Against Market'}
+                                            </button>
+                                            {renderValidationResult(field.name)}
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
 
