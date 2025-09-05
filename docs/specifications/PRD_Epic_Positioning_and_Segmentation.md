@@ -95,15 +95,15 @@ This epic is governed by the following strategic decisions:
 * **`CC-FEAT-001: Company Context Setup Modal`** ✅ **COMPLETE**
     * **Description:** One-time welcome modal that captures essential company information for enhanced AI searches and validations.
 
-### Phase 5: Market Intelligence & Validation
+### Phase 5: Market Intelligence & Validation ✅ **COMPLETE**
 * **Goal:** Add market validation capabilities using real-world data.
 * **`UX-FIX-001: Implement Input Validation for JTBD Buttons`** ✅ **COMPLETE**
     * **Description:** A usability enhancement to disable the "Validate Against Market" button when its corresponding text field is empty, preventing unnecessary errors.
-* **`DEV-FEAT-001: Add Developer Reset for Company Context`**
+* **`DEV-FEAT-001: Add Developer Reset for Company Context`** ✅ **COMPLETE**
     * **Description:** A developer-only utility to reset the company context, making it easier to test features that depend on the initial setup modal.
-* **`VAL-FEAT-001: JTBD Element Market Validation`** 📝 **PLANNED**
+* **`VAL-FEAT-001: JTBD Element Market Validation`** ✅ **COMPLETE**
     * **Description:** Individual validation buttons for each JTBD element that perform intelligent market searches.
-* **`VAL-ENH-001: Intelligent Query Generation for JTBD Validation`**
+* **`VAL-ENH-001: Intelligent Query Generation for JTBD Validation`** ✅ **COMPLETE**
     * **Description:** A critical enhancement to the `VAL-FEAT-001` backend logic. Replaces the simple search with a multi-step AI process: keyword extraction, dynamic query formulation, and aggregated analysis.
 
 ### Phase 6: The AI Research Engine (Future Vision)

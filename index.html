@@ -2666,7 +2666,7 @@
                                 <div className="space-y-8">
                         
                         {/* ICP Flow Visualization */}
-                        <ICPFlowVisualization appState={appState} />
+                        <ICPFlowVisualization appState={appState} onNavigate={onNavigate} />
                         
                         <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">1. Define Your Ideal Customer Profile (ICP)</h2>
@@ -3298,10 +3298,82 @@
         };
 
         // ICPFlowVisualization Component
-        const ICPFlowVisualization = ({ appState }) => {
-            // Check if Part 1 (Segment Foundation) is completed
+        const ICPFlowVisualization = ({ appState, onNavigate }) => {
+            const [hoveredSection, setHoveredSection] = useState(null);
+            const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+            
+            // Check completion status for progressive states
             const isSegmentComplete = appState.segmentData && 
                 Object.values(appState.segmentData).some(value => value && value.trim().length > 0);
+            
+            const isICPStarted = appState.positioningData && (
+                appState.positioningData.icp_summary ||
+                (appState.positioningData.values && appState.positioningData.values.some(v => v.val1))
+            );
+            
+            const isICPComplete = appState.positioningData && 
+                appState.positioningData.icp_summary && 
+                appState.positioningData.values && 
+                appState.positioningData.values.length > 0 &&
+                appState.positioningData.values[0].val1;
+            
+            // Tooltip content for each section
+            const tooltips = {
+                segment: {
+                    title: "Market Segment Foundation",
+                    content: "Your foundational customer understanding from Part 1: Segment Foundation. This includes Jobs-to-be-Done, Customer Value propositions, and Willingness to Pay analysis.",
+                    action: "Click to edit Segment Foundation"
+                },
+                bridge: {
+                    title: "Strategic Bridge Analysis",
+                    content: "The analytical work required to transform market segment insights into actionable ICP. This involves validating Product-Problem Fit and confirming your Scalable Business Model.",
+                    action: "This represents your current analysis work"
+                },
+                strategic: {
+                    title: "Strategic ICP - The 'Why'",
+                    content: "The strategic reasoning behind your ICP focused on messaging and positioning. Includes the fundamental motivations, value drivers, and job-to-be-done insights.",
+                    action: "Click to work on Strategic ICP elements"
+                },
+                operational: {
+                    title: "Operational ICP - The 'Where'",
+                    content: "The tactical targeting criteria for campaigns and sales. Includes firmographics, technographics, and behavioral signals for finding and reaching prospects.",
+                    action: "Click to work on Operational ICP elements"
+                }
+            };
+            
+            // Handle mouse events for tooltips
+            const handleMouseEnter = (section, event) => {
+                setHoveredSection(section);
+                const rect = event.currentTarget.getBoundingClientRect();
+                setTooltipPosition({
+                    x: rect.left + rect.width / 2,
+                    y: rect.top - 10
+                });
+            };
+            
+            const handleMouseLeave = () => {
+                setHoveredSection(null);
+            };
+            
+            // Handle click navigation
+            const handleSectionClick = (section) => {
+                switch (section) {
+                    case 'segment':
+                        onNavigate('segment');
+                        window.scrollTo(0, 0);
+                        break;
+                    case 'strategic':
+                    case 'operational':
+                        // Stay on current page but scroll to ICP definition
+                        const icpSection = document.getElementById('section-1');
+                        if (icpSection) {
+                            icpSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            };
             
             return (
                 <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
@@ -3319,20 +3391,32 @@
                             <title id="icp-flow-title">Strategic ICP Development Flow</title>
                             <desc id="icp-flow-desc">Visual representation of the progression from market segment to actionable ICP through product and business model fit</desc>
                             
-                            {/* Market Segment Box (Left) */}
-                            <rect
-                                x="30"
-                                y="100"
-                                width="150"
-                                height="100"
-                                rx="8"
-                                fill={isSegmentComplete ? "#059669" : "#9CA3AF"}
-                                opacity={isSegmentComplete ? "1" : "0.5"}
-                            />
-                            <text x="105" y="125" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="Work Sans, sans-serif">Market Segment</text>
-                            <text x="105" y="145" textAnchor="middle" fill="white" fontSize="12" fontFamily="Outfit, sans-serif">JTBD • Value • WTP</text>
-                            <text x="105" y="165" textAnchor="middle" fill="white" fontSize="10" fontFamily="Outfit, sans-serif">Foundation Complete</text>
-                            <text x="105" y="180" textAnchor="middle" fill="white" fontSize="10" fontFamily="Outfit, sans-serif">{isSegmentComplete ? "✓" : "○"}</text>
+                            {/* Market Segment Box (Left) - Interactive */}
+                            <g
+                                onMouseEnter={(e) => handleMouseEnter('segment', e)}
+                                onMouseLeave={handleMouseLeave}
+                                onClick={() => handleSectionClick('segment')}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <rect
+                                    x="30"
+                                    y="100"
+                                    width="150"
+                                    height="100"
+                                    rx="8"
+                                    fill={isSegmentComplete ? "#059669" : "#9CA3AF"}
+                                    opacity={hoveredSection === 'segment' ? "0.8" : (isSegmentComplete ? "1" : "0.5")}
+                                    stroke={hoveredSection === 'segment' ? "#047857" : "transparent"}
+                                    strokeWidth="2"
+                                />
+                                <text x="105" y="125" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="Work Sans, sans-serif">Market Segment</text>
+                                <text x="105" y="145" textAnchor="middle" fill="white" fontSize="12" fontFamily="Outfit, sans-serif">JTBD • Value • WTP</text>
+                                <text x="105" y="165" textAnchor="middle" fill="white" fontSize="10" fontFamily="Outfit, sans-serif">Foundation Complete</text>
+                                <text x="105" y="180" textAnchor="middle" fill="white" fontSize="10" fontFamily="Outfit, sans-serif">{isSegmentComplete ? "✓" : "○"}</text>
+                                {hoveredSection === 'segment' && (
+                                    <text x="105" y="195" textAnchor="middle" fill="white" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">Click to edit</text>
+                                )}
+                            </g>
                             
                             {/* Bridge Arrow */}
                             <defs>
@@ -3344,12 +3428,27 @@
                             {/* Arrow Line */}
                             <line x1="180" y1="150" x2="380" y2="150" stroke="#6B7280" strokeWidth="3" markerEnd="url(#arrowhead)" />
                             
-                            {/* Bridge Content Box */}
-                            <rect x="220" y="60" width="180" height="80" rx="6" fill="#F3F4F6" stroke="#6B7280" strokeWidth="1" />
-                            <text x="310" y="80" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Add Product &amp; Business</text>
-                            <text x="310" y="95" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Model Fit</text>
-                            <text x="310" y="115" textAnchor="middle" fill="#6B7280" fontSize="10" fontFamily="Outfit, sans-serif">Product-Problem Fit</text>
-                            <text x="310" y="128" textAnchor="middle" fill="#6B7280" fontSize="10" fontFamily="Outfit, sans-serif">Scalable Business Model</text>
+                            {/* Bridge Content Box - Interactive */}
+                            <g
+                                onMouseEnter={(e) => handleMouseEnter('bridge', e)}
+                                onMouseLeave={handleMouseLeave}
+                                style={{ cursor: 'help' }}
+                            >
+                                <rect 
+                                    x="220" 
+                                    y="60" 
+                                    width="180" 
+                                    height="80" 
+                                    rx="6" 
+                                    fill={hoveredSection === 'bridge' ? "#E5E7EB" : "#F3F4F6"} 
+                                    stroke={hoveredSection === 'bridge' ? "#374151" : "#6B7280"} 
+                                    strokeWidth="1" 
+                                />
+                                <text x="310" y="80" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Add Product &amp; Business</text>
+                                <text x="310" y="95" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Model Fit</text>
+                                <text x="310" y="115" textAnchor="middle" fill="#6B7280" fontSize="10" fontFamily="Outfit, sans-serif">Product-Problem Fit</text>
+                                <text x="310" y="128" textAnchor="middle" fill="#6B7280" fontSize="10" fontFamily="Outfit, sans-serif">Scalable Business Model</text>
+                            </g>
                             
                             {/* Actionable ICP Container (Right) */}
                             <rect x="420" y="50" width="350" height="200" rx="8" fill="#F9FAFB" stroke="#D1D5DB" strokeWidth="1" />
@@ -3357,33 +3456,77 @@
                             {/* Header */}
                             <text x="595" y="75" textAnchor="middle" fill="#111827" fontSize="16" fontWeight="bold" fontFamily="Work Sans, sans-serif">Actionable ICP</text>
                             
-                            {/* Strategic Why Section (Left Half) */}
-                            <rect x="440" y="90" width="155" height="140" rx="6" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1" />
-                            <text x="517.5" y="110" textAnchor="middle" fill="#166534" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Strategic Why</text>
-                            <text x="455" y="130" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Jobs to be Done</text>
-                            <text x="455" y="145" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Value Drivers</text>
-                            <text x="455" y="160" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Buyer Motivations</text>
-                            <text x="517.5" y="185" textAnchor="middle" fill="#059669" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">For messaging</text>
-                            <text x="517.5" y="200" textAnchor="middle" fill="#059669" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">&amp; positioning</text>
+                            {/* Strategic Why Section (Left Half) - Interactive */}
+                            <g
+                                onMouseEnter={(e) => handleMouseEnter('strategic', e)}
+                                onMouseLeave={handleMouseLeave}
+                                onClick={() => handleSectionClick('strategic')}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <rect 
+                                    x="440" 
+                                    y="90" 
+                                    width="155" 
+                                    height="140" 
+                                    rx="6" 
+                                    fill={hoveredSection === 'strategic' ? "#BBF7D0" : "#DCFCE7"}
+                                    stroke={hoveredSection === 'strategic' ? "#059669" : "#16A34A"} 
+                                    strokeWidth={hoveredSection === 'strategic' ? "2" : "1"}
+                                />
+                                <text x="517.5" y="110" textAnchor="middle" fill="#166534" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Strategic Why</text>
+                                <text x="455" y="130" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Jobs to be Done</text>
+                                <text x="455" y="145" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Value Drivers</text>
+                                <text x="455" y="160" fill="#15803D" fontSize="10" fontFamily="Outfit, sans-serif">• Buyer Motivations</text>
+                                <text x="517.5" y="185" textAnchor="middle" fill="#059669" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">For messaging</text>
+                                <text x="517.5" y="200" textAnchor="middle" fill="#059669" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">&amp; positioning</text>
+                                {hoveredSection === 'strategic' && (
+                                    <text x="517.5" y="215" textAnchor="middle" fill="#059669" fontSize="8" fontFamily="Outfit, sans-serif" fontStyle="italic">Click to work on ICP</text>
+                                )}
+                            </g>
                             
-                            {/* Operational Where Section (Right Half) */}
-                            <rect x="610" y="90" width="155" height="140" rx="6" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="1" />
-                            <text x="687.5" y="110" textAnchor="middle" fill="#92400E" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Operational Where</text>
-                            <text x="625" y="130" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Firmographics</text>
-                            <text x="625" y="145" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Technographics</text>
-                            <text x="625" y="160" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Behavioral Signals</text>
-                            <text x="687.5" y="185" textAnchor="middle" fill="#D97706" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">For targeting</text>
-                            <text x="687.5" y="200" textAnchor="middle" fill="#D97706" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">&amp; campaigns</text>
+                            {/* Operational Where Section (Right Half) - Interactive */}
+                            <g
+                                onMouseEnter={(e) => handleMouseEnter('operational', e)}
+                                onMouseLeave={handleMouseLeave}
+                                onClick={() => handleSectionClick('operational')}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <rect 
+                                    x="610" 
+                                    y="90" 
+                                    width="155" 
+                                    height="140" 
+                                    rx="6" 
+                                    fill={hoveredSection === 'operational' ? "#FDE68A" : "#FEF3C7"}
+                                    stroke={hoveredSection === 'operational' ? "#D97706" : "#F59E0B"} 
+                                    strokeWidth={hoveredSection === 'operational' ? "2" : "1"}
+                                />
+                                <text x="687.5" y="110" textAnchor="middle" fill="#92400E" fontSize="12" fontWeight="bold" fontFamily="Work Sans, sans-serif">Operational Where</text>
+                                <text x="625" y="130" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Firmographics</text>
+                                <text x="625" y="145" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Technographics</text>
+                                <text x="625" y="160" fill="#A16207" fontSize="10" fontFamily="Outfit, sans-serif">• Behavioral Signals</text>
+                                <text x="687.5" y="185" textAnchor="middle" fill="#D97706" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">For targeting</text>
+                                <text x="687.5" y="200" textAnchor="middle" fill="#D97706" fontSize="9" fontFamily="Outfit, sans-serif" fontStyle="italic">&amp; campaigns</text>
+                                {hoveredSection === 'operational' && (
+                                    <text x="687.5" y="215" textAnchor="middle" fill="#D97706" fontSize="8" fontFamily="Outfit, sans-serif" fontStyle="italic">Click to work on ICP</text>
+                                )}
+                            </g>
                         </svg>
                     </div>
                     
                     {/* Mobile Layout */}
                     <div className="md:hidden space-y-6">
-                        {/* Market Segment */}
-                        <div className={`p-4 rounded-lg text-center ${isSegmentComplete ? 'bg-green-600 text-white' : 'bg-gray-400 text-white opacity-50'}`}>
+                        {/* Market Segment - Interactive */}
+                        <div 
+                            className={`p-4 rounded-lg text-center cursor-pointer transition-all duration-200 ${isSegmentComplete ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-400 text-white opacity-50 hover:opacity-70'}`}
+                            onClick={() => handleSectionClick('segment')}
+                            onTouchStart={(e) => handleMouseEnter('segment', e)}
+                            onTouchEnd={handleMouseLeave}
+                        >
                             <h4 className="font-bold text-lg mb-1">Market Segment</h4>
                             <p className="text-sm">JTBD • Value • WTP</p>
                             <p className="text-xs mt-2">Foundation {isSegmentComplete ? '✓ Complete' : '○ Pending'}</p>
+                            <p className="text-xs mt-1 italic">Tap to edit</p>
                         </div>
                         
                         {/* Arrow Down */}
@@ -3411,8 +3554,13 @@
                         <div className="border border-gray-200 rounded-lg p-4">
                             <h4 className="font-bold text-gray-800 text-center mb-4">Actionable ICP</h4>
                             
-                            {/* Strategic Why */}
-                            <div className="bg-green-50 border border-green-200 p-3 rounded-lg mb-3">
+                            {/* Strategic Why - Interactive */}
+                            <div 
+                                className="bg-green-50 border border-green-200 p-3 rounded-lg mb-3 cursor-pointer transition-all duration-200 hover:bg-green-100 hover:border-green-300"
+                                onClick={() => handleSectionClick('strategic')}
+                                onTouchStart={(e) => handleMouseEnter('strategic', e)}
+                                onTouchEnd={handleMouseLeave}
+                            >
                                 <h5 className="font-bold text-green-700 text-center mb-2">Strategic Why</h5>
                                 <ul className="text-sm text-green-600 space-y-1">
                                     <li>• Jobs to be Done</li>
@@ -3420,10 +3568,16 @@
                                     <li>• Buyer Motivations</li>
                                 </ul>
                                 <p className="text-xs text-green-600 text-center mt-2 italic">For messaging & positioning</p>
+                                <p className="text-xs text-green-500 text-center mt-1 italic">Tap to work on ICP</p>
                             </div>
                             
-                            {/* Operational Where */}
-                            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                            {/* Operational Where - Interactive */}
+                            <div 
+                                className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-yellow-100 hover:border-yellow-300"
+                                onClick={() => handleSectionClick('operational')}
+                                onTouchStart={(e) => handleMouseEnter('operational', e)}
+                                onTouchEnd={handleMouseLeave}
+                            >
                                 <h5 className="font-bold text-yellow-700 text-center mb-2">Operational Where</h5>
                                 <ul className="text-sm text-yellow-600 space-y-1">
                                     <li>• Firmographics</li>
@@ -3431,6 +3585,7 @@
                                     <li>• Behavioral Signals</li>
                                 </ul>
                                 <p className="text-xs text-yellow-600 text-center mt-2 italic">For targeting & campaigns</p>
+                                <p className="text-xs text-yellow-500 text-center mt-1 italic">Tap to work on ICP</p>
                             </div>
                         </div>
                     </div>
@@ -3440,7 +3595,29 @@
                         <p className="text-sm text-gray-600 italic">
                             This visualization shows how your market segment analysis transforms into targeted ICP insights for both strategic messaging and operational execution.
                         </p>
+                        <p className="text-xs text-gray-500 mt-2">
+                            Hover over sections for more details • Click to navigate
+                        </p>
                     </div>
+                    
+                    {/* Interactive Tooltip */}
+                    {hoveredSection && tooltips[hoveredSection] && (
+                        <div 
+                            className="fixed z-50 bg-gray-900 text-white p-4 rounded-lg shadow-xl max-w-xs"
+                            style={{
+                                left: tooltipPosition.x - 150,
+                                top: tooltipPosition.y - 120,
+                                pointerEvents: 'none'
+                            }}
+                        >
+                            <div className="text-sm font-semibold mb-2">{tooltips[hoveredSection].title}</div>
+                            <div className="text-xs leading-relaxed mb-2">{tooltips[hoveredSection].content}</div>
+                            <div className="text-xs text-gray-300 italic">{tooltips[hoveredSection].action}</div>
+                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
+                                <div className="w-3 h-3 bg-gray-900 transform rotate-45"></div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
