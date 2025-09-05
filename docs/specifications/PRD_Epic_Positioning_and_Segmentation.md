@@ -19,8 +19,9 @@
 | 2.4     | 2025-09-04 | Gemini/Pete   | Added VAL-ENH-001 to refactor JTBD validation with intelligent query generation. |
 | 2.5     | 2025-09-04 | Gemini/Pete   | Added VAL-ENH-002 to upgrade validation scoring to "Signal Confidence" and implement "Smart Suggestions". |
 | 2.6     | 2025-09-04 | Gemini/Pete   | Added UX-FIX-001 to disable the JTBD validation button for empty inputs.     |
+| 2.7     | 2025-09-04 | Claude/Pete   | Completed UX-FIX-001 - JTBD validation button input validation enhancement. |
 
-**Version:** 2.6
+**Version:** 2.7
 **Date:** 2025-09-04
 **Status:** Approved for Implementation
 
@@ -93,7 +94,7 @@ This epic is governed by the following strategic decisions:
 
 ### Phase 5: Market Intelligence & Validation
 * **Goal:** Add market validation capabilities using real-world data.
-* **`UX-FIX-001: Implement Input Validation for JTBD Buttons`**
+* **`UX-FIX-001: Implement Input Validation for JTBD Buttons`** ✅ **COMPLETE**
     * **Description:** A usability enhancement to disable the "Validate Against Market" button when its corresponding text field is empty, preventing unnecessary errors.
 * **`DEV-FEAT-001: Add Developer Reset for Company Context`**
     * **Description:** A developer-only utility to reset the company context, making it easier to test features that depend on the initial setup modal.
@@ -382,7 +383,7 @@ The design emphasizes the strategic insight that an ICP isn't just demographics�
     1.  **Disable Button:** The "Validate Against Market" button for each JTBD element must be disabled if its corresponding textarea input is empty or contains only whitespace. This can be achieved by adding a `disabled` attribute to the button element based on the input's value.
     2.  **Visual State:** When disabled, the button's styling should visually indicate its inactive state (e.g., lower opacity, `cursor-not-allowed`).
     3.  **Update Error Message:** As a fallback, update the error message logic. If an API call fails for reasons other than an empty input (e.g., network error), the message should be more specific, like "Error: Validation service is unavailable. Please try again later."
-* **Acceptance Criteria:**
-    * The "Validate Against Market" button is visibly disabled and not clickable when its associated textarea is empty.
-    * The button becomes enabled as soon as the user types text into the textarea.
-    * If the button is clicked when enabled and an API error occurs, a more helpful error message is displayed.
+* **Acceptance Criteria:** ✅ **ALL MET**
+    * ✅ The "Validate Against Market" button is visibly disabled and not clickable when its associated textarea is empty.
+    * ✅ The button becomes enabled as soon as the user types text into the textarea.
+    * ✅ If the button is clicked when enabled and an API error occurs, a more helpful error message is displayed.
