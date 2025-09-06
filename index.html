@@ -866,8 +866,20 @@
 
             // Handle the analysis request
             const handleAnalyze = async () => {
-                if (!isValidUrl(inputUrl)) {
-                    setError('Please enter a valid URL starting with http:// or https://');
+                if (!inputUrl.trim()) {
+                    setError('Please enter a company website URL');
+                    return;
+                }
+
+                // Auto-prepend https:// if no protocol is provided
+                let processedUrl = inputUrl.trim();
+                if (!processedUrl.match(/^https?:\/\//)) {
+                    processedUrl = 'https://' + processedUrl;
+                }
+
+                // Validate the processed URL
+                if (!isValidUrl(processedUrl)) {
+                    setError('Please enter a valid website URL (e.g., google.com or https://google.com)');
                     return;
                 }
 
@@ -884,7 +896,7 @@
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            companyUrl: inputUrl,
+                            companyUrl: processedUrl,
                             companyContext: appState.companyContext || {}
                         })
                     });
@@ -971,16 +983,16 @@
                         {/* URL Input Section */}
                         <div className="space-y-3">
                             <label className="block text-sm font-medium text-gray-700">
-                                Enter a company website URL (include https:// or http://)
+                                Enter a company website URL
                             </label>
                             <input
-                                type="url"
+                                type="text"
                                 value={inputUrl}
                                 onChange={(e) => {
                                     setInputUrl(e.target.value);
                                     setError(''); // Clear error on input change
                                 }}
-                                placeholder="https://example.com"
+                                placeholder="google.com or https://google.com"
                                 className={`w-full p-3 border rounded-md ${
                                     error && !isLoading ? 'border-red-500' : 'border-gray-300'
                                 } focus:outline-none focus:ring-2 focus:ring-scale-blue`}
@@ -988,9 +1000,9 @@
                             />
                             <button
                                 onClick={handleAnalyze}
-                                disabled={isLoading || !inputUrl.trim()}
+                                disabled={isLoading}
                                 className={`w-full px-6 py-3 font-bold rounded-md transition-colors ${
-                                    isLoading || !inputUrl.trim()
+                                    isLoading
                                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                         : 'bg-scale-blue text-white hover:bg-opacity-90'
                                 }`}
