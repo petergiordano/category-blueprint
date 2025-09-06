@@ -1,4 +1,3 @@
-# feature_request_template
 
 ---
 name: New Issue (Feature / Enhancement / Bug)
