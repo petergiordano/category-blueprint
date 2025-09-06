@@ -283,19 +283,12 @@
 
                         <main className="w-full max-w-md text-center">
                             <button 
-                                onClick={() => onNavigate('segment')}
+                                onClick={() => onNavigate('analysis')}
                                 className="w-full scale-green-bg text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:bg-opacity-90 transition-transform transform hover:scale-105"
                             >
-                                Start the Blueprint →
+                                Analyze with AI →
                             </button>
                         </main>
-
-                        {/* JTBD Discovery Agent - AI Research Tools */}
-                        <JTBDDiscoveryAgent 
-                            appState={appState}
-                            setAppState={setAppState}
-                            onNavigate={onNavigate}
-                        />
 
                         <p className="text-sm text-gray-500 mt-8 text-center max-w-2xl mx-auto">
                             Your progress is saved automatically in your browser. This data is private and is not sent to any server.
@@ -1069,6 +1062,172 @@
             );
         };
 
+        // AnalysisView Component - Guided AI analysis step before Segment Foundation
+        const AnalysisView = ({ appState, setAppState, onNavigate }) => {
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState('');
+            const [loadingMessage, setLoadingMessage] = useState('');
+
+            // Extract company context
+            const companyContext = appState.companyContext || {};
+            const companyName = companyContext.companyName || 'Your Company';
+            const companyWebsite = companyContext.companyWebsite || '';
+
+            // Handle the analysis request
+            const handleAnalyze = async () => {
+                if (!companyWebsite) {
+                    setError('Company website is required. Please update your company information.');
+                    return;
+                }
+
+                setIsLoading(true);
+                setError('');
+                setLoadingMessage('Analyzing your company website...');
+
+                try {
+                    // Call the existing discover-jtbd API endpoint
+                    const response = await fetch('/api/discover-jtbd', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            companyUrl: companyWebsite,
+                            companyContext: companyContext
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Analysis failed');
+                    }
+
+                    setLoadingMessage('Generating JTBD framework...');
+
+                    if (data.success && data.jtbdAnalysis) {
+                        // Map the AI-generated JTBD to the segment data structure
+                        const segmentData = {
+                            'Context': data.jtbdAnalysis.Context || '',
+                            'Struggling Moments': data.jtbdAnalysis['Struggling Moments'] || '',
+                            'Pushes & Pulls': data.jtbdAnalysis.Pushes || '',
+                            'Anxieties & Habits': data.jtbdAnalysis.Anxieties || '',
+                            'Desired Outcomes': data.jtbdAnalysis['Desired Outcomes'] || '',
+                            'Basic Quality (Table Stakes)': data.jtbdAnalysis['Basic Quality (Table Stakes)'] || '',
+                            'Hiring Criteria': data.jtbdAnalysis['Hiring Criteria'] || '',
+                            'Firing Criteria': data.jtbdAnalysis['Firing Criteria'] || '',
+                            'Key Trade-offs': data.jtbdAnalysis['Key Trade-offs'] || ''
+                        };
+
+                        // Update app state with AI-generated data and flag
+                        setAppState(prev => ({
+                            ...prev,
+                            segmentData: segmentData,
+                            aiGeneratedSegment: true
+                        }));
+
+                        // Navigate to the segment foundation tool
+                        onNavigate('segment');
+                    } else {
+                        throw new Error(data.error || 'No analysis results returned');
+                    }
+                } catch (err) {
+                    console.error('Analysis error:', err);
+                    setError(err.message || 'Analysis failed. Please try again.');
+                } finally {
+                    setIsLoading(false);
+                    setLoadingMessage('');
+                }
+            };
+
+            return (
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="min-h-screen flex flex-col items-center justify-center">
+                        <div className="max-w-2xl w-full text-center">
+                            <header className="mb-12">
+                                <h1 className="text-4xl md:text-5xl font-bold scale-green-text mb-4">
+                                    Let's Analyze Your Company
+                                </h1>
+                                <p className="text-lg text-gray-600">
+                                    We'll analyze your website and market presence to create a data-driven 
+                                    foundation for your GTM strategy.
+                                </p>
+                            </header>
+
+                            {/* Company Context Display */}
+                            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                                <h2 className="text-xl font-bold text-gray-800 mb-4">Company Information</h2>
+                                <div className="space-y-2 text-left">
+                                    <div>
+                                        <span className="font-medium text-gray-600">Company: </span>
+                                        <span className="text-gray-800">{companyName}</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-gray-600">Website: </span>
+                                        <span className="text-gray-800">{companyWebsite}</span>
+                                    </div>
+                                    {companyContext.industry && (
+                                        <div>
+                                            <span className="font-medium text-gray-600">Industry: </span>
+                                            <span className="text-gray-800">{companyContext.industry}</span>
+                                        </div>
+                                    )}
+                                    {companyContext.productName && (
+                                        <div>
+                                            <span className="font-medium text-gray-600">Product: </span>
+                                            <span className="text-gray-800">{companyContext.productName}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Main CTA or Loading State */}
+                            {isLoading ? (
+                                <div className="p-8 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div className="flex items-center justify-center space-x-3 mb-4">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-scale-blue"></div>
+                                        <span className="text-lg font-medium text-gray-700">
+                                            {loadingMessage || 'Processing analysis...'}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        This may take 30-60 seconds as we analyze your website and gather market intelligence.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <button
+                                        onClick={handleAnalyze}
+                                        className="w-full scale-green-bg text-white font-bold text-xl py-6 px-8 rounded-xl shadow-lg hover:bg-opacity-90 transition-transform transform hover:scale-105"
+                                    >
+                                        Analyze {companyName} & Generate JTBD Framework →
+                                    </button>
+
+                                    {error && (
+                                        <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+                                            {error}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Skip Option */}
+                            {!isLoading && (
+                                <div className="mt-8 pt-6 border-t border-gray-200">
+                                    <button
+                                        onClick={() => onNavigate('segment')}
+                                        className="text-gray-500 hover:text-gray-700 underline text-sm"
+                                    >
+                                        Skip analysis and start with blank forms
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // Dynamic Field Components
         const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2, onAnalyze, analysisResult }) => (
             <div className="space-y-3">
@@ -1576,6 +1735,36 @@
 
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen pb-16">
+                    {/* AI-Generated Banner */}
+                    {appState.aiGeneratedSegment && !appState.aiGeneratedBannerDismissed && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="flex-shrink-0">
+                                    <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-blue-800">
+                                        AI-Generated Draft
+                                    </p>
+                                    <p className="text-sm text-blue-600">
+                                        This form has been pre-populated with AI-generated insights based on your company analysis. Review and edit as needed.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setAppState(prev => ({ ...prev, aiGeneratedBannerDismissed: true }))}
+                                className="flex-shrink-0 ml-4 text-blue-400 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-50 rounded-md p-1"
+                                aria-label="Dismiss banner"
+                            >
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    )}
+                    
                     <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
@@ -4173,6 +4362,8 @@
 
             const renderCurrentView = () => {
                 switch (appState.currentView) {
+                    case 'analysis':
+                        return <AnalysisView appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'segment':
                         return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'icp':

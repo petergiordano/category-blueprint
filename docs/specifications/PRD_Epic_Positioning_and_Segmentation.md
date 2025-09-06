@@ -24,8 +24,9 @@
 | 2.9     | 2025-09-05 | Claude Code   | Completed ICP-VIS-001 - Interactive ICP Visualizer implementation and integration. |
 | 3.0     | 2025-09-05 | Claude Code   | Enhanced ICP-VIS-001 with true interactivity - added hover tooltips, click navigation, and progressive visual states. |
 | 3.1     | 2025-09-05 | Claude Code   | Production deployment v1.0.0-positioning-epic complete. All phases 1-5 deployed and validated. |
+| 3.2     | 2025-09-05 | Gemini/Pete   | Added UX-FEAT-001 to streamline onboarding with a pre-segment AI analysis step.                   |
 
-**Version:** 3.1
+**Version:** 3.2
 **Date:** 2025-09-05
 **Status:** Approved for Implementation
 
@@ -109,6 +110,21 @@ This epic is governed by the following strategic decisions:
 
 ### Phase 6: The AI Research Engine (Future Vision)
 * **Goal:** Evolve the tool into a proactive, generative research engine.
+* **`UX-FEAT-001: Pre-Segment AI Analysis Integration`** ✅ **COMPLETE**
+    * **User Story:** As a new user, I want the application to guide me through an automated analysis of my company *before* I start filling out forms, so that I begin with a data-driven, AI-generated draft of my Segment Foundation, making the process faster and more insightful.
+    * **Implementation Details:**
+        *   **Refactor App Flow:** The primary user flow will be changed from `Home -> Segment` to `Home -> Analysis -> Segment`.
+        *   **New `AnalysisView` Component:** This new view will be triggered from the "Start" button on the `Home` view. It will display the user's company context and a single "Analyze & Generate JTBD" button.
+        *   **API Integration:** The "Analyze" button will call the existing `/api/discover-jtbd` endpoint.
+        *   **Auto-Population:** On a successful API response, the `appState.segmentData` will be populated with the 9 JTBD elements, and a new flag `appState.aiGeneratedSegment = true` will be set. The user will then be automatically navigated to the `segment` view.
+        *   **UI Enhancements:**
+            *   The `JTBDDiscoveryAgent` component will be removed from the `Home` view.
+            *   A dismissible banner will be added to the `SegmentFoundationTool` that is displayed only when `appState.aiGeneratedSegment` is true. The banner will read: "✨ This is an AI-generated starting point based on our analysis of your company. All fields are fully editable."
+    * **Acceptance Criteria:**
+        *   Clicking "Start the Blueprint" navigates to the new `/analysis` view.
+        *   The `/analysis` view correctly calls the backend and, on success, populates `appState` and navigates to the `/segment` view.
+        *   The `SegmentFoundationTool` correctly displays the dismissible banner when data is AI-generated.
+        *   The old research tool is no longer present on the `Home` view.
 * **`RES-FEAT-001: Outside-In JTBD Discovery Agent`** 📝 **FUTURE**
     * **Description:** Automated research on target companies to generate data-driven JTBD hypotheses.
 
