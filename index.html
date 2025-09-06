@@ -290,6 +290,13 @@
                             </button>
                         </main>
 
+                        {/* JTBD Discovery Agent - AI Research Tools */}
+                        <JTBDDiscoveryAgent 
+                            appState={appState}
+                            setAppState={setAppState}
+                            onNavigate={onNavigate}
+                        />
+
                         <p className="text-sm text-gray-500 mt-8 text-center max-w-2xl mx-auto">
                             Your progress is saved automatically in your browser. This data is private and is not sent to any server.
                         </p>
@@ -834,6 +841,217 @@
                                 Close
                             </button>
                         </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // JTBD Discovery Agent Component - AI-powered company analysis for automatic JTBD generation
+        const JTBDDiscoveryAgent = ({ appState, setAppState, onNavigate }) => {
+            const [inputUrl, setInputUrl] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [jtbdResults, setJtbdResults] = useState(null);
+            const [error, setError] = useState('');
+            const [loadingMessage, setLoadingMessage] = useState('');
+
+            // URL validation helper
+            const isValidUrl = (url) => {
+                try {
+                    const urlObj = new URL(url);
+                    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+                } catch {
+                    return false;
+                }
+            };
+
+            // Handle the analysis request
+            const handleAnalyze = async () => {
+                if (!isValidUrl(inputUrl)) {
+                    setError('Please enter a valid URL starting with http:// or https://');
+                    return;
+                }
+
+                setIsLoading(true);
+                setError('');
+                setJtbdResults(null);
+                setLoadingMessage('Analyzing website content...');
+
+                try {
+                    // Call the API endpoint
+                    const response = await fetch('/api/discover-jtbd', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            companyUrl: inputUrl,
+                            companyContext: appState.companyContext || {}
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to analyze company');
+                    }
+
+                    // Update loading message during different phases
+                    if (data.status === 'scraping') {
+                        setLoadingMessage('Gathering market intelligence...');
+                    } else if (data.status === 'analyzing') {
+                        setLoadingMessage('Generating JTBD insights...');
+                    }
+
+                    if (data.success && data.jtbdAnalysis) {
+                        setJtbdResults(data.jtbdAnalysis);
+                        setLoadingMessage('');
+                    } else {
+                        throw new Error(data.error || 'No results returned');
+                    }
+                } catch (err) {
+                    console.error('Analysis error:', err);
+                    setError(err.message || 'Failed to analyze company. Please try again.');
+                } finally {
+                    setIsLoading(false);
+                    setLoadingMessage('');
+                }
+            };
+
+            // Handle using the results as segment foundation
+            const handleUseAsFoundation = () => {
+                if (!jtbdResults) return;
+
+                // Map the AI-generated JTBD to the segment data structure
+                const segmentData = {
+                    context: jtbdResults.Context || '',
+                    strugglingMoments: jtbdResults['Struggling Moments'] || jtbdResults.StrugglingMoments || '',
+                    pushes: jtbdResults.Pushes || '',
+                    anxieties: jtbdResults.Anxieties || '',
+                    desiredOutcomes: jtbdResults['Desired Outcomes'] || jtbdResults.DesiredOutcomes || '',
+                    basicQuality: jtbdResults['Basic Quality (Table Stakes)'] || jtbdResults.BasicQuality || '',
+                    hiringCriteria: jtbdResults['Hiring Criteria'] || jtbdResults.HiringCriteria || '',
+                    firingCriteria: jtbdResults['Firing Criteria'] || jtbdResults.FiringCriteria || '',
+                    keyTradeoffs: jtbdResults['Key Trade-offs'] || jtbdResults.KeyTradeoffs || ''
+                };
+
+                // Update app state with the generated segment data
+                setAppState(prev => ({
+                    ...prev,
+                    segmentData: segmentData,
+                    aiGeneratedSegment: true // Flag to indicate this was AI-generated
+                }));
+
+                // Navigate to the segment foundation tool
+                onNavigate('segment');
+            };
+
+            // JTBD element labels for display
+            const jtbdLabels = {
+                'Context': 'Context',
+                'Struggling Moments': 'Struggling Moments',
+                'Pushes': 'Pushes',
+                'Anxieties': 'Anxieties',
+                'Desired Outcomes': 'Desired Outcomes',
+                'Basic Quality (Table Stakes)': 'Basic Quality (Table Stakes)',
+                'Hiring Criteria': 'Hiring Criteria',
+                'Firing Criteria': 'Firing Criteria',
+                'Key Trade-offs': 'Key Trade-offs'
+            };
+
+            return (
+                <div className="bg-white rounded-lg shadow-md p-6 mt-8">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold scale-green-text mb-2">AI Research Tools</h2>
+                        <p className="text-gray-600">
+                            Automatically analyze a company's website to generate a data-driven JTBD hypothesis
+                        </p>
+                    </div>
+
+                    <div className="space-y-4">
+                        {/* URL Input Section */}
+                        <div className="flex gap-3">
+                            <input
+                                type="url"
+                                value={inputUrl}
+                                onChange={(e) => {
+                                    setInputUrl(e.target.value);
+                                    setError(''); // Clear error on input change
+                                }}
+                                placeholder="https://example.com"
+                                className={`flex-1 p-3 border rounded-md ${
+                                    error && !isLoading ? 'border-red-500' : 'border-gray-300'
+                                } focus:outline-none focus:ring-2 focus:ring-scale-blue`}
+                                disabled={isLoading}
+                            />
+                            <button
+                                onClick={handleAnalyze}
+                                disabled={isLoading || !inputUrl.trim()}
+                                className={`px-6 py-3 font-bold rounded-md transition-colors ${
+                                    isLoading || !inputUrl.trim()
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        : 'bg-scale-blue text-white hover:bg-opacity-90'
+                                }`}
+                            >
+                                {isLoading ? 'Analyzing...' : 'Analyze Company & Generate JTBD'}
+                            </button>
+                        </div>
+
+                        {/* Error Display */}
+                        {error && !isLoading && (
+                            <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        {/* Loading State */}
+                        {isLoading && (
+                            <div className="p-6 bg-blue-50 border border-blue-200 rounded-md">
+                                <div className="flex items-center space-x-3">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-scale-blue"></div>
+                                    <span className="text-gray-700 font-medium">
+                                        {loadingMessage || 'Processing your request...'}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    This may take 30-60 seconds as we analyze the website and gather market intelligence.
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Results Display */}
+                        {jtbdResults && !isLoading && (
+                            <div className="space-y-4">
+                                <div className="border-t pt-4">
+                                    <h3 className="text-lg font-bold scale-green-text mb-4">
+                                        Generated JTBD Analysis
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {Object.entries(jtbdLabels).map(([key, label]) => {
+                                            const value = jtbdResults[key] || jtbdResults[key.replace(/\s+/g, '')] || '';
+                                            if (!value) return null;
+
+                                            return (
+                                                <div key={key} className="border-l-4 border-scale-gold pl-4 py-2">
+                                                    <h4 className="font-bold text-gray-800 mb-1">{label}</h4>
+                                                    <p className="text-gray-700 text-sm leading-relaxed">{value}</p>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Action Button */}
+                                <div className="flex justify-end pt-4 border-t">
+                                    <button
+                                        onClick={handleUseAsFoundation}
+                                        className="px-6 py-3 bg-scale-green text-white font-bold rounded-md hover:bg-opacity-90 transition-colors flex items-center gap-2"
+                                    >
+                                        Use as Segment Foundation
+                                        <span>→</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             );
