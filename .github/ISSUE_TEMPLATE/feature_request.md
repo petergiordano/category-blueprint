@@ -1,15 +1,15 @@
 # feature_request_template
 
 ---
-name: Feature Request
-about: Suggest a new feature, enhancement, or improvement
-title: "[FEAT-ID]: [Feature Name]"
-labels: enhancement, status-todo
+name: New Issue (Feature / Enhancement / Bug)
+about: Create a new feature, enhancement, or bug report
+title: "[FEAT-ID] / [ENH-ID] / [BUG-ID]: [Title]"
+labels: 
 assignees: ''
 ---
 
 ## Description
-[One sentence purpose of the feature]
+[One sentence purpose of the feature, enhancement, or bug]
 
 ## Acceptance Criteria
 - [ ] Criterion 1
@@ -19,6 +19,6 @@ assignees: ''
 Phase X: [Phase Name]
 
 ## Status
-⬜ Todo  
-🚧 In Progress  
-✅ Complete (Date)
+⬜ Todo  *(select one)*  
+🚧 In Progress  *(select one)*  
+✅ Complete (Date)  *(select one)*
