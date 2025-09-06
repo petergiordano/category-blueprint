@@ -1,279 +1,256 @@
-# CLAUDE.md
+# CLAUDE.md - Database-Driven Development Protocol
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Build & Development Commands
+**Version**: 2.0 - Database-Driven Protocol  
+**Focus**: GitHub Issues & Projects as primary data source  
+**Philosophy**: Database over files, relationships over isolation
 
-### Project Initialization
+---
+
+## Core Development Principles
+
+### 1. Database-First Approach
+- **GitHub Issues**: Primary data source for all features, bugs, enhancements
+- **GitHub Projects**: Live status tracking and workflow management
+- **File-based docs**: Reference only, never duplicate GitHub Issues data
+
+### 2. Relationship-Driven Development
+- All issues must have clear relationships (epic, depends-on, blocks, subtask)
+- Use relationship comments and labels to make connections visible
+- No isolated issues - everything connects to something
+
+### 3. AI-Powered Implementation
+- Follow `docs/specifications/dev-cycle.md` workflow for component development
+- Create issues first, implementation second
+- Maintain bidirectional links between issues and implementation
+
+---
+
+## GitHub Issues Management
+
+### Issue Creation Commands
 ```bash
-# Initialize a new project from this template
-./scripts/initialize-project.sh
-# Follow prompts to configure project domain, language, and Gyro features
+# Feature issues
+./scripts/create-feature-issue.sh "Feature Name" "Description" "Phase 6" "High"
+
+# Enhancements  
+./scripts/create-enhancement-issue.sh "Enhancement Name" "Description" "Phase 6" "Medium"
+
+# Bug fixes
+./scripts/create-bug-issue.sh "Bug Name" "Description" "Phase 6" "High"
+
+# Universal AI-powered creation
+./scripts/create-issue-ai.sh "FEAT" "Title" "Description" "Phase 6"
 ```
 
-### Testing Framework
+### Epic & Relationship Management
 ```bash
-# Run comprehensive tests with validation
-python scripts/test-framework.py . --save-reports
+# Create epic with related features
+./scripts/create-epic-issues.sh "Epic Title" "Epic Description" "Phase 6" "Component 1" "Component 2"
 
-# Run specific test types
-python scripts/test-framework.py . --types unit integration
+# Link related issues
+./scripts/link-related-issues.sh "FEAT-001" "FEAT-002" "depends-on"
+./scripts/link-related-issues.sh "EPIC-001" "FEAT-001" "epic"
 
-# Run all validations
-python scripts/validation/run-all-validations.py .
-
-# Specific validations
-python scripts/validation/validate-specifications.py .
-python scripts/validation/validate-hooks.py .
-python scripts/validation/validate-production-ready.py . --environment production
-python scripts/validation/validate-steering.py .
+# Update issue status
+./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
 ```
 
-### Project Setup Validation
+### Status Queries
 ```bash
-# Validate project setup
-python scripts/validate-setup.py
+# List current work
+gh issue list --repo petergiordano/category-blueprint --assignee @me --state open
+
+# View relationships
+gh issue list --repo petergiordano/category-blueprint --label has-dependencies
+gh issue list --repo petergiordano/category-blueprint --label epic-item
+
+# Check project status
+gh project list --owner petergiordano
 ```
 
-### Specification Generation
-```bash
-# Generate requirements from PRD
-python scripts/generate-requirements.py
+---
 
-# Generate technical design
-python scripts/generate-design.py
-```
-
-## High-Level Architecture
-
-This is an **AI-powered development template** implementing Gyro-style features for structured AI-assisted development workflows. The architecture is built around:
-
-### Core Workflow Pattern
-```
-PRD → Requirements → Design → Tasks → Implementation → Validation → Production
-```
-
-### Component Pipeline Architecture
-Projects are structured as 4-8 sequential pipeline components following SLC principles:
-- **Simple**: Each component does one job exceptionally well
-- **Lovable**: Provides clear feedback and user confidence  
-- **Complete**: Produces output ready for the next component
-
-### AI Coordination Framework
-The template uses a multi-layered AI assistance approach:
-
-1. **Claude Commands** (`.claude/commands/`): AI workflow commands for project navigation
-   - `@orient`: Project status and next actions
-   - `@next-task`: Component planning and implementation
-   - `@finalize-task`: Complete work with validation
-   - `@update-prd`: Synchronize project progress
-   - Advanced commands for production readiness, dependency mapping, etc.
-
-2. **Agent Steering System** (`.claude/steering/`): Persistent AI context
-   - `product.md`: Product purpose and target users
-   - `tech.md`: Technology stack and constraints
-   - `structure.md`: File organization patterns
-   - Domain-specific guidance files
-
-3. **Hooks Framework** (`.claude/hooks/`): Event-driven automation
-   - File events (on save, create, delete)
-   - Development events (pre-commit, post-implementation)
-   - Quality gate automation
-
-4. **Execution Modes** (`.claude/execution-modes/`): Adaptive AI assistance
-   - Autopilot: Autonomous for routine tasks
-   - Supervised: Step-by-step for complex changes
-   - Hybrid: Intelligent mode switching
-
-### Key Integration Points
-
-1. **Specification-Driven Development**
-   - PRD template in `docs/specifications/PRD_TEMPLATE.md`
-   - Feature spec templates for detailed component design
-   - Automated generation scripts for requirements and design
-
-2. **Multi-Language Support**
-   - Primary: Python (best template support)
-   - Secondary: JavaScript, Go
-   - Language-specific patterns in steering files
-
-3. **Domain Specialization**
-   - Data processing pipelines
-   - Content generation systems
-   - API integration projects
-   - General web applications
-
-4. **Quality Assurance Pipeline**
-   - Unit, integration, performance, acceptance testing
-   - Automated validation framework
-   - Production readiness assessment
-   - Continuous quality gates through hooks
-
-### Project State Management
-The template tracks project state through:
-- PRD status and component completion
-- Feature specifications in `docs/specifications/`
-- Implementation progress in `src/`
-- Test coverage in `tests/`
-- Validation reports in `.taskmaster/reports/` (when using validation scripts)
-
-This architecture enables rapid prototyping ("vibe coding") while maintaining production-ready quality standards ("viable code") through structured AI assistance and automated quality gates.
-
-## Three-Way Collaboration Protocol
-
-This project uses a formal three-way collaboration between **Claude Code**, **User**, and **Gemini CLI**. This protocol ensures efficient coordination and prevents context loss across AI agents.
+## Three-Way Collaboration Protocol (Updated)
 
 ### Critical Protocol Rules
 
-**IMPORTANT**: These collaboration rules OVERRIDE any default behavior and MUST be followed exactly as written.
-
-1. **Shared Context File**: `.aicontext/context.md` is our primary communication hub and state management system
-
-2. **Handoff Log**: Add timestamped entries in the `## Agent Handoff & Status Log` section at the end of `.aicontext/context.md`. **ALWAYS include the current git branch in every log entry.**
-
-3. **The Golden Rule**:
-   - **Read First**: ALWAYS read the entire `.aicontext/context.md` file at the start of every task or session
-   - **Write Last**: ALWAYS update the handoff log at the end of every completed task
-
-4. **Startup Acknowledgment**: When starting a new session, your first response must acknowledge the collaboration and confirm you have read the latest status from the handoff log
+1. **GitHub Issues First**: Always create/update issues before implementation work
+2. **Relationship Awareness**: Check issue relationships before starting work  
+3. **Handoff Integration**: Include issue URLs in all handoff entries
+4. **Status Synchronization**: Update issue status when completing work
 
 ### Multi-Agent Coordination
 
-- **Claude Code**: Follows this protocol via `CLAUDE.md` (this file)
-- **Gemini CLI**: Follows parallel protocol via `.gemini/GEMINI.md` on startup
-- **User**: Coordinates handoffs and provides strategic direction
+- **Claude Code**: Creates issues, implements features, updates issue status
+- **Gemini CLI**: Validates implementations, analyzes issue relationships
+- **User**: Manages epics, prioritizes issues, coordinates handoffs
 
-### Context Synchronization
+### Issue-Integrated Handoffs
 
-The `.aicontext/context.md` file contains:
-- Current project status and completed work
-- Active tasks and next steps
-- Technical context and decisions
-- Handoff log with timestamped agent updates
-
-**CRITICAL**: Never proceed with work without first reading `.aicontext/context.md`. This ensures all agents stay synchronized and prevents duplicate or conflicting work.
-
-## 🔴 MANDATORY HANDOFF CHECKPOINTS 🔴
-
-YOU MUST update `.aicontext/context.md` handoff log IMMEDIATELY when you:
-
-### Code Pattern Triggers
-- Type `"status": "completed"` in any TodoWrite update
-- Type `feat:` in a commit message
-- Complete any F-[number] feature (F-1, F-2, etc.)
-- Fix linting errors or warnings
-- Resolve merge conflicts
-- Write/modify 50+ lines of code
-- Receive validation feedback → Write `STATUS: VALIDATION_ACKNOWLEDGED`
-
-### Session & Connection Triggers
-- **VS Code Restart**: Workspace reopened → Write `STATUS: SESSION_RESUMED`
-- **Claude Code Restart**: User mentions restart → Write `STATUS: CLAUDE_RESTART`  
-- **Connection Lost**: File operations fail → Write `STATUS: CONNECTION_LOST`
-- **Context Warning**: See "running long" → Write `STATUS: CONTEXT_WARNING` with FULL state
-- **Session End**: About to stop work → Write `STATUS: SESSION_END`
-
-### Git Operation Triggers
-- **BEFORE** every `git push` → Write `STATUS: PRE_PUSH`
-- If push fails → Add `PUSH_PENDING: [reason]`
-- After major commits → Document what was committed
-
-## ⚠️ Handoff Entry Template ⚠️
-
+**Handoff Entry Template**:
 ```markdown
 ---
 **Timestamp:** 2025-XX-XXTXX:XX:XXZ
 **From:** Claude Code
 **To:** User/Gemini-CLI
-**Status:** [FEATURE_COMPLETE|TASK_COMPLETE|SESSION_RESUMED|CLAUDE_RESTART|CONNECTION_LOST|CONTEXT_WARNING|PRE_PUSH]
+**Status:** [FEATURE_COMPLETE|EPIC_READY|ISSUE_BLOCKED]
 **Branch:** [current git branch]
-**Summary:** [What you did or what happened]
-**Technical Details:**
-- Files modified: [list]
-- Functions/Components added: [list]
-- Dependencies: [what this builds on]
-**Context Preservation:** [Critical info that must survive context compaction]
+**GitHub Issues:** [#123, #124, #125 - links to all related issues]
+**Summary:** [What was accomplished]
+**Issue Status Updates:**
+- FEAT-001 (#123): ✅ COMPLETE
+- ENH-002 (#124): 🚧 IN PROGRESS  
+- BUG-001 (#125): 📝 BLOCKED
 **Next:** [What should happen next]
 ---
 ```
 
-## 🔄 Context Compaction Survival Protocol 🔄
+---
 
-When you see context warnings or get summarized:
-1. **IMMEDIATELY** write comprehensive handoff with `STATUS: CONTEXT_WARNING`
-2. Include `CONTEXT_RESET: [timestamp]` marker
-3. Document:
-   - `WORK_COMPLETED:` [comprehensive list]
-   - `WORK_PENDING:` [comprehensive list]
-   - `CRITICAL_STATE:` [must survive compaction]
+## Development Workflow Integration
 
-## ✅ TodoWrite Integration Rules
+### Step 1: Issue Planning Phase
+1. **Create Epic Issue** (if needed): Use `create-epic-issues.sh`
+2. **Create Feature Issues**: One issue per component
+3. **Link Relationships**: Use `link-related-issues.sh`
+4. **Validate Dependencies**: Check GitHub Projects board
 
-Your todo list MUST ALWAYS include:
-1. **First item**: "Read .aicontext/context.md and check last handoff"
-2. **Last item**: "Update .aicontext/context.md handoff log"
-3. **Checkpoint items** for long tasks: "Checkpoint: Update handoff (30 min)"
+### Step 2: Implementation Phase
+1. **Select Issue**: Choose next unblocked issue from GitHub Projects
+2. **Update Status**: Set to "status-in-progress"
+3. **Create Branch**: `feature/FEAT-001-component-name`
+4. **Follow dev-cycle.md**: Generate feature spec, implement, test
 
-**RED FLAG**: If you mark other todos complete but not the handoff todo → Stop and update immediately
+### Step 3: Completion Phase  
+1. **Update Issue Status**: Set to "status-complete"
+2. **Link Implementation**: Comment with PR links
+3. **Update Relationships**: Mark dependencies as unblocked
+4. **Create Handoff Entry**: Include all issue updates
 
-## 🚨 Validation Checks
+---
 
-Before ANY git push, verify:
-- [ ] `.aicontext/context.md` updated in last 3 commits?
-- [ ] Handoff includes current work?
-- [ ] Technical details documented?
+## VS Code Integration
 
-To test protocol compliance, use: `.aicontext/handoff-protocol-test.md`
+Use Command Palette (Cmd/Ctrl+Shift+P) → "Tasks: Run Task":
 
-## 🔍 Validation Feedback Protocol
+### Issue Creation Tasks
+- **GitHub: Create Feature Issue (Smart)**: Standard feature creation
+- **GitHub: Create Epic with Features**: Bulk epic + feature creation
+- **GitHub: Create Enhancement Issue (Smart)**: Enhancement creation
+- **GitHub: Create Bug Issue (Smart)**: Bug report creation
 
-When Gemini CLI provides validation feedback:
+### Relationship Management Tasks
+- **GitHub: Link Related Issues**: Create issue relationships
+- **GitHub: Update Issue Status**: Change issue status
+- **GitHub: Comment on Issue**: Add comments to issues
 
-### Receiving Discrepancy Reports
-If you receive `STATUS: DISCREPANCY_REPORT`, immediately:
-1. **Acknowledge receipt** → Write `STATUS: VALIDATION_ACKNOWLEDGED`
-2. **Review all discrepancies** in structured format:
-   - Issue Type: [PRD Mismatch/Acceptance Criteria Failure/etc.]
-   - Specifics: [Clear description with file:line references]  
-   - Impact: [Functional/Brand/Technical impact]
-   - Recommended Action: [Specific fix instructions]
-3. **Address each issue systematically**
-4. **Update handoff** after fixes with `STATUS: READY_FOR_REVALIDATION`
+### Project Management Tasks
+- **GitHub: List Open Issues**: View current work
+- **GitHub: View Project Board**: Open GitHub Projects
+- **GitHub: Sync PRD Status**: Check status synchronization
 
-### Validation Acknowledgment Template
-```markdown
-**Status:** VALIDATION_ACKNOWLEDGED
-**Discrepancies Received:** [Count and brief summary]
-**Action Plan:**
-- Issue 1: [Brief fix description]
-- Issue 2: [Brief fix description] 
-**Estimated Completion:** [Time estimate]
-**Ready for Re-validation:** [After completion]
-```
+---
 
-## Brand & Design Standards
+## File vs Database Guidelines
 
-This project follows Scale Venture Partners brand guidelines as defined in `docs/specifications/scale_brand.md`:
+### ✅ Use Files For:
+- **Code Implementation**: Source files, tests, documentation
+- **Templates**: Reusable templates and patterns  
+- **Reference Documentation**: Architecture guides, principles
+- **Development Workflow**: Process documentation like dev-cycle.md
 
-### Visual Design
-- **Typography**: Work Sans (bold, headlines only) and Outfit (all other text)
-- **Color Palette**: 
-  - Dark Green: `#224f41`, `#528577`, `#7da399`, `#e5ecea`
-  - Blue: `#0d71a9`, `#3e8dba`, `#6eaacb`, `#cfe3ee`, `#e2eef5`
-  - Gold/Yellow: `#e5a819`, `#efcb75`, `#faeed1`
-  - Neutrals: `#060119` (black), `#f6f6f6` (light grey)
-- **Text Styling**: Sentence case only, no ALL CAPS or Title Case
-- **Emphasis**: Gold underline (3px) for key phrases
+### ❌ Don't Use Files For:
+- **Feature Tracking**: Use GitHub Issues instead
+- **Status Management**: Use GitHub Projects instead
+- **Task Lists**: Use GitHub Issues with relationships instead
+- **Progress Tracking**: Use issue comments and status labels instead
 
-### Communication Style
-- **Voice**: Direct, authoritative, no sugar-coating
-- **No emojis**: Never use emojis in any communication
-- **Sentence length**: 10-20 words, 8th grade reading level
-- **Word choices**: Simple over complex (e.g., "use" not "utilize", "help" not "facilitate")
-- **Technical terms**: Use only when necessary, explain if unclear
+### 🔄 File-to-Database Sync:
+- **PRD Documents**: Should reference GitHub Issues, not duplicate them
+- **Feature Specs**: Created from GitHub Issues, linked back to issues
+- **Implementation Logs**: Reference issue URLs, update issue status
 
-### Content Standards
-- Focus on B2B SaaS, Series A-C companies
-- Emphasize go-to-market excellence and AI-driven transformation
-- Ground insights in enterprise software experience (VMware, Google Workspace)
-- Provide actionable frameworks and numbered steps
+---
+
+## Quality Gates & Validation
+
+### Pre-Implementation Checks
+- [ ] Issue exists with clear description
+- [ ] Dependencies identified and linked
+- [ ] No blocking relationships prevent work
+- [ ] Issue assigned and status set to "in-progress"
+
+### Implementation Validation
+- [ ] Code follows existing patterns and standards
+- [ ] Tests pass and coverage maintained
+- [ ] Implementation matches issue requirements
+- [ ] Related issues updated as needed
+
+### Completion Validation
+- [ ] Issue status updated to "complete"
+- [ ] Implementation linked in issue comments
+- [ ] Dependent issues unblocked
+- [ ] Handoff entry created with issue updates
+
+---
+
+## Emergency Protocols
+
+### Context Compaction Survival
+When context limits approached:
+1. **Prioritize Issue URLs**: Always include GitHub Issue links
+2. **Status Snapshot**: Document all in-progress issue statuses
+3. **Relationship Map**: Note critical dependencies and blockers
+4. **Recovery Plan**: Clear next steps based on issue priorities
+
+### Session Restoration  
+When resuming after disconnection:
+1. **Check Issue Status**: Review GitHub Projects board
+2. **Validate Branch State**: Ensure branch matches issue progress
+3. **Update Handoff**: Acknowledge session restart with current issue status
+4. **Sync Implementation**: Ensure code state matches issue expectations
+
+---
+
+## Agent-Specific Guidelines
+
+### For Claude Code (This Agent)
+- **Always create issues before implementing features**
+- **Update issue status at every major milestone**  
+- **Include issue URLs in all handoff entries**
+- **Use relationship scripts to connect related work**
+- **Prefer VS Code tasks over direct CLI commands**
+
+### For Gemini CLI Integration
+- **Validate issue relationships match implementation**
+- **Check for orphaned issues or missing dependencies**
+- **Analyze issue completion patterns for bottlenecks**
+- **Report discrepancies between issues and code state**
+
+### For User Coordination
+- **Use GitHub Projects board for visual status overview**
+- **Create epics for multi-issue initiatives**  
+- **Prioritize issues through GitHub milestone assignment**
+- **Coordinate agent handoffs through issue assignment**
+
+---
+
+## Migration from Legacy Systems
+
+### Deprecated Practices
+- ❌ Maintaining status in markdown files
+- ❌ Creating TODO lists in documentation
+- ❌ Tracking features outside GitHub Issues
+- ❌ Handoff entries without issue references
+
+### New Database-Driven Practices
+- ✅ All features tracked as GitHub Issues
+- ✅ Status managed through GitHub Projects
+- ✅ Relationships explicit through comments and labels
+- ✅ Handoffs reference specific issue URLs
+
+---
+
+**Protocol Ready**: This database-driven development protocol ensures all work is tracked, relationships are clear, and agents can coordinate effectively through GitHub Issues and Projects.
