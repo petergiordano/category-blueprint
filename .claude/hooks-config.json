@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "on_file_save": {
+      "*.py": ["format-code", "lint-check", "test-generator"],
+      "*.js": ["format-code", "lint-check", "test-generator"],
+      "*.md": ["doc-updater"],
+      "src/**": ["security-scanner"]
+    },
+    "pre_commit": {
+      "**/*": ["run-tests", "quality-check", "security-scan"]
+    },
+    "post_implementation": {
+      "src/**": ["test-coverage-check", "doc-generation"]
+    }
+  },
+  "actions": {
+    "format-code": {
+      "python": "black",
+      "javascript": "prettier"
+    },
+    "lint-check": {
+      "python": "flake8",
+      "javascript": "eslint"
+    },
+    "test-generator": {
+      "template": "templates/test-generator-hook.md"
+    }
+  }
+}

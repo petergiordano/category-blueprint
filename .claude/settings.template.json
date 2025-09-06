@@ -1,0 +1,44 @@
+{
+  "name": "[PROJECT_NAME]",
+  "description": "[PROJECT_DESCRIPTION]",
+  "claude": {
+    "contextFiles": [
+      ".aicontext/context.md",
+      "docs/specifications/PRD.md",
+      ".aicontext/WORKFLOW_GUIDE.md",
+      "docs/architecture/SLC_Principles.md"
+    ],
+    "persona": ".claude/persona.md",
+    "commands": [
+      ".claude/commands/orient.md",
+      ".claude/commands/next-task.md",
+      ".claude/commands/finalize-task.md",
+      ".claude/commands/update-prd.md"
+    ]
+  },
+  "project": {
+    "type": "ai-powered-development",
+    "language": "[PRIMARY_LANGUAGE]",
+    "architecture": "component-pipeline",
+    "workflow": "prd-driven"
+  },
+  "development": {
+    "testCommand": "[TEST_COMMAND]",
+    "lintCommand": "[LINT_COMMAND]",
+    "formatCommand": "[FORMAT_COMMAND]",
+    "validateCommand": "python scripts/validate-setup.py"
+  },
+  "ai_coordination": {
+    "workflow_commands": [
+      "@orient: Get project status and next actions",
+      "@next-task: Select and plan next component",
+      "@finalize-task: Complete current work with validation",
+      "@update-prd: Sync project progress and status"
+    ],
+    "reference_docs": [
+      "docs/specifications/PRD.md",
+      "docs/specifications/FEATURE_SPEC_TEMPLATE.md",
+      "docs/specifications/dev-cycle.md"
+    ]
+  }
+}

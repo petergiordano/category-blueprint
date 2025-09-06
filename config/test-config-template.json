@@ -1,0 +1,103 @@
+{
+  "test_discovery": {
+    "patterns": ["test_*.py", "*_test.py"],
+    "directories": ["tests/", "src/tests/"],
+    "exclude": ["__pycache__", ".pytest_cache", "*.pyc"]
+  },
+  "coverage": {
+    "minimum": 80,
+    "exclude": [
+      "tests/*", 
+      "*/migrations/*",
+      "*/venv/*",
+      "*/__pycache__/*"
+    ],
+    "report_format": ["term", "html", "xml"],
+    "fail_under": 80
+  },
+  "test_types": {
+    "unit": {
+      "pattern": "tests/unit/**/*.py",
+      "timeout": 30,
+      "parallel": true,
+      "markers": ["unit"],
+      "description": "Fast, isolated unit tests"
+    },
+    "integration": {
+      "pattern": "tests/integration/**/*.py", 
+      "timeout": 120,
+      "parallel": false,
+      "markers": ["integration"],
+      "description": "Component integration tests"
+    },
+    "performance": {
+      "pattern": "tests/performance/**/*.py",
+      "timeout": 300,
+      "parallel": false,
+      "markers": ["performance"],
+      "description": "Performance and load tests"
+    },
+    "acceptance": {
+      "pattern": "tests/acceptance/**/*.py",
+      "timeout": 600,
+      "parallel": false,
+      "markers": ["acceptance"],
+      "description": "End-to-end acceptance tests"
+    },
+    "smoke": {
+      "pattern": "tests/smoke/**/*.py",
+      "timeout": 60,
+      "parallel": true,
+      "markers": ["smoke"],
+      "description": "Quick smoke tests for basic functionality"
+    }
+  },
+  "validation_integration": {
+    "run_before_tests": true,
+    "fail_on_validation_errors": true,
+    "include_in_report": true,
+    "validation_timeout": 300
+  },
+  "reporting": {
+    "formats": ["console", "json", "junit", "html"],
+    "output_dir": "test-reports",
+    "include_coverage": true,
+    "include_validation": true,
+    "timestamp_reports": true
+  },
+  "quality_gates": {
+    "minimum_coverage": 80,
+    "maximum_test_duration": 600,
+    "maximum_failing_tests": 0,
+    "require_validation_pass": true
+  },
+  "hooks_integration": {
+    "pre_test": [
+      "format-code",
+      "lint-check"
+    ],
+    "post_test": [
+      "coverage-report",
+      "test-documentation-update"
+    ],
+    "on_failure": [
+      "collect-logs",
+      "notify-team"
+    ]
+  },
+  "ci_cd_integration": {
+    "junit_output": true,
+    "coverage_xml": true,
+    "artifacts": [
+      "test-reports/",
+      "coverage.xml",
+      "htmlcov/"
+    ]
+  },
+  "performance_benchmarks": {
+    "response_time_ms": 1000,
+    "memory_usage_mb": 100,
+    "cpu_usage_percent": 50,
+    "throughput_requests_per_second": 100
+  }
+}

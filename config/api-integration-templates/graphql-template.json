@@ -1,0 +1,392 @@
+{
+  "graphql_integration": {
+    "template_version": "1.0.0",
+    "description": "Standardized GraphQL API integration template for MCP servers",
+    "metadata": {
+      "api_name": "{{API_NAME}}",
+      "version": "{{API_VERSION}}",
+      "endpoint": "{{GRAPHQL_ENDPOINT}}",
+      "introspection_enabled": true,
+      "schema_url": "{{SCHEMA_URL}}",
+      "playground_url": "{{PLAYGROUND_URL}}"
+    },
+    "authentication": {
+      "type": "{{AUTH_TYPE}}",
+      "options": {
+        "bearer_token": {
+          "header_name": "Authorization",
+          "value_format": "Bearer {{TOKEN}}",
+          "env_var": "{{API_NAME}}_TOKEN"
+        },
+        "api_key": {
+          "header_name": "X-API-Key",
+          "env_var": "{{API_NAME}}_API_KEY"
+        },
+        "custom_header": {
+          "header_name": "{{CUSTOM_HEADER}}",
+          "value_format": "{{VALUE_FORMAT}}",
+          "env_var": "{{API_NAME}}_AUTH"
+        }
+      }
+    },
+    "schema": {
+      "introspection": {
+        "enabled": true,
+        "cache_duration": 3600,
+        "auto_refresh": true
+      },
+      "types": {
+        "{{ENTITY_TYPE}}": {
+          "kind": "OBJECT",
+          "description": "{{ENTITY_DESCRIPTION}}",
+          "fields": {
+            "id": {
+              "type": "ID!",
+              "description": "Unique identifier"
+            },
+            "{{FIELD_NAME}}": {
+              "type": "{{FIELD_TYPE}}",
+              "description": "{{FIELD_DESCRIPTION}}",
+              "nullable": false
+            },
+            "createdAt": {
+              "type": "DateTime!",
+              "description": "Creation timestamp"
+            },
+            "updatedAt": {
+              "type": "DateTime!",
+              "description": "Last update timestamp"
+            }
+          }
+        },
+        "{{ENTITY_TYPE}}Input": {
+          "kind": "INPUT_OBJECT", 
+          "description": "Input type for creating/updating {{ENTITY_TYPE}}",
+          "fields": {
+            "{{FIELD_NAME}}": {
+              "type": "{{FIELD_TYPE}}!",
+              "description": "{{FIELD_DESCRIPTION}}"
+            }
+          }
+        },
+        "{{ENTITY_TYPE}}Connection": {
+          "kind": "OBJECT",
+          "description": "Paginated connection for {{ENTITY_TYPE}}",
+          "fields": {
+            "edges": {
+              "type": "[{{ENTITY_TYPE}}Edge!]!",
+              "description": "List of edges"
+            },
+            "pageInfo": {
+              "type": "PageInfo!",
+              "description": "Pagination information"
+            },
+            "totalCount": {
+              "type": "Int!",
+              "description": "Total number of items"
+            }
+          }
+        }
+      }
+    },
+    "operations": {
+      "queries": {
+        "get{{ENTITY_TYPE}}": {
+          "description": "Retrieve a single {{ENTITY_TYPE}} by ID",
+          "type": "{{ENTITY_TYPE}}",
+          "arguments": {
+            "id": {
+              "type": "ID!",
+              "description": "Unique identifier"
+            }
+          },
+          "example": {
+            "query": "query Get{{ENTITY_TYPE}}($id: ID!) { get{{ENTITY_TYPE}}(id: $id) { id {{FIELD_NAME}} createdAt updatedAt } }",
+            "variables": {
+              "id": "{{EXAMPLE_ID}}"
+            }
+          }
+        },
+        "list{{ENTITY_TYPE}}s": {
+          "description": "List {{ENTITY_TYPE}}s with pagination",
+          "type": "{{ENTITY_TYPE}}Connection",
+          "arguments": {
+            "first": {
+              "type": "Int",
+              "description": "Number of items to fetch",
+              "default": 20
+            },
+            "after": {
+              "type": "String",
+              "description": "Cursor for pagination"
+            },
+            "filter": {
+              "type": "{{ENTITY_TYPE}}Filter",
+              "description": "Filter criteria"
+            },
+            "sort": {
+              "type": "{{ENTITY_TYPE}}Sort",
+              "description": "Sort order"
+            }
+          },
+          "example": {
+            "query": "query List{{ENTITY_TYPE}}s($first: Int, $filter: {{ENTITY_TYPE}}Filter) { list{{ENTITY_TYPE}}s(first: $first, filter: $filter) { edges { node { id {{FIELD_NAME}} createdAt } } pageInfo { hasNextPage endCursor } totalCount } }",
+            "variables": {
+              "first": 10,
+              "filter": {
+                "{{FIELD_NAME}}": "{{EXAMPLE_VALUE}}"
+              }
+            }
+          }
+        },
+        "search{{ENTITY_TYPE}}s": {
+          "description": "Search {{ENTITY_TYPE}}s with full-text search",
+          "type": "{{ENTITY_TYPE}}Connection",
+          "arguments": {
+            "query": {
+              "type": "String!",
+              "description": "Search query"
+            },
+            "first": {
+              "type": "Int",
+              "default": 20
+            }
+          }
+        }
+      },
+      "mutations": {
+        "create{{ENTITY_TYPE}}": {
+          "description": "Create a new {{ENTITY_TYPE}}",
+          "type": "{{ENTITY_TYPE}}",
+          "arguments": {
+            "input": {
+              "type": "{{ENTITY_TYPE}}Input!",
+              "description": "Input data for creating {{ENTITY_TYPE}}"
+            }
+          },
+          "example": {
+            "mutation": "mutation Create{{ENTITY_TYPE}}($input: {{ENTITY_TYPE}}Input!) { create{{ENTITY_TYPE}}(input: $input) { id {{FIELD_NAME}} createdAt } }",
+            "variables": {
+              "input": {
+                "{{FIELD_NAME}}": "{{EXAMPLE_VALUE}}"
+              }
+            }
+          }
+        },
+        "update{{ENTITY_TYPE}}": {
+          "description": "Update an existing {{ENTITY_TYPE}}",
+          "type": "{{ENTITY_TYPE}}",
+          "arguments": {
+            "id": {
+              "type": "ID!",
+              "description": "ID of {{ENTITY_TYPE}} to update"
+            },
+            "input": {
+              "type": "{{ENTITY_TYPE}}Input!",
+              "description": "Updated data"
+            }
+          },
+          "example": {
+            "mutation": "mutation Update{{ENTITY_TYPE}}($id: ID!, $input: {{ENTITY_TYPE}}Input!) { update{{ENTITY_TYPE}}(id: $id, input: $input) { id {{FIELD_NAME}} updatedAt } }",
+            "variables": {
+              "id": "{{EXAMPLE_ID}}",
+              "input": {
+                "{{FIELD_NAME}}": "{{UPDATED_VALUE}}"
+              }
+            }
+          }
+        },
+        "delete{{ENTITY_TYPE}}": {
+          "description": "Delete a {{ENTITY_TYPE}}",
+          "type": "Boolean",
+          "arguments": {
+            "id": {
+              "type": "ID!",
+              "description": "ID of {{ENTITY_TYPE}} to delete"
+            }
+          },
+          "example": {
+            "mutation": "mutation Delete{{ENTITY_TYPE}}($id: ID!) { delete{{ENTITY_TYPE}}(id: $id) }",
+            "variables": {
+              "id": "{{EXAMPLE_ID}}"
+            }
+          }
+        }
+      },
+      "subscriptions": {
+        "{{ENTITY_TYPE}}Updated": {
+          "description": "Subscribe to {{ENTITY_TYPE}} updates",
+          "type": "{{ENTITY_TYPE}}",
+          "arguments": {
+            "id": {
+              "type": "ID",
+              "description": "Subscribe to specific {{ENTITY_TYPE}} ID"
+            }
+          },
+          "example": {
+            "subscription": "subscription {{ENTITY_TYPE}}Updated($id: ID) { {{ENTITY_TYPE}}Updated(id: $id) { id {{FIELD_NAME}} updatedAt } }"
+          }
+        }
+      }
+    },
+    "client_configuration": {
+      "endpoint": "{{GRAPHQL_ENDPOINT}}",
+      "headers": {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      "fetch_policy": "cache-first",
+      "cache_options": {
+        "ttl": 300,
+        "size_limit": "50MB",
+        "normalize": true
+      },
+      "retry_policy": {
+        "max_retries": 3,
+        "backoff_strategy": "exponential",
+        "retry_on": [
+          "network_error",
+          "timeout",
+          "server_error"
+        ]
+      },
+      "timeout": {
+        "query": 30000,
+        "mutation": 60000,
+        "subscription": 0
+      }
+    },
+    "error_handling": {
+      "error_types": {
+        "graphql_errors": {
+          "description": "Errors in GraphQL execution",
+          "fields": ["message", "locations", "path", "extensions"]
+        },
+        "network_errors": {
+          "description": "Network-level errors",
+          "handling": "retry_with_backoff"
+        },
+        "validation_errors": {
+          "description": "Query validation errors",
+          "handling": "fail_fast"
+        }
+      },
+      "error_mapping": {
+        "UNAUTHENTICATED": "Authentication required",
+        "FORBIDDEN": "Insufficient permissions",
+        "NOT_FOUND": "Resource not found",
+        "VALIDATION_ERROR": "Input validation failed",
+        "INTERNAL_ERROR": "Internal server error"
+      }
+    },
+    "batching": {
+      "enabled": true,
+      "max_batch_size": 10,
+      "batch_interval": 10,
+      "batch_key_function": "default"
+    },
+    "persisted_queries": {
+      "enabled": false,
+      "version": 1,
+      "hash_algorithm": "sha256",
+      "cache_duration": 86400
+    },
+    "monitoring": {
+      "query_complexity": {
+        "enabled": true,
+        "max_complexity": 1000,
+        "introspection_complexity": 100
+      },
+      "query_depth": {
+        "enabled": true,
+        "max_depth": 15
+      },
+      "rate_limiting": {
+        "enabled": true,
+        "points_per_query": 1,
+        "max_points": 100,
+        "window_duration": 60
+      },
+      "metrics": {
+        "operation_latency": true,
+        "error_rates": true,
+        "cache_hit_ratio": true,
+        "query_complexity": true
+      }
+    },
+    "security": {
+      "query_whitelist": {
+        "enabled": false,
+        "allowed_operations": []
+      },
+      "introspection": {
+        "enabled_in_production": false
+      },
+      "query_timeout": 30000,
+      "max_query_size": 10000,
+      "disable_suggestions": true
+    },
+    "development": {
+      "schema_polling": {
+        "enabled": true,
+        "interval": 30000
+      },
+      "playground": {
+        "enabled": true,
+        "endpoint": "{{PLAYGROUND_URL}}"
+      },
+      "debugging": {
+        "trace_queries": true,
+        "log_cache_operations": true
+      }
+    }
+  },
+  "fragments": {
+    "{{ENTITY_TYPE}}Fragment": {
+      "description": "Common fields for {{ENTITY_TYPE}}",
+      "definition": "fragment {{ENTITY_TYPE}}Fragment on {{ENTITY_TYPE}} { id {{FIELD_NAME}} createdAt updatedAt }"
+    },
+    "PageInfoFragment": {
+      "description": "Pagination info fields",
+      "definition": "fragment PageInfoFragment on PageInfo { hasNextPage hasPreviousPage startCursor endCursor }"
+    }
+  },
+  "usage_examples": {
+    "basic_query": {
+      "description": "Fetch a single item",
+      "query": "{ get{{ENTITY_TYPE}}(id: \"123\") { ...{{ENTITY_TYPE}}Fragment } }",
+      "expected_response": {
+        "data": {
+          "get{{ENTITY_TYPE}}": {
+            "id": "123",
+            "{{FIELD_NAME}}": "{{EXAMPLE_VALUE}}",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    "paginated_query": {
+      "description": "Fetch multiple items with pagination",
+      "query": "{ list{{ENTITY_TYPE}}s(first: 5) { edges { node { ...{{ENTITY_TYPE}}Fragment } } pageInfo { ...PageInfoFragment } } }"
+    },
+    "mutation_example": {
+      "description": "Create a new item",
+      "mutation": "mutation { create{{ENTITY_TYPE}}(input: { {{FIELD_NAME}}: \"{{EXAMPLE_VALUE}}\" }) { ...{{ENTITY_TYPE}}Fragment } }"
+    }
+  },
+  "integration_checklist": [
+    "Configure GraphQL endpoint",
+    "Set up authentication",
+    "Enable schema introspection",
+    "Configure caching strategy",
+    "Set up error handling",
+    "Implement retry logic",
+    "Configure query complexity limits",
+    "Set up monitoring and metrics",
+    "Test all operations (queries, mutations, subscriptions)",
+    "Validate schema compatibility",
+    "Configure batching if needed",
+    "Set up development tools (playground, debugging)"
+  ]
+}

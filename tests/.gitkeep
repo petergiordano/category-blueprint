@@ -1,0 +1,9 @@
+# Tests Directory
+
+This directory will contain your project's test suites after initialization.
+
+The initialize-project.sh script will create subdirectories like:
+- unit/
+- integration/
+- performance/
+- acceptance/

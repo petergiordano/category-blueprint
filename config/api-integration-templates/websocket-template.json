@@ -1,0 +1,419 @@
+{
+  "websocket_integration": {
+    "template_version": "1.0.0",
+    "description": "Standardized WebSocket API integration template for MCP servers",
+    "metadata": {
+      "api_name": "{{API_NAME}}",
+      "version": "{{API_VERSION}}",
+      "websocket_url": "{{WS_URL}}",
+      "protocol": "{{WS_PROTOCOL}}",
+      "subprotocols": ["{{SUBPROTOCOL_1}}", "{{SUBPROTOCOL_2}}"]
+    },
+    "connection": {
+      "url": "{{WS_URL}}",
+      "protocols": ["{{PROTOCOL}}"],
+      "headers": {
+        "User-Agent": "{{PROJECT_NAME}}/{{VERSION}}",
+        "Origin": "{{ORIGIN_URL}}"
+      },
+      "query_params": {
+        "version": "{{API_VERSION}}",
+        "client": "{{CLIENT_ID}}"
+      },
+      "timeout": {
+        "connect": 10000,
+        "handshake": 5000,
+        "close": 5000
+      },
+      "keepalive": {
+        "enabled": true,
+        "interval": 30000,
+        "max_missed": 3,
+        "ping_frame": true
+      }
+    },
+    "authentication": {
+      "type": "{{AUTH_TYPE}}",
+      "options": {
+        "token_based": {
+          "method": "query_param",
+          "param_name": "token",
+          "env_var": "{{API_NAME}}_TOKEN"
+        },
+        "header_based": {
+          "method": "header",
+          "header_name": "Authorization",
+          "value_format": "Bearer {{TOKEN}}",
+          "env_var": "{{API_NAME}}_TOKEN"
+        },
+        "message_based": {
+          "method": "initial_message",
+          "message_type": "auth",
+          "token_field": "token",
+          "env_var": "{{API_NAME}}_TOKEN"
+        },
+        "cookie_based": {
+          "method": "cookie",
+          "cookie_name": "auth_token",
+          "env_var": "{{API_NAME}}_COOKIE"
+        }
+      },
+      "retry_on_auth_failure": true,
+      "max_auth_retries": 3
+    },
+    "message_protocol": {
+      "format": "json",
+      "encoding": "utf-8",
+      "compression": "none",
+      "message_structure": {
+        "type": {
+          "field": "type",
+          "required": true,
+          "description": "Message type identifier"
+        },
+        "id": {
+          "field": "id",
+          "required": false,
+          "description": "Unique message identifier for request/response correlation"
+        },
+        "payload": {
+          "field": "data",
+          "required": false,
+          "description": "Message payload"
+        },
+        "timestamp": {
+          "field": "timestamp",
+          "required": false,
+          "description": "Message timestamp"
+        }
+      }
+    },
+    "message_types": {
+      "control_messages": {
+        "ping": {
+          "description": "Keepalive ping message",
+          "direction": "bidirectional",
+          "structure": {
+            "type": "ping",
+            "timestamp": "{{TIMESTAMP}}"
+          },
+          "response": {
+            "type": "pong",
+            "timestamp": "{{TIMESTAMP}}"
+          }
+        },
+        "subscribe": {
+          "description": "Subscribe to events/channels",
+          "direction": "client_to_server",
+          "structure": {
+            "type": "subscribe",
+            "id": "{{REQUEST_ID}}",
+            "data": {
+              "channel": "{{CHANNEL_NAME}}",
+              "filters": "{{FILTER_OBJECT}}"
+            }
+          },
+          "response": {
+            "type": "subscribed",
+            "id": "{{REQUEST_ID}}",
+            "data": {
+              "channel": "{{CHANNEL_NAME}}",
+              "status": "success"
+            }
+          }
+        },
+        "unsubscribe": {
+          "description": "Unsubscribe from events/channels",
+          "direction": "client_to_server",
+          "structure": {
+            "type": "unsubscribe",
+            "id": "{{REQUEST_ID}}",
+            "data": {
+              "channel": "{{CHANNEL_NAME}}"
+            }
+          }
+        }
+      },
+      "data_messages": {
+        "{{EVENT_TYPE}}": {
+          "description": "{{EVENT_DESCRIPTION}}",
+          "direction": "server_to_client",
+          "structure": {
+            "type": "{{EVENT_TYPE}}",
+            "timestamp": "{{TIMESTAMP}}",
+            "data": {
+              "{{FIELD_NAME}}": "{{FIELD_TYPE}}",
+              "metadata": "{{METADATA_OBJECT}}"
+            }
+          }
+        },
+        "command": {
+          "description": "Execute command on server",
+          "direction": "client_to_server",
+          "structure": {
+            "type": "command",
+            "id": "{{REQUEST_ID}}",
+            "data": {
+              "command": "{{COMMAND_NAME}}",
+              "params": "{{COMMAND_PARAMS}}"
+            }
+          },
+          "response": {
+            "type": "command_result",
+            "id": "{{REQUEST_ID}}",
+            "data": {
+              "status": "success|error",
+              "result": "{{COMMAND_RESULT}}",
+              "error": "{{ERROR_MESSAGE}}"
+            }
+          }
+        }
+      },
+      "error_messages": {
+        "error": {
+          "description": "General error message",
+          "direction": "server_to_client",
+          "structure": {
+            "type": "error",
+            "timestamp": "{{TIMESTAMP}}",
+            "data": {
+              "code": "{{ERROR_CODE}}",
+              "message": "{{ERROR_MESSAGE}}",
+              "details": "{{ERROR_DETAILS}}"
+            }
+          }
+        }
+      }
+    },
+    "channels": {
+      "{{CHANNEL_NAME}}": {
+        "description": "{{CHANNEL_DESCRIPTION}}",
+        "subscription_required": true,
+        "message_types": ["{{EVENT_TYPE}}", "{{OTHER_EVENT_TYPE}}"],
+        "filters": {
+          "{{FILTER_NAME}}": {
+            "type": "{{FILTER_TYPE}}",
+            "description": "{{FILTER_DESCRIPTION}}",
+            "required": false
+          }
+        },
+        "rate_limit": {
+          "messages_per_second": 10,
+          "burst_capacity": 50
+        }
+      }
+    },
+    "connection_management": {
+      "auto_reconnect": {
+        "enabled": true,
+        "max_attempts": 10,
+        "initial_delay": 1000,
+        "max_delay": 30000,
+        "backoff_factor": 2,
+        "jitter": true
+      },
+      "connection_states": {
+        "connecting": "Attempting to establish connection",
+        "connected": "Connection established and authenticated",
+        "disconnecting": "Gracefully closing connection",
+        "disconnected": "Connection closed",
+        "reconnecting": "Attempting to reconnect",
+        "error": "Connection error occurred"
+      },
+      "state_callbacks": {
+        "on_connect": "{{ON_CONNECT_CALLBACK}}",
+        "on_disconnect": "{{ON_DISCONNECT_CALLBACK}}",
+        "on_error": "{{ON_ERROR_CALLBACK}}",
+        "on_message": "{{ON_MESSAGE_CALLBACK}}"
+      }
+    },
+    "error_handling": {
+      "connection_errors": {
+        "network_error": {
+          "action": "retry_with_backoff",
+          "max_retries": 5
+        },
+        "auth_error": {
+          "action": "refresh_token_and_retry",
+          "max_retries": 3
+        },
+        "server_error": {
+          "action": "exponential_backoff",
+          "max_retries": 10
+        }
+      },
+      "message_errors": {
+        "invalid_format": {
+          "action": "log_and_ignore",
+          "notify_user": false
+        },
+        "unknown_type": {
+          "action": "log_and_ignore",
+          "notify_user": true
+        },
+        "rate_limited": {
+          "action": "queue_and_retry",
+          "delay": 1000
+        }
+      },
+      "timeout_handling": {
+        "message_timeout": 30000,
+        "response_timeout": 10000,
+        "on_timeout": "retry_or_fail"
+      }
+    },
+    "message_queue": {
+      "enabled": true,
+      "max_size": 1000,
+      "overflow_strategy": "drop_oldest",
+      "persistence": {
+        "enabled": false,
+        "storage": "memory",
+        "max_persistent_messages": 100
+      },
+      "priority_levels": {
+        "high": ["error", "auth", "ping"],
+        "medium": ["subscribe", "unsubscribe"],
+        "low": ["data", "command"]
+      }
+    },
+    "rate_limiting": {
+      "outbound": {
+        "messages_per_second": 10,
+        "burst_capacity": 20,
+        "queue_on_limit": true
+      },
+      "inbound": {
+        "messages_per_second": 100,
+        "burst_capacity": 200,
+        "drop_on_limit": true
+      }
+    },
+    "monitoring": {
+      "metrics": {
+        "connection_uptime": true,
+        "message_throughput": true,
+        "error_rates": true,
+        "latency": true,
+        "reconnection_frequency": true
+      },
+      "logging": {
+        "enabled": true,
+        "level": "info",
+        "log_messages": false,
+        "log_errors": true,
+        "log_connections": true
+      },
+      "health_checks": {
+        "enabled": true,
+        "ping_interval": 30000,
+        "pong_timeout": 5000,
+        "health_check_message": {
+          "type": "ping",
+          "timestamp": "{{TIMESTAMP}}"
+        }
+      }
+    },
+    "security": {
+      "tls": {
+        "enabled": true,
+        "verify_certificates": true,
+        "min_version": "1.2"
+      },
+      "origin_checking": {
+        "enabled": true,
+        "allowed_origins": ["{{ORIGIN_1}}", "{{ORIGIN_2}}"]
+      },
+      "message_validation": {
+        "enabled": true,
+        "schema_validation": true,
+        "sanitize_input": true
+      },
+      "rate_limiting": {
+        "connection_attempts": {
+          "max_per_minute": 60,
+          "block_duration": 300
+        },
+        "message_flooding": {
+          "max_per_second": 50,
+          "violation_action": "temporary_ban"
+        }
+      }
+    },
+    "client_libraries": {
+      "javascript": {
+        "library": "ws",
+        "example": "const ws = new WebSocket('{{WS_URL}}'); ws.on('message', handleMessage);"
+      },
+      "python": {
+        "library": "websockets",
+        "example": "async with websockets.connect('{{WS_URL}}') as ws: await ws.send(message)"
+      },
+      "go": {
+        "library": "gorilla/websocket",
+        "example": "conn, _, err := websocket.DefaultDialer.Dial('{{WS_URL}}', nil)"
+      }
+    }
+  },
+  "usage_examples": {
+    "basic_connection": {
+      "description": "Establish basic WebSocket connection",
+      "code": {
+        "javascript": "const ws = new WebSocket('{{WS_URL}}');\nws.onopen = () => console.log('Connected');\nws.onmessage = (event) => console.log('Message:', event.data);\nws.onerror = (error) => console.error('Error:', error);"
+      }
+    },
+    "authentication": {
+      "description": "Authenticate after connection",
+      "message": {
+        "type": "auth",
+        "data": {
+          "token": "{{AUTH_TOKEN}}"
+        }
+      }
+    },
+    "subscription": {
+      "description": "Subscribe to real-time events",
+      "message": {
+        "type": "subscribe",
+        "id": "sub-001",
+        "data": {
+          "channel": "{{CHANNEL_NAME}}",
+          "filters": {
+            "{{FILTER_KEY}}": "{{FILTER_VALUE}}"
+          }
+        }
+      }
+    },
+    "command_execution": {
+      "description": "Execute remote command",
+      "message": {
+        "type": "command",
+        "id": "cmd-001",
+        "data": {
+          "command": "{{COMMAND_NAME}}",
+          "params": {
+            "{{PARAM_KEY}}": "{{PARAM_VALUE}}"
+          }
+        }
+      }
+    }
+  },
+  "integration_checklist": [
+    "Configure WebSocket URL and protocols",
+    "Set up authentication mechanism",
+    "Implement message protocol handling",
+    "Configure auto-reconnection logic",
+    "Set up error handling and recovery",
+    "Implement rate limiting",
+    "Add monitoring and health checks",
+    "Configure security settings (TLS, origin checking)",
+    "Test connection stability",
+    "Test all message types",
+    "Test authentication flow",
+    "Test subscription/unsubscription",
+    "Test error scenarios",
+    "Test reconnection behavior",
+    "Validate message schemas",
+    "Set up logging and monitoring"
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "private_knowledge_base": {
+    "enabled": true,
+    "description": "Internal documentation and knowledge management system",
+    "sources": {
+      "internal_docs": {
+        "enabled": true,
+        "type": "filesystem",
+        "paths": [
+          "docs/internal/",
+          "docs/architecture/", 
+          "docs/deployment/",
+          "docs/troubleshooting/",
+          ".claude/knowledge/"
+        ],
+        "file_types": [".md", ".txt", ".rst", ".adoc"],
+        "indexing": {
+          "enabled": true,
+          "update_frequency": "daily",
+          "full_text_search": true
+        }
+      },
+      "code_documentation": {
+        "enabled": true,
+        "type": "generated",
+        "sources": [
+          "src/",
+          "tests/",
+          "scripts/"
+        ],
+        "extraction_patterns": {
+          "docstrings": true,
+          "comments": true,
+          "readme_files": true,
+          "inline_documentation": true
+        },
+        "languages": ["python", "javascript", "typescript", "go", "java"]
+      },
+      "api_specifications": {
+        "enabled": true,
+        "type": "structured",
+        "formats": [
+          "openapi",
+          "swagger",
+          "graphql_schema",
+          "protobuf"
+        ],
+        "auto_discovery": true,
+        "validation": true
+      },
+      "runbooks": {
+        "enabled": true,
+        "type": "operational",
+        "categories": [
+          "deployment_procedures",
+          "incident_response",
+          "maintenance_tasks",
+          "troubleshooting_guides"
+        ],
+        "access_control": "team_lead_approval"
+      },
+      "decision_records": {
+        "enabled": true,
+        "type": "adr",
+        "path": "docs/decisions/",
+        "template": "adr-template.md",
+        "indexing": {
+          "by_date": true,
+          "by_component": true,
+          "by_status": true
+        }
+      }
+    },
+    "access_control": {
+      "authentication": {
+        "enabled": true,
+        "method": "project_based",
+        "session_timeout": 3600
+      },
+      "authorization": {
+        "levels": {
+          "public": {
+            "description": "Publicly accessible documentation",
+            "paths": ["docs/public/", "README.md"]
+          },
+          "internal": {
+            "description": "Team-accessible documentation", 
+            "paths": ["docs/internal/", "docs/api/"],
+            "required_role": "team_member"
+          },
+          "confidential": {
+            "description": "Sensitive operational information",
+            "paths": ["docs/security/", "docs/deployment/"],
+            "required_role": "senior_developer"
+          },
+          "restricted": {
+            "description": "Highly sensitive information",
+            "paths": ["docs/infrastructure/", "docs/secrets/"],
+            "required_role": "team_lead"
+          }
+        }
+      }
+    },
+    "search_capabilities": {
+      "full_text_search": {
+        "enabled": true,
+        "engine": "elasticsearch",
+        "fuzzy_matching": true,
+        "semantic_search": false
+      },
+      "faceted_search": {
+        "enabled": true,
+        "facets": [
+          "document_type",
+          "last_modified",
+          "author",
+          "component",
+          "access_level"
+        ]
+      },
+      "contextual_retrieval": {
+        "enabled": true,
+        "max_results": 10,
+        "relevance_threshold": 0.7,
+        "context_window": 500
+      }
+    },
+    "content_management": {
+      "versioning": {
+        "enabled": true,
+        "strategy": "git_based",
+        "retention_period": "2_years"
+      },
+      "auto_updates": {
+        "enabled": true,
+        "triggers": [
+          "file_modification",
+          "git_commit",
+          "scheduled_refresh"
+        ],
+        "update_frequency": "real_time"
+      },
+      "quality_gates": {
+        "enabled": true,
+        "checks": [
+          "markdown_syntax",
+          "broken_links",
+          "outdated_content",
+          "missing_metadata"
+        ]
+      },
+      "content_review": {
+        "enabled": true,
+        "review_cycle": "quarterly",
+        "automatic_flagging": true,
+        "reviewer_assignment": "rotating"
+      }
+    },
+    "integration": {
+      "claude_integration": {
+        "enabled": true,
+        "auto_context_injection": true,
+        "relevance_scoring": true,
+        "citation_tracking": true
+      },
+      "external_systems": {
+        "confluence": {
+          "enabled": false,
+          "base_url": "",
+          "space_keys": [],
+          "sync_frequency": "daily"
+        },
+        "notion": {
+          "enabled": false,
+          "workspace_id": "",
+          "database_ids": [],
+          "sync_frequency": "hourly"
+        },
+        "sharepoint": {
+          "enabled": false,
+          "site_url": "",
+          "document_libraries": [],
+          "sync_frequency": "daily"
+        }
+      },
+      "api_endpoints": {
+        "search": "/api/knowledge/search",
+        "retrieve": "/api/knowledge/retrieve",
+        "index": "/api/knowledge/index",
+        "health": "/api/knowledge/health"
+      }
+    },
+    "analytics": {
+      "usage_tracking": {
+        "enabled": true,
+        "metrics": [
+          "search_queries",
+          "document_views",
+          "popular_content",
+          "user_paths"
+        ]
+      },
+      "content_analytics": {
+        "enabled": true,
+        "metrics": [
+          "content_freshness",
+          "link_health",
+          "duplicate_detection",
+          "content_gaps"
+        ]
+      },
+      "reporting": {
+        "enabled": true,
+        "frequency": "weekly",
+        "recipients": ["team_leads", "documentation_owners"],
+        "format": "dashboard"
+      }
+    }
+  },
+  "security": {
+    "data_protection": {
+      "encryption_at_rest": true,
+      "encryption_in_transit": true,
+      "key_rotation": "quarterly"
+    },
+    "access_logging": {
+      "enabled": true,
+      "log_level": "detailed",
+      "retention_period": "1_year"
+    },
+    "content_scanning": {
+      "enabled": true,
+      "scan_for": [
+        "secrets",
+        "credentials", 
+        "pii",
+        "sensitive_data"
+      ],
+      "quarantine_policy": "immediate"
+    }
+  },
+  "performance": {
+    "caching": {
+      "enabled": true,
+      "strategy": "lru",
+      "max_size": "1GB",
+      "ttl": 3600
+    },
+    "indexing": {
+      "background_processing": true,
+      "batch_size": 100,
+      "parallel_workers": 4
+    },
+    "optimization": {
+      "content_compression": true,
+      "lazy_loading": true,
+      "cdn_integration": false
+    }
+  },
+  "version": "1.0.0",
+  "schema_version": "2024.1",
+  "last_updated": "2024-07-19T00:00:00Z"
+}

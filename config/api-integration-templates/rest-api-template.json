@@ -1,0 +1,334 @@
+{
+  "rest_api_integration": {
+    "template_version": "1.0.0",
+    "description": "Standardized REST API integration template for MCP servers",
+    "metadata": {
+      "api_name": "{{API_NAME}}",
+      "version": "{{API_VERSION}}",
+      "base_url": "{{BASE_URL}}",
+      "documentation_url": "{{DOCS_URL}}",
+      "contact": {
+        "name": "{{CONTACT_NAME}}",
+        "email": "{{CONTACT_EMAIL}}"
+      }
+    },
+    "authentication": {
+      "type": "{{AUTH_TYPE}}", 
+      "options": {
+        "api_key": {
+          "header_name": "Authorization",
+          "value_format": "Bearer {{TOKEN}}",
+          "env_var": "{{API_NAME}}_API_KEY"
+        },
+        "basic_auth": {
+          "username_env": "{{API_NAME}}_USERNAME",
+          "password_env": "{{API_NAME}}_PASSWORD"
+        },
+        "oauth2": {
+          "client_id_env": "{{API_NAME}}_CLIENT_ID",
+          "client_secret_env": "{{API_NAME}}_CLIENT_SECRET",
+          "token_url": "{{TOKEN_URL}}",
+          "scope": "{{REQUIRED_SCOPES}}"
+        }
+      }
+    },
+    "endpoints": {
+      "create_resource": {
+        "method": "POST",
+        "path": "/{{RESOURCE_PATH}}",
+        "description": "Create a new {{RESOURCE_TYPE}}",
+        "request": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          "body_schema": {
+            "type": "object",
+            "properties": {
+              "{{FIELD_NAME}}": {
+                "type": "{{FIELD_TYPE}}",
+                "description": "{{FIELD_DESCRIPTION}}",
+                "required": true
+              }
+            }
+          }
+        },
+        "response": {
+          "success": {
+            "status_code": 201,
+            "schema": {
+              "type": "object", 
+              "properties": {
+                "id": {"type": "string"},
+                "{{FIELD_NAME}}": {"type": "{{FIELD_TYPE}}"},
+                "created_at": {"type": "string", "format": "date-time"},
+                "updated_at": {"type": "string", "format": "date-time"}
+              }
+            }
+          },
+          "error": {
+            "status_codes": [400, 401, 403, 422, 500],
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {"type": "string"},
+                "message": {"type": "string"},
+                "details": {"type": "object"}
+              }
+            }
+          }
+        }
+      },
+      "get_resource": {
+        "method": "GET",
+        "path": "/{{RESOURCE_PATH}}/{id}",
+        "description": "Retrieve a specific {{RESOURCE_TYPE}}",
+        "parameters": {
+          "path": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier for the {{RESOURCE_TYPE}}",
+              "required": true
+            }
+          },
+          "query": {
+            "include": {
+              "type": "string",
+              "description": "Related resources to include",
+              "required": false
+            }
+          }
+        },
+        "response": {
+          "success": {
+            "status_code": 200,
+            "schema": "{{RESOURCE_SCHEMA}}"
+          },
+          "error": {
+            "status_codes": [401, 403, 404, 500]
+          }
+        }
+      },
+      "list_resources": {
+        "method": "GET", 
+        "path": "/{{RESOURCE_PATH}}",
+        "description": "List {{RESOURCE_TYPE}} with pagination",
+        "parameters": {
+          "query": {
+            "page": {
+              "type": "integer",
+              "description": "Page number for pagination",
+              "default": 1
+            },
+            "per_page": {
+              "type": "integer",
+              "description": "Number of items per page",
+              "default": 20,
+              "maximum": 100
+            },
+            "sort": {
+              "type": "string",
+              "description": "Sort field and direction",
+              "default": "created_at:desc"
+            },
+            "filter": {
+              "type": "object",
+              "description": "Filter criteria"
+            }
+          }
+        },
+        "response": {
+          "success": {
+            "status_code": 200,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": "{{RESOURCE_SCHEMA}}"
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "page": {"type": "integer"},
+                    "per_page": {"type": "integer"},
+                    "total": {"type": "integer"},
+                    "pages": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "update_resource": {
+        "method": "PUT",
+        "path": "/{{RESOURCE_PATH}}/{id}",
+        "description": "Update an existing {{RESOURCE_TYPE}}",
+        "parameters": {
+          "path": {
+            "id": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        "request": {
+          "body_schema": "{{UPDATE_SCHEMA}}"
+        },
+        "response": {
+          "success": {
+            "status_code": 200,
+            "schema": "{{RESOURCE_SCHEMA}}"
+          }
+        }
+      },
+      "delete_resource": {
+        "method": "DELETE",
+        "path": "/{{RESOURCE_PATH}}/{id}",
+        "description": "Delete a {{RESOURCE_TYPE}}",
+        "parameters": {
+          "path": {
+            "id": {
+              "type": "string", 
+              "required": true
+            }
+          }
+        },
+        "response": {
+          "success": {
+            "status_code": 204
+          }
+        }
+      }
+    },
+    "error_handling": {
+      "retry_policy": {
+        "max_retries": 3,
+        "backoff_strategy": "exponential",
+        "base_delay": 1000,
+        "max_delay": 30000,
+        "retry_on_status": [429, 500, 502, 503, 504]
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "failure_threshold": 5,
+        "timeout": 60000,
+        "half_open_max_calls": 3
+      },
+      "timeout": {
+        "connect_timeout": 5000,
+        "read_timeout": 30000,
+        "write_timeout": 30000
+      }
+    },
+    "rate_limiting": {
+      "requests_per_second": 10,
+      "burst_capacity": 20,
+      "rate_limit_headers": {
+        "limit": "X-RateLimit-Limit",
+        "remaining": "X-RateLimit-Remaining", 
+        "reset": "X-RateLimit-Reset"
+      }
+    },
+    "caching": {
+      "enabled": true,
+      "strategy": "time_based",
+      "default_ttl": 300,
+      "cache_headers": ["Cache-Control", "ETag"],
+      "cache_keys": ["method", "url", "headers"]
+    },
+    "monitoring": {
+      "metrics": {
+        "enabled": true,
+        "endpoint_latency": true,
+        "error_rates": true,
+        "request_volume": true
+      },
+      "logging": {
+        "enabled": true,
+        "level": "info",
+        "include_headers": false,
+        "include_body": false,
+        "sanitize_sensitive": true
+      },
+      "health_check": {
+        "enabled": true,
+        "endpoint": "/health",
+        "interval": 60000,
+        "timeout": 5000
+      }
+    },
+    "security": {
+      "tls": {
+        "verify_certificates": true,
+        "min_version": "1.2"
+      },
+      "headers": {
+        "user_agent": "{{PROJECT_NAME}}/{{VERSION}} ({{CONTACT_EMAIL}})",
+        "accept_encoding": "gzip, deflate"
+      },
+      "request_signing": {
+        "enabled": false,
+        "algorithm": "HMAC-SHA256",
+        "headers_to_sign": ["Date", "Authorization", "Content-Type"]
+      }
+    },
+    "validation": {
+      "request_validation": {
+        "enabled": true,
+        "strict_mode": true,
+        "additional_properties": false
+      },
+      "response_validation": {
+        "enabled": true,
+        "fail_on_unknown_properties": false
+      },
+      "schema_validation": {
+        "enabled": true,
+        "cache_schemas": true
+      }
+    }
+  },
+  "usage_examples": {
+    "basic_crud": {
+      "create": {
+        "description": "Create a new user",
+        "request": {
+          "method": "POST",
+          "url": "{{BASE_URL}}/users",
+          "headers": {
+            "Authorization": "Bearer {{TOKEN}}",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "name": "John Doe",
+            "email": "john.doe@example.com"
+          }
+        }
+      },
+      "read": {
+        "description": "Get user by ID",
+        "request": {
+          "method": "GET",
+          "url": "{{BASE_URL}}/users/123",
+          "headers": {
+            "Authorization": "Bearer {{TOKEN}}"
+          }
+        }
+      }
+    }
+  },
+  "integration_checklist": [
+    "Configure authentication credentials",
+    "Set up error handling and retries",
+    "Implement rate limiting",
+    "Add monitoring and logging",
+    "Validate request/response schemas",
+    "Set up health checks",
+    "Configure caching strategy",
+    "Test all CRUD operations",
+    "Verify security settings",
+    "Document integration usage"
+  ]
+}

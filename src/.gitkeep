@@ -1,0 +1,5 @@
+# Source Code Directory
+
+This directory will contain your project's source code after initialization.
+
+The initialize-project.sh script will set up the appropriate structure based on your chosen programming language.
