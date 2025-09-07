@@ -54,13 +54,13 @@ Create a standalone interactive HTML file that visualizes and demonstrates the s
 - Project URL: https://github.com/users/petergiordano/projects/1
 - Auto-addition of issues to project board
 - Status synchronization through labels
-- Visual relationship tracking
+- Clean individual issue tracking
 
 ### Testing Results (Include performance data)
 - **Issue Creation Time**: ~2-3 seconds per issue
-- **Epic Creation Time**: ~5-8 seconds (epic + multiple features + linking)
 - **Label Application**: Automatic with proper validation
 - **Project Board Sync**: Immediate
+- **Simplified Workflow**: Clean individual issue tracking without complex relationships
 
 ## Requirements
 
@@ -68,7 +68,8 @@ Create a standalone interactive HTML file that visualizes and demonstrates the s
 
 - Visual flowchart showing: PRD → GitHub Issues → Implementation → Validation → GitHub Projects
 - Interactive elements that highlight each stage when clicked
-- Show the relationship between Files (reference only) vs Database (primary tracking)
+- Show the simplified individual issue tracking approach (no complex relationships)
+- Emphasize Files (reference only) vs Database (primary tracking)
 
 ### 2. Issue Types Demonstration
 
@@ -77,14 +78,13 @@ Create interactive sections for each issue type:
 - **FEAT**: Features (new functionality)
 - **ENH**: Enhancements (improvements to existing features)  
 - **BUG**: Bug fixes
-- **EPIC**: Collections of related issues
 
 Each section should show:
 
 - Sample issue creation command
 - Example GitHub issue format
 - How it appears in GitHub Projects board
-- Relationship connections to other issues
+- Simple clean labels (no complex relationships)
 
 ### 3. Script Usage Guide
 

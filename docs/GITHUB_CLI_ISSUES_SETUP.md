@@ -1,6 +1,8 @@
 # GitHub CLI + VS Code Issue Automation Setup
 
-This guide documents how we configure GitHub CLI (gh) and VS Code tasks so agents (Claude, Gemini, ChatGPT) can create and manage GitHub issues directly in the **category-blueprint** repository and project board.
+This guide documents the **simplified database-driven workflow** for GitHub CLI (gh) and VS Code integration. Agents (Claude, Gemini) and users can create and manage GitHub issues directly in the **category-blueprint** repository and project board using automated scripts.
+
+**Key Principle**: GitHub Issues are the database. Individual issue tracking with clean labels, no complex relationships.
 
 ---
 
@@ -55,55 +57,48 @@ Note the **project number** (e.g., `1`) for `category-blueprint-roadmap` and the
 
 ---
 
-## 4) VS Code Tasks Configuration
+## 4) Automated Scripts + VS Code Integration
 
-Add tasks to `.vscode/tasks.json` so agents can run them inside VS Code.
+We use **automation scripts** instead of manual VS Code tasks. The scripts handle ID generation, validation, and project board integration automatically.
 
-```json
-{
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "GitHub: Create issue + add to Project",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-lc",
-        "ISSUE_URL=$(gh issue create --repo petergiordano/category-blueprint --title \"${input:issueTitle}\" --body \"${input:issueBody}\" --assignee @me --label ${input:labels} | tail -n1); gh project item-add 1 --owner petergiordano --url \"$ISSUE_URL\"; echo Created: $ISSUE_URL"
-      ]
-    },
-    {
-      "label": "GitHub: Comment on issue #",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-lc",
-        "gh issue comment ${input:issueNumber} --repo petergiordano/category-blueprint --body \"${input:comment}\""
-      ]
-    },
-    {
-      "label": "GitHub: Close issue #",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-lc",
-        "gh issue close ${input:issueNumber} --repo petergiordano/category-blueprint"
-      ]
-    }
-  ],
-  "inputs": [
-    { "id": "issueTitle",  "type": "promptString", "description": "Issue title (use [FEAT-ID]/[ENH-ID]/[BUG-ID]: <Title>)" },
-    { "id": "labels",      "type": "promptString", "description": "Comma-separated labels (e.g., enhancement, Phase 6, status-todo)" },
-    { "id": "issueBody",   "type": "promptString", "description": "Issue body markdown" },
-    { "id": "issueNumber", "type": "promptString", "description": "Issue number" },
-    { "id": "comment",     "type": "promptString", "description": "Comment body" }
-  ]
-}
+### Core Automation Scripts
+
+Located in `scripts/` directory:
+
+```bash
+# Essential Issue Creation (with auto-ID generation)
+./scripts/create-feature-issue.sh "Feature Title" "Description" "Phase 6" "High"
+./scripts/create-enhancement-issue.sh "Enhancement Title" "Description" "Phase 6" "Medium"
+./scripts/create-bug-issue.sh "Bug Title" "Description" "Phase 6" "High"
+
+# AI-powered universal creation
+./scripts/create-issue-ai.sh "FEAT" "Title" "Description" "Phase 6"
+
+# Status management
+./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
+
+# One-time setup
+./scripts/setup-github-labels.sh
 ```
 
-Tips:
-- Title format and labels should follow Sections **7** and **10** below.
-- The task echoes the created issue URL so agents can capture it.
+### VS Code Tasks (Current)
+
+The current `.vscode/tasks.json` integrates with these scripts:
+
+- **GitHub: Create Feature Issue (Smart)** - Uses create-feature-issue.sh
+- **GitHub: Create Enhancement Issue (Smart)** - Uses create-enhancement-issue.sh  
+- **GitHub: Create Bug Issue (Smart)** - Uses create-bug-issue.sh
+- **GitHub: Update Issue Status** - Uses update-issue-status.sh
+- **GitHub: List Open Issues** - View current work
+- **GitHub: View Project Board** - Open GitHub Projects
+
+### Benefits of Script-Based Approach
+
+- **Auto-ID Generation**: FEAT-001, ENH-001, BUG-001 with smart incrementing
+- **Validation**: Title, phase, and priority validation built-in
+- **Project Integration**: Automatic addition to GitHub Projects board
+- **Error Handling**: Comprehensive validation and user feedback
+- **Consistent Format**: Standardized issue templates and labels
 
 ---
 
@@ -223,14 +218,28 @@ Notes:
 
 ---
 
-## 9) Quick-create Tasks (agent friendly)
+## 9) Quick-create with Automation Scripts
 
-Use the task **GitHub: Create issue + add to Project** and supply:
-- **Title**: `"[FEAT-###] / [ENH-###] / [BUG-###]: <Title>"`
-- **Labels**: `enhancement` *or* `bug`, plus `Phase X`, `status-todo`
-- **Body**: paste the *Recommended body block* from Section 7
+Use the automation scripts for reliable issue creation:
 
-Other handy tasks: **Comment on issue #**, **Close issue #**.
+```bash
+# Features (new functionality)
+./scripts/create-feature-issue.sh "Feature Name" "Description" "Phase 6" "High"
+
+# Enhancements (improvements to existing features)  
+./scripts/create-enhancement-issue.sh "Enhancement Name" "Description" "Phase 6" "Medium"
+
+# Bug fixes
+./scripts/create-bug-issue.sh "Bug Name" "Description" "Phase 6" "High"
+```
+
+**Benefits:**
+- Auto-generates IDs (FEAT-001, ENH-001, BUG-001)
+- Validates input and applies correct labels automatically
+- Adds to GitHub Projects board
+- Consistent formatting and structure
+
+**VS Code Alternative:** Use Command Palette → "Tasks: Run Task" → Select the appropriate GitHub task.
 
 ---
 
