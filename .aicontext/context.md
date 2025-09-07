@@ -1013,7 +1013,7 @@ Successfully implemented and debugged the Company Context Setup Modal feature:
 **Technical Details:**
 - **Commit**: e9e6d1b "Restore sections 1–6; unify template; add verification; fix YAML front-matter issue"
 - **Files Added/Modified**: 
-  - `docs/GITHUB_CLI_ISSUES_SETUP.md` (GitHub CLI setup documentation)
+  - `docs/GITHUB_CLI_ISSUE_TRACKING_SETUP.md` (GitHub CLI issue tracking setup documentation)
   - `.github/ISSUE_TEMPLATE/config.yml` (Issue template configuration)
 - **Git Operations**: Changes committed and pushed to origin/main successfully
 - **GitHub Integration**: Issue template system now properly configured
@@ -1160,4 +1160,27 @@ Successfully implemented and debugged the Company Context Setup Modal feature:
 - Integrated with existing dev-cycle.md AI-powered development workflow
 - Maintained backward compatibility while establishing new database-first principles
 **Next:** Database-driven protocol ready for production use - all agents can coordinate through GitHub Issues with clear relationship visibility and workflow automation
+---
+**Timestamp:** 2025-09-07T15:30:00Z
+**From:** Claude Code
+**To:** User/Gemini CLI
+**Status:** WORKFLOW_SIMPLIFICATION_COMPLETE
+**Branch:** main
+**Summary:** Successfully simplified database-driven workflow by removing complex issue relationships - user feedback "complicated and brittle" addressed with clean individual issue tracking.
+**Technical Details:**
+- **Problem**: Issue relationship system (depends-on, blocks, epic, subtask) proved overly complex and brittle in practice
+- **Solution**: Streamlined to simple individual issue tracking with basic labels only
+- **Files Modified**:
+  - `docs/DATABASE_DRIVEN_WORKFLOW.md`: Removed relationship complexity, focused on clean issue creation
+  - `.vscode/tasks.json`: Removed epic and relationship management tasks
+  - `docs/CLAUDE_DESKTOP_WORKFLOW_PROMPT.md`: Updated for simplified visualization
+- **Simplified Labels**: priority-high/medium/low, status-todo/in-progress/complete, Phase 1-10 (no more epic, epic-item, has-dependencies, has-dependents)
+- **Core Scripts Remain**: create-feature-issue.sh, create-enhancement-issue.sh, create-bug-issue.sh, update-issue-status.sh
+- **Test Results**: ✅ FEAT-005 created with clean labels (enhancement, status-in-progress, Phase 6)
+**Context Preservation:**
+- Maintained all core functionality: issue creation, status management, GitHub Projects integration
+- Removed brittle relationship system while preserving workflow automation
+- Simple, reliable approach focused on individual issue tracking
+- VS Code integration simplified to essential tasks only
+**Next:** Simplified workflow tested and working - ready for production use with cleaner, more reliable issue management
 ---
