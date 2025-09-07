@@ -45,7 +45,7 @@ if [[ ${#COMPONENT_LIST[@]} -gt 0 ]]; then
     echo ""
     echo "Feature Issues to create:"
     for i in "${!COMPONENT_LIST[@]}"; do
-        local feat_num=$((i + 1))
+        feat_num=$((i + 1))
         printf "  FEAT-%03d: %s\n" "$feat_num" "${COMPONENT_LIST[$i]}"
     done
 fi

@@ -49,7 +49,7 @@ vercel dev
 ```
 
 This command:
-- Starts local server at `http://localhost:3000`
+- Starts local server at `http://localhost:3000`. To use a different port, use the `--listen` flag: `vercel dev --listen 4000`
 - Enables serverless functions at `/api/*` endpoints
 - Loads environment variables from `.env.local`
 - Provides hot reload for function changes
@@ -160,7 +160,7 @@ curl -X POST http://localhost:3000/api/search \
 ```
 
 ### 3. Frontend Integration Test
-1. Navigate to `http://localhost:3000`
+1. Navigate to `http://localhost:4000`
 2. Go to Section 4 "Value and Proof"
 3. Enter attribute text
 4. Click "Analyze Uniqueness" button

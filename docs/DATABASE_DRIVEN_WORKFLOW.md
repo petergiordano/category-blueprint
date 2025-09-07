@@ -1,14 +1,14 @@
 # Database-Driven Development Workflow
 
-**Philosophy**: GitHub Issues & Projects are the database. Files provide context and automation.
+**Philosophy**: GitHub Issues & Projects are the database. Keep it simple and focused.
 
 ---
 
 ## Quick Start Guide
 
-### 1. Create Issues First
+### 1. Create Individual Issues
 ```bash
-# Feature with smart automation
+# Feature 
 ./scripts/create-feature-issue.sh "User Authentication" "Login and session management" "Phase 6" "High"
 
 # Enhancement  
@@ -18,19 +18,10 @@
 ./scripts/create-bug-issue.sh "Login Timeout" "Sessions expire too quickly" "Phase 6" "High"
 ```
 
-### 2. Link Related Issues
-```bash
-# Create dependencies
-./scripts/link-related-issues.sh "FEAT-001" "ENH-001" "depends-on"
-
-# Create epics with features
-./scripts/create-epic-issues.sh "User Management System" "Complete user lifecycle" "Phase 6" "Authentication" "Profile Management" "Permissions"
-```
-
-### 3. Track Everything in GitHub Projects
+### 2. Track Everything in GitHub Projects
 - **Live Status**: https://github.com/users/petergiordano/projects/1
 - **No file-based status tracking**: GitHub Projects is the single source of truth
-- **Relationships visible**: Issues show dependencies through comments and labels
+- **Simple status labels**: status-todo, status-in-progress, status-complete
 
 ---
 
@@ -38,46 +29,45 @@
 
 ### ✅ Do This (Database-Driven)
 - **Create GitHub Issue for every feature, bug, enhancement**
-- **Use issue relationships to show connections**
 - **Update issue status as work progresses** 
-- **Reference issue URLs in all documentation**
 - **Use GitHub Projects board for visual management**
+- **Reference issue numbers in commit messages and code**
+- **Keep each issue focused and independent**
 
 ### ❌ Don't Do This (File-Driven)
 - **Track status in markdown files**
 - **Create TODO lists in documentation** 
 - **Maintain feature lists outside GitHub Issues**
 - **Duplicate issue data in files**
+- **Create complex dependency webs between issues**
 
 ---
 
-## Issue Relationships System
+## Simple Issue Management
 
-### Relationship Types & Usage
+### Core Issue Creation Commands
 ```bash
-# Epic relationships  
-./scripts/link-related-issues.sh "EPIC-001" "FEAT-001" "epic"
+# Feature 
+./scripts/create-feature-issue.sh "User Authentication" "Complete login system" "Phase 6" "High"
 
-# Dependencies
-./scripts/link-related-issues.sh "FEAT-001" "FEAT-002" "depends-on"  
+# Enhancement
+./scripts/create-enhancement-issue.sh "Faster Authentication" "Improve login speed" "Phase 6" "Medium"
 
-# Blocking relationships
-./scripts/link-related-issues.sh "BUG-001" "FEAT-003" "blocks"
+# Bug Fix
+./scripts/create-bug-issue.sh "Login Timeout" "Fix session expiration issue" "Phase 6" "High"
 
-# Subtasks
-./scripts/link-related-issues.sh "FEAT-001" "FEAT-004" "subtask"
+# Universal AI-powered creation
+./scripts/create-issue-ai.sh "FEAT" "Smart Dashboard" "AI-powered analytics dashboard" "Phase 6"
 ```
 
-### Finding Related Issues
+### Status Management
 ```bash
-# All epic features
-gh issue list --repo petergiordano/category-blueprint --label epic-item
+# Update status
+./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
+./scripts/update-issue-status.sh "FEAT-001" "status-complete"
 
-# Dependencies
-gh issue list --repo petergiordano/category-blueprint --label has-dependencies
-
-# Blocking issues  
-gh issue list --repo petergiordano/category-blueprint --label has-dependents
+# View all issues
+gh issue list --repo petergiordano/category-blueprint --state all
 ```
 
 ---
@@ -86,21 +76,21 @@ gh issue list --repo petergiordano/category-blueprint --label has-dependents
 
 ### For Claude Code
 1. **Always create issues before implementing**
-2. **Update issue status at milestones**
-3. **Include issue URLs in handoff entries**
-4. **Use VS Code tasks for issue management**
+2. **Update issue status as work progresses**
+3. **Include issue numbers in commit messages**
+4. **Use VS Code tasks for streamlined issue management**
 
 ### For Gemini CLI  
-1. **Validate against GitHub Issue requirements**
-2. **Check issue status accuracy**
-3. **Analyze relationship integrity**
-4. **Report discrepancies with specific issue updates**
+1. **Validate implementations match GitHub Issue requirements**
+2. **Check that issue status reflects actual progress**
+3. **Verify issue descriptions are complete and clear**
+4. **Report discrepancies with specific recommendations**
 
 ### For User/Project Director
-1. **Manage epics in GitHub Projects board**
-2. **Prioritize through issue assignment and milestones** 
-3. **Review agent work via issue comments**
-4. **Coordinate through issue relationships**
+1. **Manage work through GitHub Projects board**
+2. **Prioritize via issue labels and assignments** 
+3. **Review progress through issue status**
+4. **Create epics only when you need to group related work**
 
 ---
 
@@ -108,16 +98,13 @@ gh issue list --repo petergiordano/category-blueprint --label has-dependents
 
 Open Command Palette (Cmd/Ctrl+Shift+P) → "Tasks: Run Task":
 
-### Primary Issue Management
+### Essential Tasks
 - **GitHub: Create Feature Issue (Smart)** - Standard feature creation
-- **GitHub: Create Epic with Features** - Bulk epic + features  
-- **GitHub: Link Related Issues** - Create relationships
-- **GitHub: Update Issue Status** - Change status
-
-### Quick Views
+- **GitHub: Create Enhancement Issue (Smart)** - Improvements to existing features
+- **GitHub: Create Bug Issue (Smart)** - Bug reporting and fixes
+- **GitHub: Update Issue Status** - Change issue status
 - **GitHub: List Open Issues** - Current work overview
 - **GitHub: View Project Board** - Open GitHub Projects
-- **GitHub: Sync PRD Status** - Validate synchronization
 
 ---
 
@@ -129,27 +116,26 @@ Open Command Palette (Cmd/Ctrl+Shift+P) → "Tasks: Run Task":
 
 **Live Dashboard**: [GitHub Projects](https://github.com/users/petergiordano/projects/1)
 
-| Feature | GitHub Issues | Quick View |
-|---------|---------------|------------|  
-| Authentication | [FEAT-001](https://github.com/petergiordano/category-blueprint/issues/1) | [Search Issues](https://github.com/petergiordano/category-blueprint/issues?q=FEAT-001) |
-| User Profiles | [FEAT-002](https://github.com/petergiordano/category-blueprint/issues/2) | [Search Issues](https://github.com/petergiordano/category-blueprint/issues?q=FEAT-002) |
+| Feature | GitHub Issue | Status |
+|---------|--------------|--------|  
+| Authentication | [FEAT-001](https://github.com/petergiordano/category-blueprint/issues/1) | *See GitHub Projects* |
+| User Profiles | [FEAT-002](https://github.com/petergiordano/category-blueprint/issues/2) | *See GitHub Projects* |
 
-**Note**: Status is managed in GitHub Projects, not this file.
+**Note**: All status tracking is in GitHub Projects, not this file.
 ```
 
-### Feature Specs (Issue-Linked)  
+### Feature Specs (Simple References)
 ```markdown  
 # Feature Specification: User Authentication
 
-**GitHub Issue**: [FEAT-001](https://github.com/petergiordano/category-blueprint/issues/1)  
-**Epic**: [EPIC-001: User Management](https://github.com/petergiordano/category-blueprint/issues/5)  
-**Dependencies**: [ENH-001](https://github.com/petergiordano/category-blueprint/issues/3)
+**GitHub Issue**: [FEAT-001](https://github.com/petergiordano/category-blueprint/issues/1)
 
 ## Implementation Requirements
 [Detailed spec content...]
 
 ## Completion Criteria  
-Implementation complete when GitHub Issue FEAT-001 can be closed.
+Implementation complete when FEAT-001 is marked status-complete.
+```
 ```
 
 ### Implementation Logs (Issue-Referenced)

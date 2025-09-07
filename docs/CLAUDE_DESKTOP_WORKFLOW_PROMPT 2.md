@@ -6,35 +6,41 @@ Copy and paste this prompt into Claude Desktop to create an interactive HTML vis
 
 **Prompt for Claude Desktop:**
 
-Create a standalone interactive HTML file that visualizes and demonstrates the simplified database-driven development workflow for a GitHub Issues-based project management system. The HTML should be fully self-contained with embedded CSS and JavaScript.
+Create a standalone interactive HTML file that visualizes and demonstrates the database-driven development workflow for a GitHub Issues-based project management system. The HTML should be fully self-contained with embedded CSS and JavaScript.
 
 **Important Context**: Read these key files to understand the complete workflow and implementation details:
 
-- `/Users/petergiordano/Documents/GitHub/category-blueprint/docs/DATABASE_DRIVEN_WORKFLOW.md` - Complete simplified workflow guide with rules, commands, and examples
+- `/Users/petergiordano/Documents/GitHub/category-blueprint/docs/DATABASE_DRIVEN_WORKFLOW.md` - Complete workflow guide with rules, commands, and examples
 - `/Users/petergiordano/Documents/GitHub/category-blueprint/CLAUDE.md` - Claude Code agent protocol for database-driven development  
 - `/Users/petergiordano/Documents/GitHub/category-blueprint/.gemini/GEMINI.md` - Gemini CLI validation and analysis protocol
 - `/Users/petergiordano/Documents/GitHub/category-blueprint/.vscode/tasks.json` - VS Code task definitions for issue management
-- **Key automation scripts in `/Users/petergiordano/Documents/GitHub/category-blueprint/scripts/` directory**
+- `/Users/petergiordano/Documents/GitHub/category-blueprint/docs/E2E_TEST_PLAN.md` - End-to-end testing results and findings
+- **All automation scripts in `/Users/petergiordano/Documents/GitHub/category-blueprint/scripts/` directory**
 
 **CRITICAL**: This system requires specific GitHub labels to function. The visualization must include setup requirements.
-
-**IMPORTANT**: The workflow has been simplified to remove complex issue relationships and dependencies for better reliability and ease of use.
 
 ## As-Built System Details (MUST INCLUDE IN VISUALIZATION)
 
 ### Setup Requirements (Show as prerequisite step)
 - **Repository Setup**: Requires `./scripts/setup-github-labels.sh` to create required labels
-- **Required Labels**: priority-high/medium/low, status-todo/in-progress/complete, Phase 1-10
+- **Required Labels**: epic, epic-item, has-dependencies, has-dependents, priority-high/medium/low, status-todo/in-progress/complete, Phase 1-10
 - **Authentication**: GitHub CLI must be authenticated (`gh auth status`)
 - **Permissions**: Repository write access, GitHub Projects access
 
-### Core Automation Scripts (Annotate each workflow step with script filenames)
+### Automation Scripts (Annotate each workflow step with script filenames)
 ```bash
-# Essential Issue Creation Scripts
+# Core Issue Creation Scripts
 ./scripts/create-feature-issue.sh "Title" "Description" "Phase 6" "High"
 ./scripts/create-enhancement-issue.sh "Title" "Description" "Phase 6" "Medium" 
 ./scripts/create-bug-issue.sh "Title" "Description" "Phase 6" "High"
 ./scripts/create-issue-ai.sh "FEAT" "Title" "Description" "Phase 6"
+
+# Epic Management
+./scripts/create-epic-issues.sh "Epic Title" "Description" "Phase 6" "Component 1" "Component 2"
+
+# Relationship Management  
+./scripts/link-related-issues.sh "FEAT-001" "FEAT-002" "depends-on"
+./scripts/link-related-issues.sh "EPIC-001" "FEAT-001" "epic"
 
 # Status Management
 ./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
@@ -48,7 +54,7 @@ Create a standalone interactive HTML file that visualizes and demonstrates the s
 - Command Palette → "Tasks: Run Task" 
 - Tasks defined in `.vscode/tasks.json`
 - Smart input prompts for all parameters
-- Simplified task set focused on core functionality
+- Direct integration with shell scripts
 
 ### GitHub Projects Integration (Show data flow)
 - Project URL: https://github.com/users/petergiordano/projects/1
@@ -96,6 +102,11 @@ Interactive demonstration of key scripts:
 - `./scripts/create-enhancement-issue.sh "Enhancement Name" "Description" "Phase 6" "Medium"`
 - `./scripts/create-bug-issue.sh "Bug Name" "Description" "Phase 6" "High"`
 
+**Relationship Management:**
+
+- `./scripts/link-related-issues.sh "FEAT-001" "FEAT-002" "depends-on"`
+- `./scripts/create-epic-issues.sh "Epic Title" "Description" "Phase 6" "Component 1" "Component 2"`
+
 **Status Updates:**
 
 - `./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"`
@@ -105,10 +116,9 @@ Interactive demonstration of key scripts:
 Show the VS Code Command Palette tasks:
 
 - "GitHub: Create Feature Issue (Smart)"
-- "GitHub: Create Enhancement Issue (Smart)"
-- "GitHub: Create Bug Issue (Smart)"
+- "GitHub: Create Epic with Features"
+- "GitHub: Link Related Issues"
 - "GitHub: Update Issue Status"
-- "GitHub: List Open Issues"
 - "GitHub: View Project Board"
 
 ### 5. Agent Coordination Visualization
@@ -116,8 +126,8 @@ Show the VS Code Command Palette tasks:
 Show how the three agents interact:
 
 - **Claude Code**: Creates issues, implements features, updates status
-- **Gemini CLI**: Validates implementations, checks issue accuracy
-- **User**: Prioritizes work through GitHub Projects board
+- **Gemini CLI**: Validates implementations, analyzes relationships
+- **User**: Manages epics, prioritizes through GitHub Projects
 
 Include sample handoff log entries and status updates.
 
@@ -127,19 +137,29 @@ Visual representation of:
 
 - How issues flow through project board columns
 - Status labels (status-todo, status-in-progress, status-complete)
-- Priority labels (priority-high, priority-medium, priority-low)
-- Phase labels (Phase 1-10)
+- Relationship labels (epic-item, has-dependencies, has-dependents)
 - Project board URL: <https://github.com/users/petergiordano/projects/1>
 
-### 7. Quality Gates Section
+### 7. Relationship Types Examples
+
+Interactive examples showing:
+
+- **depends-on**: FEAT-002 depends on FEAT-001
+- **blocks**: BUG-001 blocks FEAT-003
+- **epic**: EPIC-001 contains FEAT-001, FEAT-002, FEAT-003
+- **subtask**: FEAT-004 is a subtask of FEAT-001
+- **related-to**: ENH-001 is related to FEAT-001
+
+### 8. Quality Gates Section
 
 Show validation checkpoints:
 
 - Issue requirements validation
 - Status accuracy checks
-- Implementation completeness verification
+- Relationship integrity verification
+- Epic progress tracking
 
-### 8. Setup & Prerequisites Section (CRITICAL - Must be first step)
+### 9. Setup & Prerequisites Section (CRITICAL - Must be first step)
 
 Show this as the mandatory first step in any workflow:
 
