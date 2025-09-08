@@ -2388,57 +2388,6 @@
                 }, 1500);
             };
 
-            const analyzeUniqueness = async (attributeText, idx) => {
-                setUniquenessResults(prev => ({ ...prev, [idx]: { isAnalyzing: true } }));
-                
-                // Simulate analysis
-                setTimeout(() => {
-                    setUniquenessResults(prev => ({
-                        ...prev,
-                        [idx]: {
-                            isAnalyzing: false,
-                            results: [
-                                { title: 'Similar Feature Found', snippet: 'Competitor X offers a similar capability...' },
-                                { title: 'Market Analysis', snippet: 'This feature addresses a growing need in...' }
-                            ]
-                        }
-                    }));
-                }, 1500);
-            };
-
-            const analyzeTrend = async (trendText, idx) => {
-                setTrendAnalysisResults(prev => ({ ...prev, [idx]: { isAnalyzing: true } }));
-                
-                // Simulate analysis
-                setTimeout(() => {
-                    setTrendAnalysisResults(prev => ({
-                        ...prev,
-                        [idx]: {
-                            isAnalyzing: false,
-                            results: [
-                                { title: 'Industry Report', snippet: 'Market research shows 40% growth in...' },
-                                { title: 'Expert Analysis', snippet: 'Analysts predict this trend will accelerate...' }
-                            ]
-                        }
-                    }));
-                }, 1500);
-            };
-
-            const simulateAIGrading = async (item, idx) => {
-                setGradingState(prev => ({ ...prev, [idx]: { isGrading: true } }));
-                
-                setTimeout(() => {
-                    const score = Math.floor(Math.random() * 3) + 6; // 6-8 score
-                    setGradingState(prev => ({
-                        ...prev,
-                        [idx]: {
-                            isGrading: false,
-                            score,
-                            feedback: score >= 7 ? 'Strong unique value proposition' : 'Could be more differentiated'
-                        }
-                    }));
-                }, 1500);
-            };
 
             // Export functionality for positioning data
             const exportData = () => {
@@ -2559,7 +2508,7 @@
                             React.createElement('p', { className: 'text-gray-600 mb-6' }, 'What unique attributes deliver measurable value to your customers?'),
                             React.createElement('div', { className: 'space-y-4' },
                                 (appState.positioningData.values || []).map((item, index) => 
-                                    React.createElement(ValueProofRow, {
+                                    React.createElement(RemovableTriple, {
                                         key: index,
                                         index: index,
                                         item: item,
