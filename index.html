@@ -1311,7 +1311,7 @@
             </div>
         );
 
-        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult, onAnalyzeUniqueness, uniquenessResult, pillars }) => (
+        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult, onAnalyzeUniqueness, uniquenessResult }) => (
             <div className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
@@ -1356,23 +1356,6 @@
                         value={item.val3}
                         onChange={(e) => onUpdate(index, 'val3', e.target.value)}
                     />
-                </div>
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Strategic Pillar
-                    </label>
-                    <select 
-                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                        value={item.pillarId || ''}
-                        onChange={(e) => onUpdate(index, 'pillarId', e.target.value ? parseInt(e.target.value) : null)}
-                    >
-                        <option value="">Select a pillar...</option>
-                        {(pillars || []).map((pillar) => (
-                            <option key={pillar.id} value={pillar.id}>
-                                {pillar.name || `Pillar ${pillar.id}`}
-                            </option>
-                        ))}
-                    </select>
                 </div>
                 <div className="pt-2 space-y-3">
                     <div className="flex space-x-2">
@@ -2517,12 +2500,11 @@
                                         onGrade: (item, idx) => simulateAIGrading(item, idx),
                                         gradingResult: gradingState[index],
                                         onAnalyzeUniqueness: (attributeText, idx) => analyzeUniqueness(attributeText, idx),
-                                        uniquenessResult: uniquenessResults[index],
-                                        pillars: appState.positioningData.pillars
+                                        uniquenessResult: uniquenessResults[index]
                                     })
                                 ),
                                 React.createElement('button', {
-                                    onClick: () => addItem('values', { val1: '', val2: '', val3: '', pillarId: null }),
+                                    onClick: () => addItem('values', { val1: '', val2: '', val3: '' }),
                                     className: 'scale-blue-bg text-white font-bold py-2 px-4 rounded hover:bg-blue-700'
                                 }, '+ Add Value Proposition')
                             )
@@ -2532,8 +2514,38 @@
                         React.createElement('div', { id: 'section-3', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
                             React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '3. Market Category'),
                             React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Define how customers and analysts will categorize your solution.'),
-                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
-                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Market category section will be implemented in Phase 2')
+                            React.createElement('div', { className: 'space-y-4' },
+                                React.createElement('div', null,
+                                    React.createElement('label', { className: 'block font-bold text-gray-700 mb-2' }, 'Market Context'),
+                                    React.createElement('select', {
+                                        className: 'w-full p-2 border border-gray-300 rounded-md',
+                                        value: appState.positioningData['market-context'] || '',
+                                        onChange: (e) => setAppState(prev => ({ 
+                                            ...prev, 
+                                            positioningData: { ...prev.positioningData, 'market-context': e.target.value } 
+                                        }))
+                                    },
+                                        React.createElement('option', { value: '' }, 'Select market category...'),
+                                        React.createElement('option', { value: 'New Category' }, 'New Category'),
+                                        React.createElement('option', { value: 'Existing Category' }, 'Existing Category'),
+                                        React.createElement('option', { value: 'Sub-category' }, 'Sub-category'),
+                                        React.createElement('option', { value: 'Other' }, 'Other')
+                                    )
+                                ),
+                                // Show additional input if "Other" is selected
+                                appState.positioningData['market-context'] === 'Other' && React.createElement('div', null,
+                                    React.createElement('label', { className: 'block font-bold text-gray-700 mb-2' }, 'Specify Market Context'),
+                                    React.createElement('input', {
+                                        type: 'text',
+                                        className: 'w-full p-2 border border-gray-300 rounded-md',
+                                        placeholder: 'Enter your specific market context...',
+                                        value: appState.positioningData['market-context-other'] || '',
+                                        onChange: (e) => setAppState(prev => ({ 
+                                            ...prev, 
+                                            positioningData: { ...prev.positioningData, 'market-context-other': e.target.value } 
+                                        }))
+                                    })
+                                )
                             )
                         ),
                         
@@ -2541,8 +2553,39 @@
                         React.createElement('div', { id: 'section-4', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
                             React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '4. Target Market Characteristics'),
                             React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Who will care most about your unique value?'),
-                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
-                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Target market characteristics will pull from ICP data in Phase 2')
+                            React.createElement('div', { className: 'space-y-4' },
+                                // Display ICP data from Part 2
+                                React.createElement('div', { className: 'bg-blue-50 border border-blue-200 rounded-lg p-4' },
+                                    React.createElement('h3', { className: 'text-lg font-bold text-blue-800 mb-2' }, 'ICP Summary from Part 2'),
+                                    React.createElement('div', { className: 'space-y-2' },
+                                        appState.positioningData.icp_summary ? 
+                                            React.createElement('p', { className: 'text-blue-700' }, appState.positioningData.icp_summary) :
+                                            React.createElement('p', { className: 'text-blue-600 italic' }, 'Complete Part 2: ICP Definition to see your target market characteristics here')
+                                    )
+                                ),
+                                // Additional ICP details
+                                React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' },
+                                    // Firmographic
+                                    appState.positioningData.icp_firmographic && React.createElement('div', { className: 'p-3 bg-gray-50 rounded-lg' },
+                                        React.createElement('h4', { className: 'font-bold text-gray-800 mb-1' }, 'Firmographic'),
+                                        React.createElement('p', { className: 'text-sm text-gray-700' }, appState.positioningData.icp_firmographic)
+                                    ),
+                                    // Technographic
+                                    appState.positioningData.icp_technographic && React.createElement('div', { className: 'p-3 bg-gray-50 rounded-lg' },
+                                        React.createElement('h4', { className: 'font-bold text-gray-800 mb-1' }, 'Technographic'),
+                                        React.createElement('p', { className: 'text-sm text-gray-700' }, appState.positioningData.icp_technographic)
+                                    ),
+                                    // Behavioral
+                                    appState.positioningData.icp_behavioral && React.createElement('div', { className: 'p-3 bg-gray-50 rounded-lg' },
+                                        React.createElement('h4', { className: 'font-bold text-gray-800 mb-1' }, 'Behavioral'),
+                                        React.createElement('p', { className: 'text-sm text-gray-700' }, appState.positioningData.icp_behavioral)
+                                    ),
+                                    // Implementation Readiness
+                                    appState.positioningData.icp_implementation_readiness && React.createElement('div', { className: 'p-3 bg-gray-50 rounded-lg' },
+                                        React.createElement('h4', { className: 'font-bold text-gray-800 mb-1' }, 'Implementation Readiness'),
+                                        React.createElement('p', { className: 'text-sm text-gray-700' }, appState.positioningData.icp_implementation_readiness)
+                                    )
+                                )
                             )
                         ),
                         
