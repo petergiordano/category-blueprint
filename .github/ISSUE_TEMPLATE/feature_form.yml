@@ -1,0 +1,90 @@
+name: 🚀 Feature Request
+description: Propose a new feature for the project
+title: "[FEAT-XXX]: "
+labels: ["enhancement", "status-todo"]
+assignees:
+  - "@me"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request Form
+        Use this form when the automated scripts aren't available. Replace XXX in the title with the next available FEAT number.
+        
+  - type: input
+    id: title
+    attributes:
+      label: Feature Title
+      description: Brief, descriptive title for the feature
+      placeholder: "e.g., AI-Powered Report Generator"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Detailed description of what this feature should do
+      placeholder: "Describe the feature's purpose, functionality, and value..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      description: Which project phase does this belong to?
+      options:
+        - Phase 1
+        - Phase 2
+        - Phase 3
+        - Phase 4
+        - Phase 5
+        - Phase 6
+        - Phase 7
+        - Phase 8
+        - Phase 9
+        - Phase 10
+      default: 5
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - High
+        - Medium
+        - Low
+      default: 1
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Standard criteria for feature completion
+      options:
+        - label: Feature design and specification complete
+        - label: Implementation completed according to spec
+        - label: Unit tests written and passing
+        - label: Integration tests completed
+        - label: Documentation updated
+        - label: Code review completed
+        
+  - type: textarea
+    id: additional_criteria
+    attributes:
+      label: Additional Acceptance Criteria
+      description: Any feature-specific criteria not covered above
+      placeholder: "- [ ] Custom criterion 1\n- [ ] Custom criterion 2"
+      
+  - type: textarea
+    id: technical_notes
+    attributes:
+      label: Technical Notes
+      description: Any technical considerations or implementation notes
+      placeholder: "API dependencies, performance requirements, etc."

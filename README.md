@@ -1,444 +1,277 @@
-# AI-Powered Development Cycle Template
+# Interactive GTM Blueprint
 
-A complete, production-ready template for implementing AI-assisted development workflows with **Amazon Gyro IDE capabilities**. Transform your development process with structured AI assistance, automated quality gates, and enterprise-grade governance.
+**A production web application for B2B SaaS go-to-market strategy development**
 
-## 🎯 What This Template Provides
+[![Production Deployment](https://img.shields.io/badge/Production-Live-success?logo=vercel)](https://category-blueprint.vercel.app/)
+[![GitHub Issues](https://img.shields.io/github/issues/petergiordano/category-blueprint)](https://github.com/petergiordano/category-blueprint/issues)
+[![GitHub Project](https://img.shields.io/badge/Project%20Board-Active-blue)](https://github.com/users/petergiordano/projects/1)
 
-This template bridges the gap between **"vibe coding"** (rapid prototyping) and **"viable code"** (production-ready systems):
-
-### 🧠 **Gyro-Enhanced AI Development**
-- **Spec-Driven Development**: Requirements → Design → Tasks workflow with automated generation
-- **Agent Steering System**: Persistent AI context through domain-specific guidance files
-- **Agent Hooks Framework**: Event-driven automation for quality gates and workflows
-- **Execution Modes**: Autopilot, supervised, and hybrid AI assistance levels
-- **Advanced Validation**: Comprehensive production readiness assessment
-
-### 🏗️ **Production-Ready Architecture**
-- **Component-Based Pipeline**: Break complex projects into manageable, testable components  
-- **SLC Principles**: Simple, Lovable, Complete design framework for quality outcomes
-- **Multi-Tier Testing**: Unit, integration, performance, and acceptance testing
-- **Quality Gates**: Automated validation before deployment
-
-### 🤖 **AI Coordination**
-- **Claude Code Integration**: Complex problem-solving, architecture decisions, code review
-- **Domain-Specific Intelligence**: Data processing, content generation, API integration patterns
-- **Workflow Orchestration**: Multi-step development automation with intelligent coordination
-
-## ⚡ Quick Start
-
-> **New here?** Start with [QUICKSTART.md](QUICKSTART.md) for a 5-minute setup guide.
-
-### 1. Clone and Initialize
-```bash
-# Clone the template (or download as ZIP)
-git clone https://github.com/[your-username]/ai-dev-cycle-template my-project
-cd my-project
-
-# Run the enhanced setup script (includes Gyro features)
-./scripts/initialize-project.sh
-# Choose your project domain: data-processing, content-generation, api-integration, or general
-# Enable Gyro features: steering system, hooks, validation (recommended: yes)
-
-# Validate setup
-python scripts/validate-setup.py
-```
-
-### 2. Customize for Your Project  
-```bash
-# Review generated steering files for your domain
-code .claude/steering/
-
-# Edit the PRD template for your specific project
-code docs/specifications/PRD.md
-
-# Configure your development environment
-code config/project-config.json
-```
-
-### 3. Start Developing with AI
-```bash
-# Open in VS Code with Claude Code extension
-code .
-
-# Use enhanced AI workflow commands:
-@orient                    # Get project status and next steps
-@next-task                 # Select and plan next component  
-@finalize-task             # Complete current work with validation
-@update-prd                # Sync project progress
-
-# Gyro-enhanced commands:
-@workflow-orchestrator     # Automate multi-step workflows
-@production-readiness      # Check deployment readiness
-@validate-all              # Run comprehensive validation
-```
-
-## 🏗️ Architecture
-
-### 🎯 **Gyro-Style Development Workflow**
-**Spec-Driven Development** with formal requirements → design → tasks phases:
-```
-Requirements Generation → Technical Design → Task Breakdown → Implementation → Validation
-```
-
-### 🔄 **Component Pipeline Approach**
-Every project is structured as a sequential pipeline of 4-8 components:
-```
-Input → Component 1 → Component 2 → Component 3 → ... → Final Output
-```
-
-Each component follows **SLC principles**:
-- **Simple**: Does one job exceptionally well
-- **Lovable**: Provides clear feedback and user confidence
-- **Complete**: Produces output ready for the next component
-
-### 🧭 **Agent Steering System**
-**Persistent AI context** through domain-specific guidance:
-```
-.claude/steering/
-├── product.md           # Product purpose and target users
-├── tech.md             # Technology stack and constraints
-├── structure.md        # File organization and patterns
-└── domain-specific.md  # Specialized guidance for your domain
-```
-
-### 🪝 **Agent Hooks Framework**
-**Event-driven automation** for quality gates:
-```
-.claude/hooks/
-├── file-events/         # On save, create, delete triggers
-├── development-events/  # Pre-commit, post-implementation
-└── templates/          # Reusable automation templates
-```
-
-### ⚙️ **Execution Modes**
-**Adaptive AI assistance** based on task complexity:
-- **Autopilot**: Autonomous execution for routine tasks
-- **Supervised**: Step-by-step approval for complex changes
-- **Hybrid**: Intelligent mode switching based on risk assessment
-
-### 🎛️ **AI Coordination Framework**
-- **Claude Code**: Complex problem-solving, architecture decisions, code review
-- **Steering System**: Contextual guidance for domain-specific patterns
-- **Hooks Framework**: Automated quality gates and workflow triggers
-- **Human Oversight**: Strategic decisions, quality gates, final approval
-
-## 📁 Template Structure
-
-```
-ai-dev-cycle-template/
-├── .aicontext/
-│   ├── AI_CONTEXT_TEMPLATE.md
-│   └── WORKFLOW_GUIDE.md
-├── .claude/
-│   ├── commands/
-│   │   ├── advanced/
-│   │   │   ├── context-analyzer.md
-│   │   │   ├── dependency-mapper.md
-│   │   │   ├── production-readiness.md
-│   │   │   ├── quality-assessor.md
-│   │   │   └── workflow-orchestrator.md
-│   │   ├── finalize-task.md
-│   │   ├── generate-tasks.md
-│   │   ├── next-task.md
-│   │   ├── orient.md
-│   │   └── update-prd.md
-│   ├── execution-modes/
-│   │   ├── autopilot-config.md
-│   │   ├── hybrid-config.md
-│   │   └── supervised-config.md
-│   ├── hooks/
-│   │   ├── development-events/
-│   │   ├── file-events/
-│   │   └── templates/
-│   ├── steering/
-│   │   ├── domain-specific/
-│   │   ├── api-standards.md
-│   │   ├── product.md
-│   │   ├── structure.md
-│   │   ├── tech.md
-│   │   └── testing.md
-│   ├── hooks-config.json
-│   ├── persona.md
-│   ├── settings.template.json
-│   ├── steering-config.json
-│   └── validation-config.json
-├── .github/
-│   └── REPOSITORY_INFO.md
-├── config/
-│   ├── api-integration-templates/
-│   │   ├── graphql-template.json
-│   │   ├── rest-api-template.json
-│   │   └── websocket-template.json
-│   ├── mcp-servers.json
-│   ├── private-knowledge-config.json
-│   ├── project-config.template.json
-│   └── test-config-template.json
-├── docs/
-│   ├── architecture/
-│   │   ├── ComponentLibrary.md
-│   │   ├── Experience_Goals.md
-│   │   └── SLC_Principles.md
-│   └── specifications/
-│       ├── design-template.md
-│       ├── dev-cycle.md
-│       ├── FEATURE_SPEC_TEMPLATE.md
-│       ├── PRD_TEMPLATE.md
-│       ├── requirements-template.md
-│       └── tasks-template.md
-├── scripts/
-│   ├── validation/
-│   │   ├── run-all-validations.py
-│   │   ├── validate-hooks.py
-│   │   ├── validate-production-ready.py
-│   │   ├── validate-specifications.py
-│   │   └── validate-steering.py
-│   ├── copy-validation-scripts.sh
-│   ├── generate-design.py
-│   ├── generate-requirements.py
-│   ├── initialize-project.sh
-│   ├── test-framework.py
-│   └── validate-setup.py
-├── src/
-│   └── .gitkeep
-├── tests/
-│   └── .gitkeep
-├── CHANGELOG.md
-├── CLAUDE_CODE_PROMPT.md
-├── FAQ.md
-├── LICENSE
-├── QUICKSTART.md
-├── README.md
-├── TEMPLATE_SETUP.md
-├── TEST_PLAN.md
-└── TROUBLESHOOTING.md
-```
-
-## 🎛️ Key Features
-
-### 🤖 **Enhanced AI Workflow Commands**
-**Core Commands:**
-- **@orient**: Get project status and recommended next actions
-- **@next-task**: Automatically select and plan the highest priority component
-- **@finalize-task**: Complete current work with testing and documentation
-- **@update-prd**: Synchronize project progress and status
-
-**Gyro Advanced Commands:**
-- **@workflow-orchestrator**: Automate complex multi-step development workflows
-- **@production-readiness**: Comprehensive deployment readiness validation
-- **@validate-all**: Run complete project validation (specs, steering, hooks, production)
-- **@context-analyzer**: Deep project state analysis and insights
-- **@dependency-mapper**: Visualize and optimize component dependencies
-
-### 🔍 **Quality Assurance & Validation**
-- **Multi-Tier Testing**: Unit, integration, performance, acceptance, smoke tests
-- **Validation Framework**: Specifications, steering, hooks, production readiness
-- **Reference Test Cases**: Validate every component against real-world scenarios
-- **Performance Monitoring**: Track speed, resource usage, and user satisfaction
-- **Code Quality Gates**: Automated linting, formatting, and style checking
-- **Production Readiness**: Infrastructure, security, performance, monitoring validation
-
-### 🧭 **Intelligent Development Guidance**
-- **Agent Steering**: Persistent AI context through domain-specific guidance files
-- **Spec-Driven Development**: Formal requirements → design → tasks workflow
-- **Event-Driven Automation**: Hooks framework for quality gates and workflows
-- **Execution Modes**: Autopilot, supervised, hybrid AI assistance levels
-- **Domain Intelligence**: Specialized patterns for data processing, content generation, API integration
-
-### 📊 **Documentation & Reporting**
-- **Living Documentation**: PRD updates automatically with development progress
-- **Implementation Logs**: Detailed records of development decisions and learnings
-- **Architecture Decision Records**: Persistent record of design choices
-- **AI Context Management**: Knowledge base that grows with your project
-- **Comprehensive Reports**: JSON, JUnit XML, HTML formats for CI/CD integration
-
-## 🚀 **Getting Started with Gyro Features**
-
-### **First-Time Setup**
-1. **Run Enhanced Initialization:**
-   ```bash
-   ./scripts/initialize-project.sh
-   # Select your domain when prompted
-   # Enable Gyro features (recommended: yes)
-   ```
-
-2. **Review Generated Steering Files:**
-   ```bash
-   # Check your domain-specific guidance
-   code .claude/steering/domain-specific.md
-   
-   # Review product and technical constraints
-   code .claude/steering/product.md
-   code .claude/steering/tech.md
-   ```
-
-3. **Configure Execution Mode:**
-   ```bash
-   # Choose your preferred AI assistance level
-   code .claude/execution-modes/hybrid-config.md  # Recommended for new users
-   ```
-
-### **Development Workflow**
-```bash
-# 1. Generate specifications (Gyro-style)
-@workflow-orchestrator feature --spec="requirements" --component="Component 1"
-
-# 2. Validate before implementation
-@validate-all
-
-# 3. Implement with guided assistance
-@next-task
-
-# 4. Comprehensive testing
-python scripts/test-framework.py . --save-reports
-
-# 5. Production readiness check
-@production-readiness staging
-```
-
-### **Validation & Quality Gates**
-```bash
-# Run all validations
-python scripts/validation/run-all-validations.py .
-
-# Specific validations
-python scripts/validation/validate-specifications.py .
-python scripts/validation/validate-hooks.py .
-python scripts/validation/validate-production-ready.py . --environment production
-
-# Enhanced testing with validation integration
-python scripts/test-framework.py . --types unit integration
-```
-
-## 🌟 Domain Examples
-
-### Data Processing Pipeline
-```
-Raw Data → Validation → Transformation → Analysis → Visualization → Export
-```
-- Focus on data accuracy and processing speed
-- Emphasize error handling and data quality
-- Include cost monitoring for cloud processing
-
-### Content Generation System
-```
-Input → Parsing → Generation → Quality Check → Formatting → Output
-```
-- Prioritize output quality and consistency
-- Include API cost tracking and optimization
-- Focus on user experience and content standards
-
-### API Integration Project
-```
-Config → Authentication → Data Mapping → Processing → Validation → Response
-```
-- Emphasize reliability and error handling
-- Include rate limiting and timeout management
-- Focus on data transformation accuracy
-
-## 🚀 Getting Started
-
-### Prerequisites
-- **Git**: Version control and template management
-- **VS Code**: Primary development environment  
-- **Claude Code Extension**: AI coordination and assistance (supports Gyro features)
-- **Python 3.8+**: Required for validation framework and enhanced testing
-- **Programming Language**: Python, JavaScript, Go, or your preferred language
-- **Optional**: Docker for containerization validation
-
-### Installation Steps
-
-1. **Get the Template**
-   ```bash
-   # Option 1: Clone from repository
-   git clone [template-repo-url] my-new-project
-   
-   # Option 2: Download as ZIP and extract
-   # Download from GitHub releases page
-   ```
-
-2. **Initialize Your Project**
-   ```bash
-   cd my-new-project
-   ./scripts/initialize-project.sh
-   # Follow prompts to:
-   # - Set project name and description
-   # - Choose domain (data-processing, content-generation, api-integration, general)  
-   # - Enable Gyro features (recommended: yes)
-   ```
-
-3. **Validate Setup**
-   ```bash
-   python scripts/validate-setup.py
-   
-   # If Gyro features enabled, run comprehensive validation:
-   python scripts/validation/run-all-validations.py .
-   ```
-
-4. **Customize for Your Domain**
-   - Review generated steering files: `.claude/steering/`
-   - Edit `docs/specifications/PRD.md` with your project requirements
-   - Configure execution mode: `.claude/execution-modes/hybrid-config.md`
-   - Set up hooks for your workflow: `.claude/hooks-config.json`
-
-5. **Start AI-Assisted Development**
-   ```bash
-   code .
-   # Install Claude Code extension if needed
-   # Use the starter prompt from CLAUDE_CODE_PROMPT.md for optimal AI assistance
-   ```
-
-## 📖 Documentation
-
-### Essential Reading
-- **[TEMPLATE_SETUP.md](TEMPLATE_SETUP.md)**: Detailed setup and customization guide
-- **[PRD Template](docs/specifications/PRD_TEMPLATE.md)**: Project requirements structure
-- **[SLC Principles](docs/architecture/SLC_Principles.md)**: Core design philosophy
-- **[Development Workflow](docs/specifications/dev-cycle.md)**: AI-assisted development process
-
-### Reference Documentation
-- **[Feature Spec Template](docs/specifications/FEATURE_SPEC_TEMPLATE.md)**: Component specification format
-- **[Component Library](docs/architecture/ComponentLibrary.md)**: Design patterns and standards
-- **[Experience Goals](docs/architecture/Experience_Goals.md)**: User experience guidelines
-- **[Workflow Guide](.aicontext/WORKFLOW_GUIDE.md)**: AI coordination details
-
-## 🤝 Contributing
-
-This template is designed to evolve based on real-world usage:
-
-1. **Use the template** in your own projects
-2. **Document learnings** and improvements
-3. **Share feedback** on what works and what doesn't
-4. **Contribute improvements** back to the template
-
-### Template Development
-- Keep the core principles intact
-- Make customization easy and obvious
-- Provide clear examples for different domains
-- Maintain compatibility with AI tools
-
-## 📜 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-This template is open source and free to use for any purpose.
-
-## 🆘 Support
-
-### Quick Help Navigation
-- 🚀 **Getting Started**: [QUICKSTART.md](QUICKSTART.md) - 5-minute setup
-- 🤖 **Claude Code**: [CLAUDE_CODE_PROMPT.md](CLAUDE_CODE_PROMPT.md) - AI assistance starter
-- ❓ **Common Questions**: [FAQ.md](FAQ.md) - Frequently asked questions  
-- 🔧 **Issues & Solutions**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Problem resolution
-- 📖 **Detailed Setup**: [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md) - Comprehensive guide
-- 📝 **Changes**: [CHANGELOG.md](CHANGELOG.md) - Version history and updates
-
-### Getting Help
-- Start with [FAQ.md](FAQ.md) for common questions
-- Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for specific issues
-- Run `python scripts/validate-setup.py` for setup diagnostics
-- See [TEMPLATE_SETUP.md](TEMPLATE_SETUP.md) for detailed configuration
-- Create issues in the template repository for bugs or feature requests
+**Live Application**: https://category-blueprint.vercel.app/
 
 ---
 
-**Transform your development workflow with AI assistance. Build faster, build better, build with confidence.** 🤖✨
+## 🎯 What This Application Does
+
+The Interactive GTM Blueprint transforms B2B SaaS go-to-market strategy development from a complex, time-consuming process into a guided, AI-powered experience. Companies can:
+
+- **Analyze Market Segments** with structured frameworks
+- **Define Ideal Customer Profiles** using proven methodologies  
+- **Generate Positioning Strategies** with AI-powered insights
+- **Validate Market Assumptions** through intelligent research
+- **Export Comprehensive Strategies** for implementation
+
+### 🏢 Built for Scale Venture Partners Portfolio Companies
+Following Scale VP brand guidelines and focusing on enterprise SaaS go-to-market excellence.
+
+---
+
+## ✨ Key Features
+
+### 🎯 **Segment Foundation Analysis**
+- **Company Context Setup**: Capture company details, industry, and competitive landscape
+- **9-Element JTBD Framework**: Structured analysis of customer jobs-to-be-done
+- **Market Validation**: AI-powered validation of segment assumptions
+- **Export Capabilities**: Comprehensive data export for further analysis
+
+### 🤖 **AI-Powered Strategy Tools**
+- **Customer Value Drafter**: AI-generated value propositions based on segment analysis
+- **WTP Analysis**: Willingness-to-pay insights and pricing guidance  
+- **Category Positioning**: AI-powered category creation and positioning recommendations
+- **Market Intelligence**: Real-time market research and competitive analysis
+
+### 📊 **Interactive Visualizations**
+- **ICP Flow Visualization**: Strategic flow from market segments to actionable ICPs
+- **Progress Tracking**: Visual indicators of completion status
+- **Responsive Design**: Optimized for desktop, tablet, and mobile use
+
+### 🔄 **Integrated Workflow**
+- **Pre-Segment AI Analysis**: Automated company analysis to jumpstart the process
+- **Progressive Disclosure**: Step-by-step guidance through complex frameworks
+- **Cross-Platform Export**: Easy sharing and implementation of developed strategies
+
+---
+
+## 🛡️ Workflow Resilience Features
+
+### Enhanced Reliability
+- **Setup Validation**: Run `./scripts/validate-workflow.sh` to verify all dependencies
+- **Automatic Retry Logic**: All GitHub API calls retry 3x on failure with smart error recovery
+- **Multiple Fallback Options**: GitHub Issue Forms when scripts unavailable, comment commands for quick updates
+- **GitHub Actions Integration**: Auto-labeling and status updates via `/status` and `/priority` commands
+
+### Quick Validation
+```bash
+# Check your setup before starting
+./scripts/validate-workflow.sh
+
+# All green? You're ready to go!
+```
+
+---
+
+## 🚀 Getting Started
+
+### For Users
+1. **Visit the Live Application**: https://category-blueprint.vercel.app/
+2. **Complete Company Setup**: Provide basic company information
+3. **Run AI Analysis**: Generate initial segment foundation data
+4. **Refine Your Strategy**: Use the guided tools to develop your GTM approach
+5. **Export Results**: Download your completed strategy analysis
+
+### For Developers
+```bash
+# Clone the repository
+git clone https://github.com/petergiordano/category-blueprint.git
+cd category-blueprint
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Add your BRAVE_API_KEY to .env.local
+
+# Start development server
+npm run dev
+# or
+vercel dev
+
+# Open application
+open http://localhost:3000
+```
+
+---
+
+## 🏗️ Technical Architecture
+
+### **Frontend**
+- **Single-Page Application**: Pure HTML/CSS/JavaScript (no framework dependencies)
+- **Responsive Design**: Mobile-first approach with Scale VP brand guidelines
+- **Progressive Enhancement**: Works without JavaScript for core functionality
+
+### **Backend**
+- **Vercel Serverless Functions**: Node.js APIs for AI-powered features
+- **Brave Search API**: Market intelligence and research capabilities
+- **No Database**: Stateless architecture with client-side data management
+
+### **Key Technologies**
+- **Deployment**: Vercel with automatic deployments from main branch
+- **APIs**: Brave Search for market research and competitive analysis
+- **Styling**: Tailwind CSS for consistent, responsive design
+- **Fonts**: Work Sans (headings) and Outfit (body) per Scale VP guidelines
+
+---
+
+## 📁 Project Structure
+
+```
+category-blueprint/
+├── index.html              # Main application (SPA)
+├── api/                     # Vercel serverless functions
+│   ├── discover-jtbd.js    # Company analysis and JTBD generation
+│   ├── draft-category.js   # AI category positioning
+│   ├── draft-customer-value.js  # Customer value generation
+│   ├── draft-wtp-value.js  # Willingness-to-pay analysis
+│   └── validate-jtbd.js    # Market validation research
+├── scripts/                 # GitHub Issues automation
+│   ├── create-feature-issue.sh
+│   ├── create-enhancement-issue.sh
+│   ├── create-bug-issue.sh
+│   └── issue-utils.sh
+├── .vscode/                 # VS Code integration
+│   └── tasks.json          # GitHub Issues tasks
+├── .github/                 # GitHub templates and workflows
+│   └── ISSUE_TEMPLATE/
+├── docs/                    # Documentation
+│   ├── GITHUB_CLI_ISSUE_TRACKING_SETUP.md
+│   ├── DATABASE_DRIVEN_WORKFLOW.md
+│   └── GEMINI_CLI_TRAINING_PROMPT.md
+├── .aicontext/             # AI agent coordination
+│   └── context.md          # Shared context and handoff logs
+├── package.json            # Dependencies and scripts
+└── vercel.json            # Deployment configuration
+```
+
+---
+
+## 🔧 Development Workflow
+
+This project uses a **simplified database-driven development approach** with GitHub Issues as the primary data source for all project tracking.
+
+### **Issue Management**
+```bash
+# Create feature issues
+./scripts/create-feature-issue.sh "Feature Name" "Description" "Phase 6" "High"
+
+# Create enhancement issues  
+./scripts/create-enhancement-issue.sh "Enhancement Name" "Description" "Phase 6" "Medium"
+
+# Update issue status
+./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
+```
+
+### **Three-Way Collaboration**
+- **Claude Code**: Feature implementation and issue management
+- **Gemini CLI**: Implementation validation and quality assurance  
+- **User/Project Director**: Strategic direction and prioritization
+
+### **Quality Assurance**
+- **Issue-First Development**: Create issues before implementation
+- **Validation Protocol**: Gemini CLI validates all implementations
+- **Production Testing**: Verify functionality on live application
+
+---
+
+## 📊 Current Status
+
+### **Production Deployment** ✅
+- **Live URL**: https://category-blueprint.vercel.app/
+- **All Core Features**: Implemented and functional
+- **Mobile Responsive**: Optimized for all device types
+- **Performance**: Fast loading with serverless architecture
+
+### **Feature Completion**
+- ✅ **Phase 1-6**: All positioning and segmentation features complete
+- ✅ **AI Integration**: Real-time market intelligence and analysis
+- ✅ **User Experience**: Guided workflow with progressive disclosure
+- ✅ **Export Capabilities**: Comprehensive strategy export functionality
+
+### **GitHub Project Board**
+Track active issues and development progress: https://github.com/users/petergiordano/projects/1
+
+---
+
+## 🤝 Contributing
+
+### **For Scale VP Portfolio Companies**
+1. Use the application for your go-to-market strategy development
+2. Provide feedback through GitHub Issues
+3. Request new features or enhancements
+
+### **For Developers**
+1. **Setup**: Follow the developer getting started guide above
+2. **Issues**: Check the GitHub Issues for current work items
+3. **Development**: Use the simplified database-driven workflow
+4. **Quality**: Ensure all changes maintain Scale VP brand guidelines
+
+### **Issue Creation**
+Use the automated scripts for consistent issue management:
+```bash
+# Feature requests
+./scripts/create-feature-issue.sh "Feature Title" "Description" "Phase" "Priority"
+
+# Bug reports  
+./scripts/create-bug-issue.sh "Bug Title" "Description" "Phase" "Priority"
+```
+
+---
+
+## 📄 Documentation
+
+### **User Guides**
+- **Application Help**: Built-in guidance throughout the application
+- **Strategy Development**: Progressive workflow with contextual tips
+
+### **Developer Documentation**
+- **[GitHub CLI Setup](docs/GITHUB_CLI_ISSUE_TRACKING_SETUP.md)**: Complete development workflow setup
+- **[Database-Driven Workflow](docs/DATABASE_DRIVEN_WORKFLOW.md)**: Simplified issue management approach
+- **[Gemini CLI Training](docs/GEMINI_CLI_TRAINING_PROMPT.md)**: Comprehensive validation protocol
+- **[CLAUDE.md](CLAUDE.md)**: Claude Code development protocol
+
+### **Project Context**
+- **[.aicontext/context.md](.aicontext/context.md)**: Shared context and agent coordination logs
+- **[GitHub Projects Board](https://github.com/users/petergiordano/projects/1)**: Live development tracking
+
+---
+
+## 🛠️ Support & Issues
+
+### **Application Support**
+- **Live Issues**: Report bugs through [GitHub Issues](https://github.com/petergiordano/category-blueprint/issues)
+- **Feature Requests**: Use the issue creation scripts for standardized requests
+- **Questions**: Contact through GitHub Issues with the appropriate labels
+
+### **Development Support**
+- **Setup Issues**: Follow the comprehensive setup documentation
+- **Workflow Questions**: Reference the database-driven workflow documentation
+- **Integration Help**: Check VS Code tasks and GitHub CLI setup guides
+
+---
+
+## 📜 License
+
+**Proprietary** - Scale Venture Partners
+
+This application is built for Scale Venture Partners portfolio companies and follows Scale VP brand guidelines and go-to-market methodologies.
+
+---
+
+## 🏢 About Scale Venture Partners
+
+Scale Venture Partners is a leading venture capital firm focused on B2B software companies. This Interactive GTM Blueprint reflects Scale's proven methodologies for go-to-market excellence, distilled into an AI-powered tool for portfolio companies.
+
+**Learn more**: [Scale Venture Partners](https://www.scalevp.com/)
+
+---
+
+**Transform your go-to-market strategy from complex guesswork to data-driven precision.** 🚀

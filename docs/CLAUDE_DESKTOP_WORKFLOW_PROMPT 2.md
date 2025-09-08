@@ -22,32 +22,31 @@ Create a standalone interactive HTML file that visualizes and demonstrates the d
 ## As-Built System Details (MUST INCLUDE IN VISUALIZATION)
 
 ### Setup Requirements (Show as prerequisite step)
+- **🆕 Validation Script**: Run `./scripts/validate-workflow.sh` to check all dependencies
 - **Repository Setup**: Requires `./scripts/setup-github-labels.sh` to create required labels
-- **Required Labels**: epic, epic-item, has-dependencies, has-dependents, priority-high/medium/low, status-todo/in-progress/complete, Phase 1-10
+- **Required Labels**: priority-high/medium/low, status-todo/in-progress/complete, Phase 1-10, enhancement, bug
 - **Authentication**: GitHub CLI must be authenticated (`gh auth status`)
 - **Permissions**: Repository write access, GitHub Projects access
+- **Note**: Complex relationships (epic, dependencies) have been REMOVED for simplicity
 
 ### Automation Scripts (Annotate each workflow step with script filenames)
+
 ```bash
-# Core Issue Creation Scripts
+# Setup and Validation
+./scripts/validate-workflow.sh  # 🆕 Check all dependencies before starting
+./scripts/setup-github-labels.sh  # One-time setup for required labels
+
+# Core Issue Creation Scripts (with retry logic)
 ./scripts/create-feature-issue.sh "Title" "Description" "Phase 6" "High"
 ./scripts/create-enhancement-issue.sh "Title" "Description" "Phase 6" "Medium" 
 ./scripts/create-bug-issue.sh "Title" "Description" "Phase 6" "High"
 ./scripts/create-issue-ai.sh "FEAT" "Title" "Description" "Phase 6"
 
-# Epic Management
-./scripts/create-epic-issues.sh "Epic Title" "Description" "Phase 6" "Component 1" "Component 2"
-
-# Relationship Management  
-./scripts/link-related-issues.sh "FEAT-001" "FEAT-002" "depends-on"
-./scripts/link-related-issues.sh "EPIC-001" "FEAT-001" "epic"
-
 # Status Management
 ./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
 
-# Utilities
-./scripts/issue-utils.sh - Shared functions (get_next_id, detect_current_phase, etc.)
-./scripts/setup-github-labels.sh - One-time setup for required labels
+# Utilities (Enhanced with retry logic)
+./scripts/issue-utils.sh - Shared functions with gh_with_retry wrapper
 ```
 
 ### VS Code Integration (Show as alternative workflow path)

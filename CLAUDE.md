@@ -1,35 +1,54 @@
-# CLAUDE.md - Database-Driven Development Protocol
+# CLAUDE.md - Simplified Database-Driven Development Protocol
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Version**: 2.0 - Database-Driven Protocol  
+**Version**: 3.0 - Simplified Database-Driven Protocol  
 **Focus**: GitHub Issues & Projects as primary data source  
-**Philosophy**: Database over files, relationships over isolation
+**Philosophy**: Simple individual issue tracking, no complex relationships
+
+---
+
+## Project Overview
+
+This is the **Interactive GTM Blueprint** project - a production web application that helps B2B SaaS companies develop their go-to-market strategies through guided AI-powered analysis and positioning tools.
+
+**Production URL**: https://category-blueprint.vercel.app/  
+**Repository**: `petergiordano/category-blueprint`  
+**GitHub Projects Board**: https://github.com/users/petergiordano/projects/1
 
 ---
 
 ## Core Development Principles
 
-### 1. Database-First Approach
+### 1. Simplified Database-First Approach
 - **GitHub Issues**: Primary data source for all features, bugs, enhancements
 - **GitHub Projects**: Live status tracking and workflow management
+- **Simple Individual Tracking**: No complex issue relationships or dependencies
 - **File-based docs**: Reference only, never duplicate GitHub Issues data
 
-### 2. Relationship-Driven Development
-- All issues must have clear relationships (epic, depends-on, blocks, subtask)
-- Use relationship comments and labels to make connections visible
-- No isolated issues - everything connects to something
+### 2. Clean Issue Management
+- **No Complex Relationships**: User feedback eliminated "complicated and brittle" dependency system
+- **Simple Labels Only**: status-todo/in-progress/complete, priority-high/medium/low, Phase 1-10
+- **Individual Issue Focus**: Each issue stands alone with clear acceptance criteria
+- **Direct Implementation**: Issue requirements → implementation → status update
 
-### 3. AI-Powered Implementation
-- Follow `docs/specifications/dev-cycle.md` workflow for component development
-- Create issues first, implementation second
-- Maintain bidirectional links between issues and implementation
+### 3. Three-Way Collaboration Protocol
+- **Claude Code** (you): Creates issues, implements features, updates status
+- **Gemini CLI**: Validates implementations, analyzes issue accuracy
+- **User**: Prioritizes work through GitHub Projects board, provides feedback
 
 ---
 
-## GitHub Issues Management
+## GitHub Issues Management (Simplified)
 
-### Issue Creation Commands
+### Issue Creation Commands (With Enhanced Resilience)
+
+**🆕 Before starting, validate your setup:**
+```bash
+./scripts/validate-workflow.sh  # Check all dependencies and configuration
+```
+
+**Primary Method - CLI Scripts (with retry logic):**
 ```bash
 # Feature issues
 ./scripts/create-feature-issue.sh "Feature Name" "Description" "Phase 6" "High"
@@ -42,215 +61,279 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Universal AI-powered creation
 ./scripts/create-issue-ai.sh "FEAT" "Title" "Description" "Phase 6"
-```
 
-### Epic & Relationship Management
-```bash
-# Create epic with related features
-./scripts/create-epic-issues.sh "Epic Title" "Epic Description" "Phase 6" "Component 1" "Component 2"
-
-# Link related issues
-./scripts/link-related-issues.sh "FEAT-001" "FEAT-002" "depends-on"
-./scripts/link-related-issues.sh "EPIC-001" "FEAT-001" "epic"
-
-# Update issue status
+# Status updates
 ./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
 ```
 
-### Status Queries
-```bash
-# List current work
-gh issue list --repo petergiordano/category-blueprint --assignee @me --state open
+**🆕 Fallback Method - GitHub UI Forms:**
+If scripts fail, use GitHub's web interface:
+1. Go to Issues → New Issue
+2. Choose: Feature Request / Bug Report / Enhancement Request
+3. Fill out the structured form
+4. Submit (labels will be auto-applied)
 
-# View relationships
-gh issue list --repo petergiordano/category-blueprint --label has-dependencies
-gh issue list --repo petergiordano/category-blueprint --label epic-item
-
-# Check project status
-gh project list --owner petergiordano
+**🆕 Quick Status Updates via Comments:**
 ```
+/status in-progress    # Changes status to in-progress
+/status done          # Changes status to complete
+/priority high        # Changes priority to high
+```
+
+### Core Automation Scripts (Enhanced v2.0)
+Located in `scripts/` directory:
+- **`validate-workflow.sh`** 🆕 - Validates setup and diagnoses issues
+- **`create-feature-issue.sh`** - Creates FEAT-xxx issues (with retry logic)
+- **`create-enhancement-issue.sh`** - Creates ENH-xxx issues (with retry logic)
+- **`create-bug-issue.sh`** - Creates BUG-xxx issues (with retry logic)
+- **`update-issue-status.sh`** - Updates issue status labels (with retry logic)
+- **`issue-utils.sh`** - Enhanced utilities with retry wrapper and error recovery
+- **`setup-github-labels.sh`** - One-time setup for required labels
+
+### 🆕 Resilience Features
+
+**1. Automatic Retry Logic**
+- All gh CLI commands retry up to 3 times on failure
+- Configurable via environment variables:
+  ```bash
+  export GH_MAX_RETRIES=5      # Increase retry attempts
+  export GH_RETRY_DELAY=3      # Delay between retries (seconds)
+  ```
+
+**2. Validation Script**
+- Run `./scripts/validate-workflow.sh` to check:
+  - GitHub CLI installation and version
+  - Authentication status
+  - Repository access permissions
+  - Required label existence
+  - Script dependencies
+
+**3. Fallback Options**
+- **GitHub Issue Forms**: Structured web UI when scripts fail
+- **Comment Commands**: Update issues via `/status` and `/priority` comments
+- **Manual Labels**: Apply via GitHub UI if automation fails
+
+**4. Error Recovery**
+- Clear error messages with suggested fixes
+- Fallback ID generation if API calls fail
+- Non-critical failures don't stop the workflow
+
+**5. GitHub Actions Support**
+- Auto-labeling based on issue titles and content
+- Comment-based status updates
+- Works alongside scripts, not replacing them
+
+### VS Code Integration
+Use Command Palette → "Tasks: Run Task" to access:
+- "GitHub: Create Feature Issue (Smart)"
+- "GitHub: Create Enhancement Issue (Smart)" 
+- "GitHub: Create Bug Issue (Smart)"
+- "GitHub: Update Issue Status"
+- "GitHub: List Open Issues"
+- "GitHub: View Project Board"
 
 ---
 
-## Three-Way Collaboration Protocol (Updated)
+## Simplified Label System
+
+### Status Labels
+- `status-todo` - Planned, not started
+- `status-in-progress` - Currently being worked on
+- `status-complete` - Done/finished
+
+### Priority Labels
+- `priority-high` - High priority
+- `priority-medium` - Medium priority
+- `priority-low` - Low priority
+
+### Phase Labels
+- `Phase 1` through `Phase 10` - Phase management
+
+### Type Labels
+- `enhancement` - For both features and enhancements
+- `bug` - For bug fixes
+
+### ❌ REMOVED Labels (No Longer Used)
+The following labels were removed per user feedback to simplify workflow:
+- `epic`, `epic-item` 
+- `has-dependencies`, `has-dependents`
+- Complex relationship labels
+
+---
+
+## Development Workflow
+
+### 1. Issue-First Development
+```bash
+# 1. Create issue for work
+./scripts/create-feature-issue.sh "OAuth Integration" "Add Google OAuth login" "Phase 6" "High"
+
+# 2. Update status when starting work  
+./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
+
+# 3. Implement the feature
+# [Your implementation work here]
+
+# 4. Update status when complete
+./scripts/update-issue-status.sh "FEAT-001" "status-complete"
+```
+
+### 2. Quality Assurance
+- Ensure implementation fulfills issue acceptance criteria
+- Test all functionality thoroughly
+- Update issue with implementation notes if needed
+- Coordinate with Gemini CLI for validation
+
+### 3. Documentation Updates
+- Update relevant documentation if feature changes workflow
+- Ensure README reflects current application state
+- Keep `.aicontext/context.md` current with handoff logs
+
+---
+
+## Three-Way Collaboration Protocol
 
 ### Critical Protocol Rules
 
-1. **GitHub Issues First**: Always create/update issues before implementation work
-2. **Relationship Awareness**: Check issue relationships before starting work  
-3. **Handoff Integration**: Include issue URLs in all handoff entries
-4. **Status Synchronization**: Update issue status when completing work
+1. **Shared Context File**: `.aicontext/context.md` is our primary communication hub
+2. **Handoff Log**: Add timestamped entries in the "Agent Handoff & Status Log" section
+3. **The Golden Rule**: 
+   - **Read First**: ALWAYS read `.aicontext/context.md` at start of every task
+   - **Write Last**: ALWAYS update handoff log at end of every completed task
+4. **Issue References**: Always include relevant GitHub issue numbers in handoff logs
 
-### Multi-Agent Coordination
-
-- **Claude Code**: Creates issues, implements features, updates issue status
-- **Gemini CLI**: Validates implementations, analyzes issue relationships
-- **User**: Manages epics, prioritizes issues, coordinates handoffs
-
-### Issue-Integrated Handoffs
-
-**Handoff Entry Template**:
+### Handoff Template
 ```markdown
----
-**Timestamp:** 2025-XX-XXTXX:XX:XXZ
+**Timestamp:** [YYYY-MM-DDTHH:MM:SSZ]
 **From:** Claude Code
-**To:** User/Gemini-CLI
-**Status:** [FEATURE_COMPLETE|EPIC_READY|ISSUE_BLOCKED]
+**To:** User/Gemini CLI
+**Status:** [FEATURE_COMPLETE|TASK_COMPLETE|SESSION_RESUMED]
 **Branch:** [current git branch]
-**GitHub Issues:** [#123, #124, #125 - links to all related issues]
-**Summary:** [What was accomplished]
-**Issue Status Updates:**
-- FEAT-001 (#123): ✅ COMPLETE
-- ENH-002 (#124): 🚧 IN PROGRESS  
-- BUG-001 (#125): 📝 BLOCKED
+**Issues Worked On:** [#123: FEAT-001, #124: ENH-002]
+**Summary:** [What you accomplished]
+**Technical Details:** [Implementation specifics, files modified, functions added]
+**Context Preservation:** [Critical info for next agent]
 **Next:** [What should happen next]
----
 ```
 
 ---
 
-## Development Workflow Integration
+## Setup Requirements
 
-### Step 1: Issue Planning Phase
-1. **Create Epic Issue** (if needed): Use `create-epic-issues.sh`
-2. **Create Feature Issues**: One issue per component
-3. **Link Relationships**: Use `link-related-issues.sh`
-4. **Validate Dependencies**: Check GitHub Projects board
+### Prerequisites
+1. **Repository Setup**: Run `./scripts/setup-github-labels.sh` once to create required labels
+2. **GitHub CLI**: Must be authenticated (`gh auth status`)
+3. **Permissions**: Repository write access, GitHub Projects access
+4. **VS Code**: Optional but recommended for task integration
 
-### Step 2: Implementation Phase
-1. **Select Issue**: Choose next unblocked issue from GitHub Projects
-2. **Update Status**: Set to "status-in-progress"
-3. **Create Branch**: `feature/FEAT-001-component-name`
-4. **Follow dev-cycle.md**: Generate feature spec, implement, test
-
-### Step 3: Completion Phase  
-1. **Update Issue Status**: Set to "status-complete"
-2. **Link Implementation**: Comment with PR links
-3. **Update Relationships**: Mark dependencies as unblocked
-4. **Create Handoff Entry**: Include all issue updates
+### Required Environment
+- **Repository**: `petergiordano/category-blueprint`
+- **Project Board**: https://github.com/users/petergiordano/projects/1
+- **Production App**: https://category-blueprint.vercel.app/
+- **Development Server**: `http://localhost:3000` (when running locally)
 
 ---
 
-## VS Code Integration
+## Application Context
 
-Use Command Palette (Cmd/Ctrl+Shift+P) → "Tasks: Run Task":
+### What You're Working On
+- **Interactive GTM Blueprint** - A web application for B2B SaaS go-to-market strategy development
+- **Tech Stack**: HTML/CSS/JavaScript frontend, Vercel serverless functions, Brave Search API
+- **Key Features**: Segment Foundation, AI-powered drafters, ICP analysis, company context setup
+- **Current Phase**: All major features complete, production deployed
 
-### Issue Creation Tasks
-- **GitHub: Create Feature Issue (Smart)**: Standard feature creation
-- **GitHub: Create Epic with Features**: Bulk epic + feature creation
-- **GitHub: Create Enhancement Issue (Smart)**: Enhancement creation
-- **GitHub: Create Bug Issue (Smart)**: Bug report creation
-
-### Relationship Management Tasks
-- **GitHub: Link Related Issues**: Create issue relationships
-- **GitHub: Update Issue Status**: Change issue status
-- **GitHub: Comment on Issue**: Add comments to issues
-
-### Project Management Tasks
-- **GitHub: List Open Issues**: View current work
-- **GitHub: View Project Board**: Open GitHub Projects
-- **GitHub: Sync PRD Status**: Check status synchronization
+### Key Implementation Files
+- **`index.html`** - Main application (single-page application)
+- **`api/*.js`** - Serverless functions for AI-powered features
+- **`.env.local`** - Environment variables (BRAVE_API_KEY)
+- **`package.json`** - Dependencies and scripts
+- **`vercel.json`** - Deployment configuration
 
 ---
 
-## File vs Database Guidelines
+## Build & Development Commands
 
-### ✅ Use Files For:
-- **Code Implementation**: Source files, tests, documentation
-- **Templates**: Reusable templates and patterns  
-- **Reference Documentation**: Architecture guides, principles
-- **Development Workflow**: Process documentation like dev-cycle.md
+### Local Development
+```bash
+# Install dependencies
+npm install
 
-### ❌ Don't Use Files For:
-- **Feature Tracking**: Use GitHub Issues instead
-- **Status Management**: Use GitHub Projects instead
-- **Task Lists**: Use GitHub Issues with relationships instead
-- **Progress Tracking**: Use issue comments and status labels instead
+# Start development server
+npm run dev
+# or
+vercel dev
 
-### 🔄 File-to-Database Sync:
-- **PRD Documents**: Should reference GitHub Issues, not duplicate them
-- **Feature Specs**: Created from GitHub Issues, linked back to issues
-- **Implementation Logs**: Reference issue URLs, update issue status
+# Open application
+open http://localhost:3000
+```
 
----
+### Production Deployment
+```bash
+# Deploy to Vercel (automatically triggered by git push to main)
+vercel deploy --prod
+```
 
-## Quality Gates & Validation
+### Issue Management
+```bash
+# List current issues
+gh issue list --repo petergiordano/category-blueprint
 
-### Pre-Implementation Checks
-- [ ] Issue exists with clear description
-- [ ] Dependencies identified and linked
-- [ ] No blocking relationships prevent work
-- [ ] Issue assigned and status set to "in-progress"
+# View specific issue
+gh issue view 123 --repo petergiordano/category-blueprint
 
-### Implementation Validation
-- [ ] Code follows existing patterns and standards
-- [ ] Tests pass and coverage maintained
-- [ ] Implementation matches issue requirements
-- [ ] Related issues updated as needed
-
-### Completion Validation
-- [ ] Issue status updated to "complete"
-- [ ] Implementation linked in issue comments
-- [ ] Dependent issues unblocked
-- [ ] Handoff entry created with issue updates
+# Create issues via scripts (preferred)
+./scripts/create-feature-issue.sh "Feature Name" "Description" "Phase 6" "High"
+```
 
 ---
 
-## Emergency Protocols
+## Quality Standards
 
-### Context Compaction Survival
-When context limits approached:
-1. **Prioritize Issue URLs**: Always include GitHub Issue links
-2. **Status Snapshot**: Document all in-progress issue statuses
-3. **Relationship Map**: Note critical dependencies and blockers
-4. **Recovery Plan**: Clear next steps based on issue priorities
+### Implementation Requirements
+- Follow existing code patterns and conventions
+- Ensure responsive design (mobile-friendly)
+- Maintain Scale Venture Partners brand guidelines
+- Test functionality across different browsers
+- Validate with real user scenarios
 
-### Session Restoration  
-When resuming after disconnection:
-1. **Check Issue Status**: Review GitHub Projects board
-2. **Validate Branch State**: Ensure branch matches issue progress
-3. **Update Handoff**: Acknowledge session restart with current issue status
-4. **Sync Implementation**: Ensure code state matches issue expectations
-
----
-
-## Agent-Specific Guidelines
-
-### For Claude Code (This Agent)
-- **Always create issues before implementing features**
-- **Update issue status at every major milestone**  
-- **Include issue URLs in all handoff entries**
-- **Use relationship scripts to connect related work**
-- **Prefer VS Code tasks over direct CLI commands**
-
-### For Gemini CLI Integration
-- **Validate issue relationships match implementation**
-- **Check for orphaned issues or missing dependencies**
-- **Analyze issue completion patterns for bottlenecks**
-- **Report discrepancies between issues and code state**
-
-### For User Coordination
-- **Use GitHub Projects board for visual status overview**
-- **Create epics for multi-issue initiatives**  
-- **Prioritize issues through GitHub milestone assignment**
-- **Coordinate agent handoffs through issue assignment**
+### Issue Management Requirements
+- Create issues before starting significant work
+- Update issue status accurately and promptly
+- Include clear acceptance criteria in issue descriptions
+- Reference relevant issues in commit messages
+- Coordinate with other agents through handoff logs
 
 ---
 
-## Migration from Legacy Systems
+## 🔴 MANDATORY CHECKPOINTS
 
-### Deprecated Practices
-- ❌ Maintaining status in markdown files
-- ❌ Creating TODO lists in documentation
-- ❌ Tracking features outside GitHub Issues
-- ❌ Handoff entries without issue references
+### When You Must Update Handoff Log
+- Complete any FEAT/ENH/BUG issue
+- Make significant code changes (50+ lines)
+- Resolve implementation challenges
+- Session start/end
+- Before any git push
 
-### New Database-Driven Practices
-- ✅ All features tracked as GitHub Issues
-- ✅ Status managed through GitHub Projects
-- ✅ Relationships explicit through comments and labels
-- ✅ Handoffs reference specific issue URLs
+### Validation Triggers
+- Feature implementation complete → Request Gemini CLI validation
+- Significant changes made → Update issue status
+- Production deployment → Verify functionality
 
 ---
 
-**Protocol Ready**: This database-driven development protocol ensures all work is tracked, relationships are clear, and agents can coordinate effectively through GitHub Issues and Projects.
+## Reference Documentation
+
+### Current Documentation
+- **`docs/GITHUB_CLI_ISSUE_TRACKING_SETUP.md`** - Complete setup guide
+- **`docs/DATABASE_DRIVEN_WORKFLOW.md`** - Simplified workflow rules
+- **`docs/GEMINI_CLI_TRAINING_PROMPT.md`** - Comprehensive Gemini CLI training
+- **`.vscode/tasks.json`** - VS Code task definitions
+- **`.github/ISSUE_TEMPLATE/feature_request.md`** - GitHub issue template
+
+### Project Context
+- **`.aicontext/context.md`** - Shared context and handoff logs
+- **Current production status** - All major features deployed and working
+
+---
+
+**Simplified Database-Driven Protocol Ready**: Focus on clean individual issue tracking, quality implementation, and seamless three-way collaboration through GitHub Issues as the authoritative data source.

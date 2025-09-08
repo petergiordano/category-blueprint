@@ -1,12 +1,17 @@
 #!/bin/bash
 # Issue creation utilities and shared functions
 # Used by all issue creation scripts
+# Version 2.0 - With retry logic and error recovery
 
 set -e
 
 REPO="petergiordano/category-blueprint"
 PROJECT_NUMBER="1"
 PROJECT_OWNER="petergiordano"
+
+# Configuration
+MAX_RETRY_ATTEMPTS="${GH_MAX_RETRIES:-3}"
+RETRY_DELAY="${GH_RETRY_DELAY:-2}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -32,6 +37,49 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+log_retry() {
+    echo -e "${YELLOW}[RETRY]${NC} $1"
+}
+
+# Retry wrapper for gh commands
+gh_with_retry() {
+    local attempt=1
+    local output=""
+    local exit_code=0
+    
+    while [ $attempt -le $MAX_RETRY_ATTEMPTS ]; do
+        if output=$(gh "$@" 2>&1); then
+            echo "$output"
+            return 0
+        else
+            exit_code=$?
+            if [ $attempt -lt $MAX_RETRY_ATTEMPTS ]; then
+                log_retry "Attempt $attempt failed (exit code: $exit_code). Retrying in ${RETRY_DELAY}s..."
+                sleep $RETRY_DELAY
+                attempt=$((attempt + 1))
+            else
+                log_error "Command failed after $MAX_RETRY_ATTEMPTS attempts"
+                log_error "Last error: $output"
+                
+                # Provide helpful error messages based on common issues
+                if echo "$output" | grep -q "HTTP 401\|HTTP 403\|Unauthorized"; then
+                    log_warning "Authentication issue detected. Try: gh auth refresh"
+                elif echo "$output" | grep -q "HTTP 404\|Not Found"; then
+                    log_warning "Resource not found. Check repository name and permissions"
+                elif echo "$output" | grep -q "HTTP 422\|Validation Failed"; then
+                    log_warning "GitHub API validation error. Check input parameters"
+                elif echo "$output" | grep -q "rate limit\|API rate limit"; then
+                    log_warning "GitHub API rate limit hit. Wait a few minutes and try again"
+                elif echo "$output" | grep -q "network\|timeout\|connection"; then
+                    log_warning "Network issue detected. Check your internet connection"
+                fi
+                
+                return $exit_code
+            fi
+        fi
+    done
+}
+
 # Get next available ID for issue type
 get_next_id() {
     local issue_type="$1"
@@ -47,13 +95,24 @@ get_next_id() {
             ;;
     esac
     
-    # Get highest existing ID for this type
-    local max_id=$(gh issue list --repo "$REPO" --state all --limit 1000 --json title \
-        --jq ".[] | select(.title | startswith(\"[$prefix\")) | .title" \
-        | grep -oE "\[${prefix}[0-9]+\]" \
-        | grep -oE "[0-9]+" \
-        | sort -n \
-        | tail -1)
+    log_info "Fetching existing issues to generate next ID..."
+    
+    # Get highest existing ID for this type with retry
+    local max_id=""
+    if issues_json=$(gh_with_retry issue list --repo "$REPO" --state all --limit 1000 --json title); then
+        max_id=$(echo "$issues_json" \
+            | jq -r ".[] | select(.title | startswith(\"[$prefix\")) | .title" \
+            | grep -oE "\[${prefix}[0-9]+\]" \
+            | grep -oE "[0-9]+" \
+            | sort -n \
+            | tail -1)
+    else
+        log_warning "Could not fetch existing issues. Using fallback ID generation."
+        # Fallback: Use timestamp-based ID if we can't fetch issues
+        local timestamp_suffix=$(date +%H%M)
+        echo "T${timestamp_suffix}"
+        return
+    fi
     
     if [[ -z "$max_id" ]]; then
         echo "001"
@@ -199,23 +258,23 @@ create_issue() {
         "BUG") labels="bug,$phase,status-todo" ;;
     esac
     
-    # Create the issue
-    local issue_url=$(gh issue create \
+    # Create the issue with retry
+    local issue_url=""
+    if issue_url=$(gh_with_retry issue create \
         --repo "$REPO" \
         --title "$formatted_title" \
         --body "$issue_body" \
         --label "$labels" \
-        --assignee @me)
-    
-    if [[ $? -eq 0 ]]; then
+        --assignee @me); then
+        
         log_success "Issue created: $issue_url"
         
-        # Add to project board
+        # Add to project board (with retry but non-critical)
         log_info "Adding issue to project board..."
-        if gh project item-add "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --url "$issue_url" 2>/dev/null; then
+        if gh_with_retry project item-add "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --url "$issue_url" 2>/dev/null; then
             log_success "Issue added to project board"
         else
-            log_warning "Could not add issue to project board (this is optional)"
+            log_warning "Could not add issue to project board (this is optional - you can add manually)"
         fi
         
         # Output for AI agents to capture

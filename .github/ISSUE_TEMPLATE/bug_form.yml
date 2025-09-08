@@ -1,0 +1,117 @@
+name: 🐛 Bug Report
+description: Report a bug or issue in the project
+title: "[BUG-XXX]: "
+labels: ["bug", "status-todo"]
+assignees:
+  - "@me"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report Form
+        Use this form when the automated scripts aren't available. Replace XXX in the title with the next available BUG number.
+        
+  - type: input
+    id: title
+    attributes:
+      label: Bug Title
+      description: Brief description of the bug
+      placeholder: "e.g., Login timeout occurs too quickly"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Detailed description of the bug and its impact
+      placeholder: "What's happening? What should happen instead?"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this bug?
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What should happen instead?
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      description: Which project phase is affected?
+      options:
+        - Phase 1
+        - Phase 2
+        - Phase 3
+        - Phase 4
+        - Phase 5
+        - Phase 6
+        - Phase 7
+        - Phase 8
+        - Phase 9
+        - Phase 10
+      default: 5
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority/Severity
+      description: How severe is this bug?
+      options:
+        - High (Critical/Blocking)
+        - Medium (Important)
+        - Low (Minor)
+      default: 1
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where does this bug occur?
+      options:
+        - Production
+        - Development
+        - Both
+        - Not Sure
+      default: 0
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Standard criteria for bug resolution
+      options:
+        - label: Bug reproduced and documented
+        - label: Root cause identified
+        - label: Fix implemented and tested
+        - label: Regression tests added
+        - label: Fix verified in production-like environment
+        - label: Related documentation updated
+        
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or logs
+      placeholder: "Error messages, console logs, screenshots, etc."

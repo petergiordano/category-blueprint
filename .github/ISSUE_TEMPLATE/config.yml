@@ -1,1 +1,8 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/petergiordano/category-blueprint/blob/main/docs/GITHUB_CLI_ISSUE_TRACKING_SETUP.md
+    about: Learn about our issue tracking workflow
+  - name: 🔧 Use CLI Scripts (Preferred)
+    url: https://github.com/petergiordano/category-blueprint/tree/main/scripts
+    about: Use automated scripts for consistent issue creation

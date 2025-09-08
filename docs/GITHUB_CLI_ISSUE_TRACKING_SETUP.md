@@ -1,8 +1,28 @@
-# GitHub CLI + VS Code Issue Automation Setup
+# GitHub CLI + VS Code Issue Automation Setup (Enhanced v2.0)
 
-This guide documents the **simplified database-driven workflow** for GitHub CLI (gh) and VS Code integration. Agents (Claude, Gemini) and users can create and manage GitHub issues directly in the **category-blueprint** repository and project board using automated scripts.
+This guide documents the **simplified database-driven workflow** with **enhanced resilience features** for GitHub CLI (gh) and VS Code integration. Agents (Claude, Gemini) and users can create and manage GitHub issues directly in the **category-blueprint** repository and project board using automated scripts with multiple fallback options.
 
 **Key Principle**: GitHub Issues are the database. Individual issue tracking with clean labels, no complex relationships.
+
+---
+
+## 🆕 0) Validate Your Setup
+
+**Before starting, run the validation script to check all dependencies:**
+
+```bash
+./scripts/validate-workflow.sh
+```
+
+This script checks:
+- GitHub CLI installation and version
+- Authentication status
+- Repository access permissions  
+- Required label existence
+- Script dependencies
+- VS Code integration
+
+If any checks fail, the script provides clear instructions for fixing issues.
 
 ---
 
@@ -57,16 +77,20 @@ Note the **project number** (e.g., `1`) for `category-blueprint-roadmap` and the
 
 ---
 
-## 4) Automated Scripts + VS Code Integration
+## 4) Automated Scripts + VS Code Integration (Enhanced with Resilience)
 
-We use **automation scripts** instead of manual VS Code tasks. The scripts handle ID generation, validation, and project board integration automatically.
+We use **automation scripts** with **retry logic and error recovery**. The scripts handle ID generation, validation, and project board integration automatically.
 
-### Core Automation Scripts
+### 🆕 Enhanced Core Automation Scripts
 
 Located in `scripts/` directory:
 
 ```bash
-# Essential Issue Creation (with auto-ID generation)
+# Validation and setup
+./scripts/validate-workflow.sh  # 🆕 Check all dependencies before starting
+./scripts/setup-github-labels.sh  # One-time label setup
+
+# Essential Issue Creation (with auto-ID generation + retry logic)
 ./scripts/create-feature-issue.sh "Feature Title" "Description" "Phase 6" "High"
 ./scripts/create-enhancement-issue.sh "Enhancement Title" "Description" "Phase 6" "Medium"
 ./scripts/create-bug-issue.sh "Bug Title" "Description" "Phase 6" "High"
@@ -74,11 +98,8 @@ Located in `scripts/` directory:
 # AI-powered universal creation
 ./scripts/create-issue-ai.sh "FEAT" "Title" "Description" "Phase 6"
 
-# Status management
+# Status management (with retry logic)
 ./scripts/update-issue-status.sh "FEAT-001" "status-in-progress"
-
-# One-time setup
-./scripts/setup-github-labels.sh
 ```
 
 ### VS Code Tasks (Current)
@@ -99,6 +120,46 @@ The current `.vscode/tasks.json` integrates with these scripts:
 - **Project Integration**: Automatic addition to GitHub Projects board
 - **Error Handling**: Comprehensive validation and user feedback
 - **Consistent Format**: Standardized issue templates and labels
+
+---
+
+## 🆕 4.5) Resilience Features
+
+### Automatic Retry Logic
+All scripts now include retry logic that automatically retries failed GitHub API calls:
+- Default: 3 retry attempts with 2-second delays
+- Configurable via environment variables:
+```bash
+export GH_MAX_RETRIES=5      # Increase retry attempts
+export GH_RETRY_DELAY=3      # Delay between retries (seconds)
+```
+
+### Fallback Options
+
+#### GitHub Issue Forms (Web UI)
+If scripts fail, use GitHub's web interface:
+1. Go to Issues → New Issue
+2. Choose from structured forms:
+   - 🚀 Feature Request
+   - 🐛 Bug Report  
+   - ✨ Enhancement Request
+3. Fill out the form with dropdowns and validations
+4. Submit (labels auto-applied)
+
+#### Comment Commands (GitHub Actions)
+Quick status updates via issue comments:
+```bash
+/status in-progress    # Changes status to in-progress
+/status done          # Changes status to complete
+/priority high        # Changes priority to high
+```
+
+### Error Recovery
+Scripts provide helpful error messages:
+- Authentication issues → suggests `gh auth refresh`
+- Network failures → automatic retry
+- Rate limits → wait and retry guidance
+- Missing labels → run setup script
 
 ---
 

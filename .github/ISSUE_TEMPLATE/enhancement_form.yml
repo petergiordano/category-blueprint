@@ -1,0 +1,116 @@
+name: ✨ Enhancement Request
+description: Propose an improvement to existing functionality
+title: "[ENH-XXX]: "
+labels: ["enhancement", "status-todo"]
+assignees:
+  - "@me"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Enhancement Request Form
+        Use this form when the automated scripts aren't available. Replace XXX in the title with the next available ENH number.
+        
+  - type: input
+    id: title
+    attributes:
+      label: Enhancement Title
+      description: Brief description of the enhancement
+      placeholder: "e.g., Improve authentication performance"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current Behavior
+      description: How does the feature currently work?
+      placeholder: "Describe the current functionality..."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: proposed_enhancement
+    attributes:
+      label: Proposed Enhancement
+      description: How should it be improved?
+      placeholder: "Describe the enhancement and expected benefits..."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Why is this enhancement needed?
+      placeholder: "Business value, user feedback, performance metrics, etc."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      description: Which project phase does this belong to?
+      options:
+        - Phase 1
+        - Phase 2
+        - Phase 3
+        - Phase 4
+        - Phase 5
+        - Phase 6
+        - Phase 7
+        - Phase 8
+        - Phase 9
+        - Phase 10
+      default: 5
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this enhancement?
+      options:
+        - High
+        - Medium
+        - Low
+      default: 1
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: type
+    attributes:
+      label: Enhancement Type
+      description: What kind of enhancement is this?
+      options:
+        - Performance
+        - User Experience
+        - Security
+        - Maintainability
+        - Feature Extension
+        - Other
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Standard criteria for enhancement completion
+      options:
+        - label: Enhancement scope clearly defined
+        - label: Implementation approach validated
+        - label: Changes implemented and tested
+        - label: Backward compatibility verified
+        - label: Performance impact assessed
+        - label: Documentation updated if needed
+        
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: Additional Notes
+      description: Any other considerations or context
+      placeholder: "Dependencies, risks, alternatives considered, etc."
