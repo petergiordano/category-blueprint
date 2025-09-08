@@ -139,7 +139,7 @@
          * - HomeView: Landing page with navigation cards (replaces old index.html content)
          * - SegmentFoundationTool: Placeholder for Part 1
          * - ICPDefinitionTool: Complete Part 2 functionality (replaces positioning.html)
-         * - CategoryDesignTool: Complete Part 3 functionality (replaces category_design.html)
+         * - CategoryDesignTool: Complete Part 4 functionality (replaces category_design.html)
          * - App: Main component that manages routing and global state
          * p
          * STATE MANAGEMENT:
@@ -2322,6 +2322,137 @@
             );
         };
 
+        // PositioningTool Component - Part 3
+        const PositioningTool = ({ appState, setAppState, onNavigate }) => {
+            const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+
+            // Export functionality for positioning data
+            const exportData = () => {
+                const formatSection = (title, content) => content ? `## ${title}\n${content}\n\n` : '';
+                let summary = `Part 3: Positioning Blueprint\n======================================\n\n`;
+                
+                summary += formatSection('1. Competitive Alternatives', 'Placeholder content - will be implemented in Phase 2');
+                summary += formatSection('2. Unique Value & Proof', 'Placeholder content - will be implemented in Phase 2');
+                summary += formatSection('3. Market Category', 'Placeholder content - will be implemented in Phase 2');
+                summary += formatSection('4. Target Market Characteristics', 'Placeholder content - will be implemented in Phase 2');
+                summary += formatSection('5. Relevant Trends', 'Placeholder content - will be implemented in Phase 2');
+                
+                setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
+            };
+
+            return React.createElement('div', { className: 'min-h-screen bg-gray-50' },
+                React.createElement(ExportModal, {
+                    ...exportModal,
+                    onClose: () => setExportModal({ isOpen: false, content: '', title: '' }),
+                    appState: appState
+                }),
+                
+                // Header
+                React.createElement('div', { className: 'bg-white border-b border-gray-200 py-4' },
+                    React.createElement('div', { className: 'max-w-4xl mx-auto px-4 sm:px-6 lg:px-8' },
+                        React.createElement('div', { className: 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4' },
+                            React.createElement('div', null,
+                                React.createElement('h1', { className: 'text-xl sm:text-2xl font-bold scale-green-text' }, 'Part 3: Positioning'),
+                                React.createElement('p', { className: 'text-gray-600 text-sm mt-1' }, 'Define your competitive positioning and unique value')
+                            ),
+                            React.createElement('div', { className: 'flex gap-3' },
+                                React.createElement('button', {
+                                    onClick: exportData,
+                                    className: 'bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 text-sm'
+                                }, 'Export Summary'),
+                                React.createElement('button', {
+                                    onClick: () => { onNavigate('category'); window.scrollTo(0, 0); },
+                                    className: 'scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90'
+                                }, 'Continue to Part 4: Category Design →')
+                            )
+                        )
+                    )
+                ),
+                
+                // Sticky Navigation
+                React.createElement('div', { className: 'sticky top-0 bg-white shadow-sm z-20 border-b' },
+                    React.createElement('div', { className: 'max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3' },
+                        React.createElement('div', { className: 'flex items-center justify-between' },
+                            React.createElement('button', {
+                                onClick: () => { onNavigate('icp'); window.scrollTo(0, 0); },
+                                className: 'text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1'
+                            }, '← Back to Part 2: ICP Definition'),
+                            React.createElement('div', { className: 'flex space-x-6 text-xs' },
+                                React.createElement('a', { href: '#section-1', className: 'text-blue-600 hover:underline' }, 'Competitive Alternatives'),
+                                React.createElement('a', { href: '#section-2', className: 'text-blue-600 hover:underline' }, 'Unique Value'),
+                                React.createElement('a', { href: '#section-3', className: 'text-blue-600 hover:underline' }, 'Market Category'),
+                                React.createElement('a', { href: '#section-4', className: 'text-blue-600 hover:underline' }, 'Target Market'),
+                                React.createElement('a', { href: '#section-5', className: 'text-blue-600 hover:underline' }, 'Trends')
+                            )
+                        )
+                    )
+                ),
+                
+                // Main Content
+                React.createElement('div', { className: 'max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8' },
+                    React.createElement('div', { className: 'space-y-8' },
+                        
+                        // Section 1: Competitive Alternatives
+                        React.createElement('div', { id: 'section-1', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
+                            React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '1. Competitive Alternatives'),
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Identify what your target customers currently use to solve this problem.'),
+                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
+                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Competitive alternatives section will be implemented in Phase 2')
+                            )
+                        ),
+                        
+                        // Section 2: Unique Value & Proof
+                        React.createElement('div', { id: 'section-2', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
+                            React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '2. Unique Value & Proof'),
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Define your truly unique attributes and how they deliver measurable value.'),
+                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
+                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Unique value and proof section will be implemented in Phase 2')
+                            )
+                        ),
+                        
+                        // Section 3: Market Category
+                        React.createElement('div', { id: 'section-3', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
+                            React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '3. Market Category'),
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Define how customers and analysts will categorize your solution.'),
+                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
+                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Market category section will be implemented in Phase 2')
+                            )
+                        ),
+                        
+                        // Section 4: Target Market Characteristics
+                        React.createElement('div', { id: 'section-4', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
+                            React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '4. Target Market Characteristics'),
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Who will care most about your unique value?'),
+                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
+                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Target market characteristics will pull from ICP data in Phase 2')
+                            )
+                        ),
+                        
+                        // Section 5: Relevant Trends
+                        React.createElement('div', { id: 'section-5', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
+                            React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '5. Relevant Trends'),
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Market trends that support the need for your solution.'),
+                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
+                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Relevant trends section will be implemented in Phase 2')
+                            )
+                        ),
+                        
+                        // Navigation Footer
+                        React.createElement('div', { className: 'flex justify-between items-center pt-8' },
+                            React.createElement('button', {
+                                onClick: () => { onNavigate('icp'); window.scrollTo(0, 0); },
+                                className: 'text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2'
+                            }, '← Back to Part 2: ICP Definition'),
+                            React.createElement('button', {
+                                onClick: () => { onNavigate('category'); window.scrollTo(0, 0); },
+                                className: 'scale-green-bg text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 flex items-center gap-2'
+                            }, 'Continue to Part 4: Category Design →')
+                        )
+                    )
+                )
+            );
+        };
+
         // ICPDefinitionTool Component
         const ICPDefinitionTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
@@ -3677,10 +3808,10 @@
 
                         <div className="text-center mt-12 pb-24">
                             <button 
-                                onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
+                                onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }}
                                 className="scale-gold-bg text-white font-bold py-4 px-8 rounded-lg hover:bg-opacity-90 text-lg"
                             >
-                                Continue to Part 3: Category Design →
+                                Continue to Part 3: Positioning →
                             </button>
                         </div>
                                 </div>
@@ -4114,8 +4245,8 @@
                     <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
-                                <button onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }} className="text-gray-600 hover:scale-gold-text">← Back to ICP Definition</button>
-                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 3: Category Design</h1>
+                                <button onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }} className="text-gray-600 hover:scale-gold-text">← Back to Part 3: Positioning</button>
+                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 4: Category Design</h1>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <button
@@ -4368,6 +4499,8 @@
                         return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'icp':
                         return <ICPDefinitionTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                    case 'positioning':
+                        return <PositioningTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'category':
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     default:
