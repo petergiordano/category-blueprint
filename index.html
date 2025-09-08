@@ -2325,17 +2325,153 @@
         // PositioningTool Component - Part 3
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+            const [analysisState, setAnalysisState] = useState({});
+            const [uniquenessResults, setUniquenessResults] = useState({});
+            const [trendAnalysisResults, setTrendAnalysisResults] = useState({});
+            const [gradingState, setGradingState] = useState({});
+            const [pillarGenState, setPillarGenState] = useState({
+                isGenerating: false,
+                suggestedPillars: [],
+                error: null,
+                refinementInputs: {}
+            });
+            const [pillarGenModalOpen, setPillarGenModalOpen] = useState(false);
+
+            // Helper functions for nested data management
+            const updateNestedValue = (section, index, key, value) => {
+                const newData = { ...appState.positioningData };
+                if (!newData[section]) newData[section] = [];
+                if (!newData[section][index]) newData[section][index] = {};
+                newData[section][index][key] = value;
+                setAppState(prev => ({ ...prev, positioningData: newData }));
+            };
+
+            const addItem = (section, template) => {
+                const newData = { ...appState.positioningData };
+                if (!newData[section]) newData[section] = [];
+                newData[section].push(template);
+                setAppState(prev => ({ ...prev, positioningData: newData }));
+            };
+
+            const removeItem = (section, index) => {
+                const newData = { ...appState.positioningData };
+                if (newData[section]) {
+                    newData[section].splice(index, 1);
+                    setAppState(prev => ({ ...prev, positioningData: newData }));
+                    // Clear grading state for removed item
+                    setGradingState(prev => {
+                        const newState = { ...prev };
+                        delete newState[index];
+                        return newState;
+                    });
+                }
+            };
+
+            // AI Analysis functions (placeholders for now)
+            const simulateCompetitiveAnalysis = async (item, idx) => {
+                setAnalysisState(prev => ({ ...prev, [idx]: { isAnalyzing: true, result: null } }));
+                
+                // Simulate API call
+                setTimeout(() => {
+                    setAnalysisState(prev => ({
+                        ...prev,
+                        [idx]: {
+                            isAnalyzing: false,
+                            result: {
+                                marketShare: '15-20%',
+                                strengths: 'Established brand, wide distribution',
+                                weaknesses: 'Limited customization, high cost',
+                                opportunity: 'Vulnerable on flexibility and pricing'
+                            }
+                        }
+                    }));
+                }, 1500);
+            };
+
+            const analyzeUniqueness = async (attributeText, idx) => {
+                setUniquenessResults(prev => ({ ...prev, [idx]: { isAnalyzing: true } }));
+                
+                // Simulate analysis
+                setTimeout(() => {
+                    setUniquenessResults(prev => ({
+                        ...prev,
+                        [idx]: {
+                            isAnalyzing: false,
+                            results: [
+                                { title: 'Similar Feature Found', snippet: 'Competitor X offers a similar capability...' },
+                                { title: 'Market Analysis', snippet: 'This feature addresses a growing need in...' }
+                            ]
+                        }
+                    }));
+                }, 1500);
+            };
+
+            const analyzeTrend = async (trendText, idx) => {
+                setTrendAnalysisResults(prev => ({ ...prev, [idx]: { isAnalyzing: true } }));
+                
+                // Simulate analysis
+                setTimeout(() => {
+                    setTrendAnalysisResults(prev => ({
+                        ...prev,
+                        [idx]: {
+                            isAnalyzing: false,
+                            results: [
+                                { title: 'Industry Report', snippet: 'Market research shows 40% growth in...' },
+                                { title: 'Expert Analysis', snippet: 'Analysts predict this trend will accelerate...' }
+                            ]
+                        }
+                    }));
+                }, 1500);
+            };
+
+            const simulateAIGrading = async (item, idx) => {
+                setGradingState(prev => ({ ...prev, [idx]: { isGrading: true } }));
+                
+                setTimeout(() => {
+                    const score = Math.floor(Math.random() * 3) + 6; // 6-8 score
+                    setGradingState(prev => ({
+                        ...prev,
+                        [idx]: {
+                            isGrading: false,
+                            score,
+                            feedback: score >= 7 ? 'Strong unique value proposition' : 'Could be more differentiated'
+                        }
+                    }));
+                }, 1500);
+            };
 
             // Export functionality for positioning data
             const exportData = () => {
                 const formatSection = (title, content) => content ? `## ${title}\n${content}\n\n` : '';
+                const formatList = (items, k1, k2) => items.map(item => `- ${item[k1]}: ${item[k2]}`).join('\n');
+                
                 let summary = `Part 3: Positioning Blueprint\n======================================\n\n`;
                 
-                summary += formatSection('1. Competitive Alternatives', 'Placeholder content - will be implemented in Phase 2');
-                summary += formatSection('2. Unique Value & Proof', 'Placeholder content - will be implemented in Phase 2');
-                summary += formatSection('3. Market Category', 'Placeholder content - will be implemented in Phase 2');
-                summary += formatSection('4. Target Market Characteristics', 'Placeholder content - will be implemented in Phase 2');
-                summary += formatSection('5. Relevant Trends', 'Placeholder content - will be implemented in Phase 2');
+                summary += formatSection('1. Competitive Alternatives', 
+                    appState.positioningData.alternatives ? 
+                    formatList(appState.positioningData.alternatives, 'val1', 'val2') : 'N/A');
+                
+                let valuesContent = '';
+                if (appState.positioningData.values) {
+                    appState.positioningData.values.forEach(v => {
+                        if (v.val1) valuesContent += `- Attribute: ${v.val1}\n  Benefit: ${v.val2}\n  Value: ${v.val3}\n\n`;
+                    });
+                }
+                summary += formatSection('2. Unique Value & Proof', valuesContent || 'N/A');
+                
+                let marketContext = appState.positioningData['market-context'] === 'Other' ? 
+                    appState.positioningData['market-context-other'] : appState.positioningData['market-context'];
+                summary += formatSection('3. Market Category', marketContext || 'N/A');
+                
+                summary += formatSection('4. Target Market Characteristics', 
+                    appState.positioningData.icp_summary || 'N/A');
+                
+                let trendsContent = '';
+                if (appState.positioningData.trend1_desc) trendsContent += `- Trend 1: ${appState.positioningData.trend1_desc}\n`;
+                if (appState.positioningData.trend2_desc) trendsContent += `- Trend 2: ${appState.positioningData.trend2_desc}\n`;
+                if (appState.positioningData.trend3_desc) trendsContent += `- Trend 3: ${appState.positioningData.trend3_desc}\n`;
+                if (appState.positioningData.trend4_desc) trendsContent += `- Trend 4: ${appState.positioningData.trend4_desc}\n`;
+                summary += formatSection('5. Relevant Trends', trendsContent || 'N/A');
                 
                 setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
             };
@@ -2395,18 +2531,51 @@
                         // Section 1: Competitive Alternatives
                         React.createElement('div', { id: 'section-1', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
                             React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '1. Competitive Alternatives'),
-                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Identify what your target customers currently use to solve this problem.'),
-                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
-                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Competitive alternatives section will be implemented in Phase 2')
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'What are your target customers currently using to solve this problem?'),
+                            React.createElement('div', { className: 'space-y-4' },
+                                (appState.positioningData.alternatives || []).map((item, index) => 
+                                    React.createElement(RemovableRow, {
+                                        key: index,
+                                        index: index,
+                                        item: item,
+                                        onUpdate: (idx, key, value) => updateNestedValue('alternatives', idx, key, value),
+                                        onRemove: (idx) => removeItem('alternatives', idx),
+                                        placeholder1: 'Alternative',
+                                        placeholder2: 'Why it\'s inadequate',
+                                        onAnalyze: (item, idx) => simulateCompetitiveAnalysis(item, idx),
+                                        analysisResult: analysisState[index]
+                                    })
+                                ),
+                                React.createElement('button', {
+                                    onClick: () => addItem('alternatives', { val1: '', val2: '' }),
+                                    className: 'scale-blue-bg text-white font-bold py-2 px-4 rounded hover:bg-blue-700'
+                                }, '+ Add Alternative')
                             )
                         ),
                         
                         // Section 2: Unique Value & Proof
                         React.createElement('div', { id: 'section-2', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
                             React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '2. Unique Value & Proof'),
-                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Define your truly unique attributes and how they deliver measurable value.'),
-                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
-                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Unique value and proof section will be implemented in Phase 2')
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'What unique attributes deliver measurable value to your customers?'),
+                            React.createElement('div', { className: 'space-y-4' },
+                                (appState.positioningData.values || []).map((item, index) => 
+                                    React.createElement(ValueProofRow, {
+                                        key: index,
+                                        index: index,
+                                        item: item,
+                                        onUpdate: (idx, key, value) => updateNestedValue('values', idx, key, value),
+                                        onRemove: (idx) => removeItem('values', idx),
+                                        onGrade: (item, idx) => simulateAIGrading(item, idx),
+                                        gradingResult: gradingState[index],
+                                        onAnalyzeUniqueness: (attributeText, idx) => analyzeUniqueness(attributeText, idx),
+                                        uniquenessResult: uniquenessResults[index],
+                                        pillars: appState.positioningData.pillars
+                                    })
+                                ),
+                                React.createElement('button', {
+                                    onClick: () => addItem('values', { val1: '', val2: '', val3: '', pillarId: null }),
+                                    className: 'scale-blue-bg text-white font-bold py-2 px-4 rounded hover:bg-blue-700'
+                                }, '+ Add Value Proposition')
                             )
                         ),
                         
@@ -2431,9 +2600,52 @@
                         // Section 5: Relevant Trends
                         React.createElement('div', { id: 'section-5', className: 'bg-white p-8 rounded-lg shadow-md scroll-mt-24' },
                             React.createElement('h2', { className: 'text-2xl font-bold scale-green-text mb-2' }, '5. Relevant Trends'),
-                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'Market trends that support the need for your solution.'),
-                            React.createElement('div', { className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4' },
-                                React.createElement('p', { className: 'text-yellow-800' }, 'Placeholder: Relevant trends section will be implemented in Phase 2')
+                            React.createElement('p', { className: 'text-gray-600 mb-6' }, 'What market trends create urgency for your solution?'),
+                            React.createElement('div', { className: 'space-y-6' },
+                                // Trend 1
+                                React.createElement('div', null,
+                                    React.createElement('label', { className: 'block font-bold text-gray-700 mb-2' }, 'Industry Trend 1'),
+                                    React.createElement('textarea', {
+                                        className: 'w-full mt-1 p-2 border border-gray-300 rounded-md',
+                                        rows: '2',
+                                        placeholder: 'Example: AI automation is becoming table stakes in enterprise software',
+                                        value: appState.positioningData.trend1_desc || '',
+                                        onChange: (e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend1_desc: e.target.value } }))
+                                    })
+                                ),
+                                // Trend 2
+                                React.createElement('div', null,
+                                    React.createElement('label', { className: 'block font-bold text-gray-700 mb-2' }, 'Industry Trend 2'),
+                                    React.createElement('textarea', {
+                                        className: 'w-full mt-1 p-2 border border-gray-300 rounded-md',
+                                        rows: '2',
+                                        placeholder: 'Example: Remote work is driving demand for cloud-based collaboration',
+                                        value: appState.positioningData.trend2_desc || '',
+                                        onChange: (e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend2_desc: e.target.value } }))
+                                    })
+                                ),
+                                // Trend 3
+                                React.createElement('div', null,
+                                    React.createElement('label', { className: 'block font-bold text-gray-700 mb-2' }, 'Industry Trend 3'),
+                                    React.createElement('textarea', {
+                                        className: 'w-full mt-1 p-2 border border-gray-300 rounded-md',
+                                        rows: '2',
+                                        placeholder: 'Example: Regulatory compliance requirements are becoming more stringent',
+                                        value: appState.positioningData.trend3_desc || '',
+                                        onChange: (e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend3_desc: e.target.value } }))
+                                    })
+                                ),
+                                // Trend 4
+                                React.createElement('div', null,
+                                    React.createElement('label', { className: 'block font-bold text-gray-700 mb-2' }, 'Industry Trend 4'),
+                                    React.createElement('textarea', {
+                                        className: 'w-full mt-1 p-2 border border-gray-300 rounded-md',
+                                        rows: '2',
+                                        placeholder: 'Example: Customer expectations for real-time data insights',
+                                        value: appState.positioningData.trend4_desc || '',
+                                        onChange: (e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend4_desc: e.target.value } }))
+                                    })
+                                )
                             )
                         ),
                         
@@ -3199,10 +3411,6 @@
                                     <h3 className="font-bold scale-green-text mb-2 text-lg">Sections</h3>
                                     <ul className="space-y-1">
                                         <li><a href="#section-1" className="nav-link block p-2 rounded text-gray-700 font-semibold">1. Define Your ICP</a></li>
-                                        <li><a href="#section-2" className="nav-link block p-2 rounded text-gray-700 font-semibold">2. Competitive Alternatives</a></li>
-                                        <li><a href="#section-3" className="nav-link block p-2 rounded text-gray-700 font-semibold">3. Value and Proof</a></li>
-                                        <li><a href="#section-4" className="nav-link block p-2 rounded text-gray-700 font-semibold">4. Relevant Trends</a></li>
-                                        <li><a href="#section-5" className="nav-link block p-2 rounded text-gray-700 font-semibold">5. Strategic Pillars</a></li>
                                     </ul>
                                     <div className="mt-4 pt-4 border-t">
                                         <button onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }} className="text-sm text-gray-600 hover:scale-gold-text font-semibold w-full text-left">
@@ -3394,417 +3602,6 @@
                             </div>
                         </div>
 
-                        <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">2. Competitive Alternatives</h2>
-                            <div className="space-y-4">
-                                {(appState.positioningData.alternatives || []).map((item, index) => (
-                                    <RemovableRow 
-                                        key={index}
-                                        index={index}
-                                        item={item}
-                                        onUpdate={(idx, key, value) => updateNestedValue('alternatives', idx, key, value)}
-                                        onRemove={(idx) => removeItem('alternatives', idx)}
-                                        placeholder1="Alternative"
-                                        placeholder2="Why it's inadequate"
-                                        onAnalyze={(item, idx) => simulateCompetitiveAnalysis(item, idx)}
-                                        analysisResult={analysisState[index]}
-                                    />
-                                ))}
-                                <button 
-                                    onClick={() => addItem('alternatives', { val1: '', val2: '' })}
-                                    className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
-                                >
-                                    + Add Alternative
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">3. Value and Proof</h2>
-                            <div className="space-y-6">
-                                {(() => {
-                                    // Group values by pillarId
-                                    const groupedValues = {};
-                                    const ungroupedValues = [];
-                                    
-                                    (appState.positioningData.values || []).forEach((item, index) => {
-                                        if (item.pillarId) {
-                                            if (!groupedValues[item.pillarId]) {
-                                                groupedValues[item.pillarId] = [];
-                                            }
-                                            groupedValues[item.pillarId].push({ item, index });
-                                        } else {
-                                            ungroupedValues.push({ item, index });
-                                        }
-                                    });
-                                    
-                                    return (
-                                        <>
-                                            {/* Render ungrouped values first */}
-                                            {ungroupedValues.length > 0 && (
-                                                <div className="space-y-4">
-                                                    {ungroupedValues.length > 0 && (
-                                                        <div className="text-sm font-medium text-gray-500 border-b border-gray-200 pb-2 mb-4">
-                                                            Unassigned Value Propositions
-                                                        </div>
-                                                    )}
-                                                    {ungroupedValues.map(({ item, index }) => (
-                                                        <RemovableTriple 
-                                                            key={index}
-                                                            index={index}
-                                                            item={item}
-                                                            onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
-                                                            onRemove={(idx) => removeItem('values', idx)}
-                                                            onGrade={(item, idx) => simulateAIGrading(item, idx)}
-                                                            gradingResult={gradingState[index]}
-                                                            onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
-                                                            uniquenessResult={uniquenessResults[index]}
-                                                            pillars={appState.positioningData.pillars}
-                                                        />
-                                                    ))}
-                                                </div>
-                                            )}
-                                            
-                                            {/* Render grouped values by pillar */}
-                                            {(appState.positioningData.pillars || []).map((pillar) => {
-                                                const pillarValues = groupedValues[pillar.id] || [];
-                                                if (pillarValues.length === 0) return null;
-                                                
-                                                return (
-                                                    <div key={pillar.id} className="space-y-4">
-                                                        <div className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
-                                                            <h3 className="text-lg font-bold text-gray-800">
-                                                                {pillar.name || `Strategic Pillar ${pillar.id}`}
-                                                            </h3>
-                                                            {pillar.benefit && (
-                                                                <p className="text-sm text-gray-600 mt-1">{pillar.benefit}</p>
-                                                            )}
-                                                        </div>
-                                                        <div className="space-y-4 ml-4">
-                                                            {pillarValues.map(({ item, index }) => (
-                                                                <RemovableTriple 
-                                                                    key={index}
-                                                                    index={index}
-                                                                    item={item}
-                                                                    onUpdate={(idx, key, value) => updateNestedValue('values', idx, key, value)}
-                                                                    onRemove={(idx) => removeItem('values', idx)}
-                                                                    onGrade={(item, idx) => simulateAIGrading(item, idx)}
-                                                                    gradingResult={gradingState[index]}
-                                                                    onAnalyzeUniqueness={(attributeText, idx) => analyzeUniqueness(attributeText, idx)}
-                                                                    uniquenessResult={uniquenessResults[index]}
-                                                                    pillars={appState.positioningData.pillars}
-                                                                />
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </>
-                                    );
-                                })()}
-                                
-                                <button 
-                                    onClick={() => addItem('values', { val1: '', val2: '', val3: '', pillarId: null })}
-                                    className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
-                                >
-                                    + Add Value Point
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">4. Relevant Trends</h2>
-                            <p className="font-semibold text-gray-600 mb-2">Question: What macro trends create urgency for our solution *right now*?</p>
-                            <p className="text-gray-600 mb-6">Guidance: Tying your solution to an undeniable trend creates urgency.</p>
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="block font-bold text-gray-700">Industry Trend 1</label>
-                                    <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                                        rows="2" 
-                                        placeholder="How this trend aligns with and enhances your product"
-                                        value={appState.positioningData.trend1_desc || ''}
-                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend1_desc: e.target.value } }))}
-                                    />
-                                    <div className="mt-2 space-y-3">
-                                        <button 
-                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
-                                            onClick={() => analyzeTrend(appState.positioningData.trend1_desc, 0)}
-                                            disabled={trendAnalysisResults[0]?.isAnalyzing || !appState.positioningData.trend1_desc?.trim()}
-                                        >
-                                            {trendAnalysisResults[0]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
-                                        </button>
-                                        
-                                        {trendAnalysisResults[0] && !trendAnalysisResults[0].isAnalyzing && (
-                                            <div className="bg-white p-3 rounded-md border border-gray-300">
-                                                <div className="mb-2">
-                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
-                                                </div>
-                                                {trendAnalysisResults[0].error ? (
-                                                    <div className="text-sm text-red-600">
-                                                        {trendAnalysisResults[0].error}
-                                                    </div>
-                                                ) : trendAnalysisResults[0].results && trendAnalysisResults[0].results.length > 0 ? (
-                                                    <div className="space-y-2">
-                                                        {trendAnalysisResults[0].results.slice(0, 3).map((result, idx) => (
-                                                            <div key={idx} className="text-sm text-gray-600">
-                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
-                                                                    {result.title}
-                                                                </a>
-                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-sm text-red-600">
-                                                        No strong evidence found for this trend. Consider rephrasing.
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block font-bold text-gray-700">Industry Trend 2</label>
-                                    <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                                        rows="2" 
-                                        placeholder="How this trend makes your product more appealing"
-                                        value={appState.positioningData.trend2_desc || ''}
-                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend2_desc: e.target.value } }))}
-                                    />
-                                    <div className="mt-2 space-y-3">
-                                        <button 
-                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
-                                            onClick={() => analyzeTrend(appState.positioningData.trend2_desc, 1)}
-                                            disabled={trendAnalysisResults[1]?.isAnalyzing || !appState.positioningData.trend2_desc?.trim()}
-                                        >
-                                            {trendAnalysisResults[1]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
-                                        </button>
-                                        
-                                        {trendAnalysisResults[1] && !trendAnalysisResults[1].isAnalyzing && (
-                                            <div className="bg-white p-3 rounded-md border border-gray-300">
-                                                <div className="mb-2">
-                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
-                                                </div>
-                                                {trendAnalysisResults[1].error ? (
-                                                    <div className="text-sm text-red-600">
-                                                        {trendAnalysisResults[1].error}
-                                                    </div>
-                                                ) : trendAnalysisResults[1].results && trendAnalysisResults[1].results.length > 0 ? (
-                                                    <div className="space-y-2">
-                                                        {trendAnalysisResults[1].results.slice(0, 3).map((result, idx) => (
-                                                            <div key={idx} className="text-sm text-gray-600">
-                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
-                                                                    {result.title}
-                                                                </a>
-                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-sm text-red-600">
-                                                        No strong evidence found for this trend. Consider rephrasing.
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block font-bold text-gray-700">Industry Trend 3 (Optional)</label>
-                                    <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                                        rows="2" 
-                                        placeholder="How this trend creates urgency for your product"
-                                        value={appState.positioningData.trend3_desc || ''}
-                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend3_desc: e.target.value } }))}
-                                    />
-                                    <div className="mt-2 space-y-3">
-                                        <button 
-                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
-                                            onClick={() => analyzeTrend(appState.positioningData.trend3_desc, 2)}
-                                            disabled={trendAnalysisResults[2]?.isAnalyzing || !appState.positioningData.trend3_desc?.trim()}
-                                        >
-                                            {trendAnalysisResults[2]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
-                                        </button>
-                                        
-                                        {trendAnalysisResults[2] && !trendAnalysisResults[2].isAnalyzing && (
-                                            <div className="bg-white p-3 rounded-md border border-gray-300">
-                                                <div className="mb-2">
-                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
-                                                </div>
-                                                {trendAnalysisResults[2].error ? (
-                                                    <div className="text-sm text-red-600">
-                                                        {trendAnalysisResults[2].error}
-                                                    </div>
-                                                ) : trendAnalysisResults[2].results && trendAnalysisResults[2].results.length > 0 ? (
-                                                    <div className="space-y-2">
-                                                        {trendAnalysisResults[2].results.slice(0, 3).map((result, idx) => (
-                                                            <div key={idx} className="text-sm text-gray-600">
-                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
-                                                                    {result.title}
-                                                                </a>
-                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-sm text-red-600">
-                                                        No strong evidence found for this trend. Consider rephrasing.
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block font-bold text-gray-700">Industry Trend 4 (Optional)</label>
-                                    <textarea 
-                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                                        rows="2" 
-                                        placeholder="How this trend impacts the need for your product"
-                                        value={appState.positioningData.trend4_desc || ''}
-                                        onChange={(e) => setAppState(prev => ({ ...prev, positioningData: { ...prev.positioningData, trend4_desc: e.target.value } }))}
-                                    />
-                                    <div className="mt-2 space-y-3">
-                                        <button 
-                                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors scale-blue-bg hover:bg-blue-700 text-white disabled:opacity-50"
-                                            onClick={() => analyzeTrend(appState.positioningData.trend4_desc, 3)}
-                                            disabled={trendAnalysisResults[3]?.isAnalyzing || !appState.positioningData.trend4_desc?.trim()}
-                                        >
-                                            {trendAnalysisResults[3]?.isAnalyzing ? 'Analyzing trend...' : 'Analyze Trend'}
-                                        </button>
-                                        
-                                        {trendAnalysisResults[3] && !trendAnalysisResults[3].isAnalyzing && (
-                                            <div className="bg-white p-3 rounded-md border border-gray-300">
-                                                <div className="mb-2">
-                                                    <span className="text-sm font-bold text-gray-700">Trend Analysis:</span>
-                                                </div>
-                                                {trendAnalysisResults[3].error ? (
-                                                    <div className="text-sm text-red-600">
-                                                        {trendAnalysisResults[3].error}
-                                                    </div>
-                                                ) : trendAnalysisResults[3].results && trendAnalysisResults[3].results.length > 0 ? (
-                                                    <div className="space-y-2">
-                                                        {trendAnalysisResults[3].results.slice(0, 3).map((result, idx) => (
-                                                            <div key={idx} className="text-sm text-gray-600">
-                                                                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
-                                                                    {result.title}
-                                                                </a>
-                                                                <p className="text-xs text-gray-500 mt-1">{result.description}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-sm text-red-600">
-                                                        No strong evidence found for this trend. Consider rephrasing.
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
-                            <h2 className="text-2xl font-bold scale-green-text mb-2">5. Strategic Pillars</h2>
-                            <p className="text-gray-600 mb-6">Organize your value propositions under strategic pillars to create a coherent narrative. Each pillar represents a core benefit theme that groups related value propositions.</p>
-                            <div className="space-y-4">
-                                {(appState.positioningData.pillars || []).map((pillar, index) => (
-                                    <div key={pillar.id} className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-grow space-y-3">
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                                        Pillar Name
-                                                    </label>
-                                                    <input 
-                                                        type="text" 
-                                                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                                                        placeholder="Example: Enterprise-Grade Security"
-                                                        value={pillar.name || ''}
-                                                        onChange={(e) => {
-                                                            const newPillars = [...(appState.positioningData.pillars || [])];
-                                                            newPillars[index] = { ...newPillars[index], name: e.target.value };
-                                                            setAppState(prev => ({
-                                                                ...prev,
-                                                                positioningData: { ...prev.positioningData, pillars: newPillars }
-                                                            }));
-                                                        }}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                                        Benefit Statement
-                                                    </label>
-                                                    <textarea 
-                                                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                                                        rows="2"
-                                                        placeholder="Example: Ensures your data meets the highest security standards without slowing down innovation"
-                                                        value={pillar.benefit || ''}
-                                                        onChange={(e) => {
-                                                            const newPillars = [...(appState.positioningData.pillars || [])];
-                                                            newPillars[index] = { ...newPillars[index], benefit: e.target.value };
-                                                            setAppState(prev => ({
-                                                                ...prev,
-                                                                positioningData: { ...prev.positioningData, pillars: newPillars }
-                                                            }));
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                            {(appState.positioningData.pillars || []).length > 1 && (
-                                                <button 
-                                                    onClick={() => {
-                                                        const newPillars = appState.positioningData.pillars.filter((_, i) => i !== index);
-                                                        // Reset pillarId for any values that were assigned to this pillar
-                                                        const newValues = appState.positioningData.values.map(val => 
-                                                            val.pillarId === pillar.id ? { ...val, pillarId: null } : val
-                                                        );
-                                                        setAppState(prev => ({
-                                                            ...prev,
-                                                            positioningData: { 
-                                                                ...prev.positioningData, 
-                                                                pillars: newPillars,
-                                                                values: newValues
-                                                            }
-                                                        }));
-                                                    }}
-                                                    className="ml-3 text-red-500 hover:text-red-700 font-bold text-lg"
-                                                >
-                                                    ×
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                                <div className="flex space-x-3">
-                                    <button 
-                                        onClick={handleGeneratePillars}
-                                        className="text-sm bg-scale-blue text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90"
-                                    >
-                                        🤖 Generate Strategic Pillars
-                                    </button>
-                                    <button 
-                                        onClick={() => {
-                                            const maxId = Math.max(0, ...(appState.positioningData.pillars || []).map(p => p.id));
-                                            const newPillar = { id: maxId + 1, name: '', benefit: '' };
-                                            setAppState(prev => ({
-                                                ...prev,
-                                                positioningData: {
-                                                    ...prev.positioningData,
-                                                    pillars: [...(prev.positioningData.pillars || []), newPillar]
-                                                }
-                                            }));
-                                        }}
-                                        className="text-sm scale-green-bg text-white font-bold py-2 px-3 rounded-lg hover:bg-opacity-90"
-                                    >
-                                        + Add Strategic Pillar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
 
                         <div className="text-center mt-12 pb-24">
                             <button 
