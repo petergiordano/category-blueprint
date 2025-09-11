@@ -98,9 +98,11 @@
         const saveAppState = (state) => {
           serverLog('log', 'Saving app state to localStorage...');
           try {
-            // Remove lastSaved and any timestamp properties to avoid infinite loops
-            const { lastSaved, timestamp, ...stateToSave } = state;
-            localStorage.setItem('klarityGTMBlueprintState', JSON.stringify(stateToSave));
+            const stateWithTimestamp = {
+              ...state,
+              lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('klarityGTMBlueprintState', JSON.stringify(stateWithTimestamp));
           } catch (error) {
             serverLog('error', 'Could not save state to localStorage', error);
           }
@@ -632,81 +634,16 @@
             const companyWebsite = companyContext.companyWebsite || '';
 
             const handleAnalyze = async () => {
-                serverLog('log', 'Starting company analysis...');
-                
-                // Clear previous analysis data before starting new analysis
-                setAppState(prev => ({
-                    ...prev,
-                    segmentData: {},
-                    analysisComplete: false
-                }));
-                
+                serverLog('log', 'Starting analysis...');
                 setIsLoading(true);
                 setError('');
                 
-                try {
-                    // Log company context being sent
-                    serverLog('log', 'Company context for analysis:', {
-                        companyName: companyContext.companyName,
-                        companyUrl: companyContext.companyWebsite,
-                        industry: companyContext.industry,
-                        productName: companyContext.productName,
-                        targetMarket: companyContext.targetMarket
-                    });
-                    
-                    // Call the real analyze-company API endpoint
-                    const response = await fetch('/api/analyze-company', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            companyName: companyContext.companyName,
-                            companyUrl: companyContext.companyWebsite,
-                            industry: companyContext.industry,
-                            productName: companyContext.productName,
-                            targetMarket: companyContext.targetMarket
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Analysis failed: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        serverLog('log', 'Company analysis complete - JTBD framework generated');
-                        
-                        // Store the JTBD analysis results in localStorage for use in segment view
-                        const analysisResults = {
-                            companyAnalysis: result.analysis,
-                            jtbdData: result.analysis.jtbdFramework,
-                            analyzedAt: new Date().toISOString()
-                        };
-                        
-                        localStorage.setItem('analysisResults', JSON.stringify(analysisResults));
-                        
-                        // Also directly update the app state with the JTBD data
-                        setAppState(prev => ({
-                            ...prev,
-                            segmentData: {
-                                ...result.analysis.jtbdFramework
-                            }
-                        }));
-                        
-                        serverLog('log', 'Analysis results stored, navigating to segment foundation...');
-                        setIsLoading(false);
-                        onNavigate('segment');
-                    } else {
-                        throw new Error(result.error || 'Analysis failed');
-                    }
-                    
-                } catch (error) {
-                    serverLog('error', `Analysis failed: ${error.message}`);
-                    setError(`Analysis failed: ${error.message}`);
+                // Simulate analysis for now
+                setTimeout(() => {
+                    serverLog('log', 'Analysis complete, navigating to segment...');
                     setIsLoading(false);
-                }
+                    onNavigate('segment');
+                }, 2000);
             };
 
             return (
@@ -764,37 +701,6 @@
             const [wtpDraftLoading, setWtpDraftLoading] = useState(false);
             const [wtpDraftsAvailable, setWtpDraftsAvailable] = useState(false);
             const [wtpDraftError, setWtpDraftError] = useState(null);
-
-            // Check for stored analysis results on component mount and when appState changes
-            useEffect(() => {
-                console.log('SegmentFoundationTool useEffect triggered');
-                const storedAnalysisResults = localStorage.getItem('analysisResults');
-                console.log('Stored analysis results:', storedAnalysisResults);
-                if (storedAnalysisResults) {
-                    try {
-                        const analysisData = JSON.parse(storedAnalysisResults);
-                        console.log('Parsed analysis data:', analysisData);
-                        if (analysisData.jtbdData) {
-                            console.log('Loading JTBD data from analysis results:', analysisData.jtbdData);
-                            setAppState(prev => ({
-                                ...prev,
-                                segmentData: {
-                                    ...analysisData.jtbdData
-                                }
-                            }));
-                            // Clear the stored results after loading to prevent repeated loading
-                            localStorage.removeItem('analysisResults');
-                            console.log('Analysis results loaded and cleared from localStorage');
-                        } else {
-                            console.log('No jtbdData found in analysis results');
-                        }
-                    } catch (error) {
-                        console.error('Error loading analysis results:', error);
-                    }
-                } else {
-                    console.log('No stored analysis results found');
-                }
-            });
 
             const handleValidateJtbd = async (jtbdElementName, userInput) => {
                 // Check if company context is properly set up
@@ -3275,18 +3181,10 @@
                 return state;
             });
 
-            const isSavingRef = useRef(false);
-
-            // Save state changes - use manual saving instead of useEffect to prevent infinite loops
-            const handleSaveState = React.useCallback((state) => {
-                if (isSavingRef.current) return;
-                serverLog('log', 'Manually saving app state to localStorage...');
-                isSavingRef.current = true;
-                saveAppState(state);
-                setTimeout(() => {
-                    isSavingRef.current = false;
-                }, 100);
-            }, []);
+            useEffect(() => {
+                serverLog('log', 'App state changed, saving to localStorage...');
+                saveAppState(appState);
+            }, [appState]);
 
             const navigate = (view) => {
                 serverLog('log', `Navigating to view: ${view}`);

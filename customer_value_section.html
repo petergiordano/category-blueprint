@@ -1,0 +1,45 @@
+                                        {/* Customer Value Fields - Manual Entry */}
+                                        <div className="space-y-6">
+                                            {[
+                                                {
+                                                    name: 'Table Stakes',
+                                                    description: 'The non-negotiables for credibility and trust. Baseline requirements.',
+                                                    placeholder: 'Example: SOC2 certification; ERP integration; 99.9% uptime SLAs.'
+                                                },
+                                                {
+                                                    name: 'Functional Value',
+                                                    description: 'Tangible, measurable outcomes—ROI, efficiency, cost savings, growth, or risk mitigation.',
+                                                    placeholder: 'Example: $500K OpEx savings from faster close cycles and fewer errors.'
+                                                },
+                                                {
+                                                    name: 'Ease of Doing Business',
+                                                    description: 'How simple you make adoption and daily use. Less friction wins.',
+                                                    placeholder: 'Example: Fast implementation playbook; role-based onboarding; 24/7 enterprise support.'
+                                                },
+                                                {
+                                                    name: 'Individual Value',
+                                                    description: 'What matters to each buyer personally—status, workload relief, confidence, or career gains.',
+                                                    placeholder: 'Example: CFO is seen as innovator; IT leader feels secure; end users save hours.'
+                                                },
+                                                {
+                                                    name: 'Aspirational Value',
+                                                    description: 'Alignment with higher-order goals and purpose. Motivations beyond rational ROI.',
+                                                    placeholder: 'Example: Supports ESG reporting; signals innovation to board and investors.'
+                                                }
+                                            ].map(field => (
+                                                <div key={field.name}>
+                                                    <label className="block text-lg font-semibold text-gray-800 mb-1">{field.name}</label>
+                                                    <p className="text-sm text-gray-600 mb-2">{field.description}</p>
+                                                    <textarea
+                                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                        rows="3"
+                                                        value={appState.segmentData[field.name] || ''}
+                                                        onChange={(e) => {
+                                                            const newSegmentData = { ...appState.segmentData, [field.name]: e.target.value };
+                                                            setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                        }}
+                                                        placeholder={field.placeholder}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
