@@ -2050,12 +2050,28 @@
                         </div>
 
 
-                        <div className="text-center mt-12 pb-24">
-                            <button 
-                                onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }}
-                                className="scale-gold-bg text-white font-bold py-4 px-8 rounded-lg hover:bg-opacity-90 text-lg"
+                        {/* Navigation Buttons */}
+                        <div className="mt-8 text-center">
+                            <button
+                                onClick={() => {
+                                    // Clear all ICP and Positioning fields
+                                    setAppState(prev => ({
+                                        ...prev,
+                                        positioningData: getInitialState().positioningData
+                                    }));
+                                    alert('All fields cleared! Refresh the page to see placeholder text.');
+                                }}
+                                className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
                             >
-                                Continue to Part 3: Positioning →
+                                Clear All Fields
+                            </button>
+                            
+                            {/* Continue to Part 3 Button */}
+                            <button
+                                onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }}
+                                className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                                Continue to Part 3: Positioning
                             </button>
                         </div>
                                 </div>
