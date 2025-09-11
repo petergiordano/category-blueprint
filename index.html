@@ -164,20 +164,84 @@
           };
         };
 
-        // Progress Stepper Component
-        const ProgressStepper = ({ currentPart, completedParts, onNavigate }) => {
-            
+        // Enhanced Interactive Progress Stepper Component
+        const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, saveAppState }) => {
             const parts = [
-                { id: 'segment', name: 'Foundation', number: 1 },
-                { id: 'icp', name: 'ICP Definition', number: 2 },
-                { id: 'positioning', name: 'Positioning', number: 3 },
-                { id: 'category', name: 'Category Design', number: 4 }
+                { id: 'segment', name: 'Foundation', number: 1, fullName: 'Segment Foundation' },
+                { id: 'icp', name: 'ICP Definition', number: 2, fullName: 'ICP Definition' },
+                { id: 'positioning', name: 'Positioning', number: 3, fullName: 'Positioning' },
+                { id: 'category', name: 'Category Design', number: 4, fullName: 'Category Design' }
             ];
 
-            const getStepState = (partId, current, completed) => {
-                if (partId === current) return 'active';
-                if (completed.includes(partId)) return 'completed';
+            const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+            useEffect(() => {
+                const handleResize = () => setIsMobile(window.innerWidth < 640);
+                window.addEventListener('resize', handleResize);
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
+
+            const isNavigable = (partId) => {
+                // Can navigate to completed parts or the current part
+                return completedParts.includes(partId) || partId === currentPart;
+            };
+
+            const getStepStatus = (partId) => {
+                if (partId === currentPart) return 'current';
+                if (completedParts.includes(partId)) return 'completed';
                 return 'upcoming';
+            };
+
+            const handleStepClick = (partId) => {
+                if (!isNavigable(partId)) return;
+                
+                // Save current state before navigation
+                if (saveAppState && appState) {
+                    saveAppState(appState);
+                }
+                
+                // Navigate to the selected part
+                onNavigate(partId);
+                
+                // Smooth scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const getStepStyles = (status, isHoverable) => {
+                const baseStyles = {
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '0.5rem',
+                    transition: 'all 0.2s ease',
+                    cursor: isHoverable ? 'pointer' : 'not-allowed',
+                    userSelect: 'none',
+                    position: 'relative',
+                    border: 'none',
+                    outline: 'none'
+                };
+
+                const statusStyles = {
+                    completed: {
+                        backgroundColor: '#10b981',
+                        color: 'white',
+                        opacity: 1
+                    },
+                    current: {
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        opacity: 1,
+                        boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)'
+                    },
+                    upcoming: {
+                        backgroundColor: '#f3f4f6',
+                        color: '#6b7280',
+                        opacity: 0.6
+                    }
+                };
+
+                return { ...baseStyles, ...statusStyles[status] };
             };
 
             return (
@@ -190,46 +254,95 @@
                     borderBottom: '1px solid #e5e7eb',
                     position: 'sticky',
                     top: 0,
-                    zIndex: 50
+                    zIndex: 50,
+                    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
                 }}>
-                    {parts.map((part, index) => (
-                        <React.Fragment key={part.id}>
-                            <div 
-                                onClick={() => {
-                                    if (completedParts.includes(part.id) || part.id === currentPart) {
-                                        onNavigate(part.id);
-                                    }
-                                }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    padding: '0.75rem 1rem',
-                                    borderRadius: '0.5rem',
-                                    cursor: completedParts.includes(part.id) || part.id === currentPart ? 'pointer' : 'not-allowed',
-                                    backgroundColor: 
-                                        part.id === currentPart ? '#3b82f6' :
-                                        completedParts.includes(part.id) ? '#10b981' :
-                                        '#f3f4f6',
-                                    color: 
-                                        part.id === currentPart || completedParts.includes(part.id) ? 'white' :
-                                        '#6b7280'
-                                }}
-                            >
-                                {completedParts.includes(part.id) ? (
-                                    <span>✓</span>
-                                ) : (
-                                    <span>{part.number}</span>
-                                )}
-                                <span>Part {part.number}: {part.name}</span>
-                            </div>
-                            {index < parts.length - 1 && (
-                                <div style={{ margin: '0 0.5rem', color: '#9ca3af', fontWeight: 'bold' }}>
-                                    →
-                                </div>
-                            )}
-                        </React.Fragment>
-                    ))}
+                    <nav role="navigation" aria-label="Blueprint progress">
+                        <ol role="list" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', listStyle: 'none', margin: 0, padding: 0 }}>
+                            {parts.map((part, index) => {
+                                const status = getStepStatus(part.id);
+                                const isHoverable = isNavigable(part.id);
+                                
+                                return (
+                                    <React.Fragment key={part.id}>
+                                        <li role="listitem">
+                                            <button
+                                                onClick={() => handleStepClick(part.id)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleStepClick(part.id);
+                                                    }
+                                                }}
+                                                disabled={!isHoverable}
+                                                aria-label={`Part ${part.number}: ${part.fullName} - ${status}`}
+                                                aria-current={part.id === currentPart ? 'step' : undefined}
+                                                style={getStepStyles(status, isHoverable)}
+                                                onMouseEnter={(e) => {
+                                                    if (isHoverable) {
+                                                        e.currentTarget.style.transform = 'scale(1.02)';
+                                                        e.currentTarget.style.opacity = '0.9';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.transform = 'scale(1)';
+                                                    e.currentTarget.style.opacity = '1';
+                                                }}
+                                                onFocus={(e) => {
+                                                    if (isHoverable) {
+                                                        e.currentTarget.style.boxShadow = status === 'current' ? 
+                                                            '0 0 0 3px rgba(59, 130, 246, 0.3)' : 
+                                                            '0 0 0 3px rgba(16, 185, 129, 0.3)';
+                                                    }
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.currentTarget.style.boxShadow = status === 'current' ? 
+                                                        '0 0 0 3px rgba(59, 130, 246, 0.1)' : 
+                                                        'none';
+                                                }}
+                                                title={
+                                                    isHoverable 
+                                                        ? `Navigate to Part ${part.number}: ${part.fullName}`
+                                                        : `Part ${part.number}: ${part.fullName} (Not yet available)`
+                                                }
+                                            >
+                                                {status === 'completed' ? (
+                                                    <span style={{ fontSize: '1.1rem' }}>✓</span>
+                                                ) : (
+                                                    <span style={{ 
+                                                        fontWeight: 'bold',
+                                                        fontSize: '0.9rem',
+                                                        minWidth: '1.5rem',
+                                                        textAlign: 'center'
+                                                    }}>{part.number}</span>
+                                                )}
+                                                <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                                                    {isMobile ? (
+                                                        part.number
+                                                    ) : (
+                                                        <>
+                                                            <span className="hidden sm:inline">Part {part.number}: </span>
+                                                            {part.name}
+                                                        </>
+                                                    )}
+                                                </span>
+                                            </button>
+                                        </li>
+                                        {index < parts.length - 1 && (
+                                            <li role="presentation" aria-hidden="true">
+                                                <div style={{ 
+                                                    width: '2rem',
+                                                    height: '2px',
+                                                    backgroundColor: completedParts.includes(parts[index + 1].id) || parts[index + 1].id === currentPart ? '#10b981' : '#d1d5db',
+                                                    transition: 'background-color 0.3s ease'
+                                                }} />
+                                            </li>
+                                        )}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </ol>
+                    </nav>
                 </div>
             );
         };
@@ -970,17 +1083,18 @@
                         </div>
                     )}
                     
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
-                        <div className="flex justify-between items-center py-3">
-                            <div className="flex items-center space-x-4">
-                                <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
-                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 1: Segment Foundation</h1>
-                            </div>
+                    <header className="bg-white border-b border-gray-200 py-4">
+                        <div className="flex justify-between items-center">
+                            <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 1: Segment Foundation</h1>
                             {React.createElement(PrimaryActions, {
                                 currentPart: 'segment',
                                 onReset: handleReset,
                                 onExport: handleExport,
-                                onContinue: () => { onNavigate('icp'); window.scrollTo(0, 0); }
+                                onContinue: () => { 
+                                    markPartAsCompleted('segment'); 
+                                    onNavigate('icp'); 
+                                    window.scrollTo(0, 0); 
+                                }
                             })}
                         </div>
                     </header>
@@ -2034,12 +2148,9 @@
 
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen pb-16">
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
-                        <div className="flex justify-between items-center py-3">
-                            <div className="flex items-center space-x-4">
-                                <button onClick={() => onNavigate('segment')} className="text-gray-600 hover:scale-gold-text">← Back to Segment Foundation</button>
-                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 2: ICP Definition</h1>
-                            </div>
+                    <header className="bg-white border-b border-gray-200 py-4">
+                        <div className="flex justify-between items-center">
+                            <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 2: ICP Definition</h1>
                             {React.createElement(PrimaryActions, {
                                 currentPart: 'icp',
                                 onReset: () => {
@@ -2051,7 +2162,11 @@
                                     }
                                 },
                                 onExport: handleExport,
-                                onContinue: () => { onNavigate('positioning'); window.scrollTo(0, 0); }
+                                onContinue: () => { 
+                                    markPartAsCompleted('icp'); 
+                                    onNavigate('positioning'); 
+                                    window.scrollTo(0, 0); 
+                                }
                             })}
                         </div>
                     </header>
@@ -2797,12 +2912,9 @@
                     />
                     
                     {/* Header */}
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
-                        <div className="flex justify-between items-center py-3">
-                            <div className="flex items-center space-x-4">
-                                <button onClick={() => onNavigate('icp')} className="text-gray-600 hover:scale-gold-text">← Back to ICP Definition</button>
-                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 3: Positioning</h1>
-                            </div>
+                    <header className="bg-white border-b border-gray-200 py-4">
+                        <div className="flex justify-between items-center">
+                            <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 3: Positioning</h1>
                             {React.createElement(PrimaryActions, {
                                 currentPart: 'positioning',
                                 onReset: () => {
@@ -2814,7 +2926,11 @@
                                     }
                                 },
                                 onExport: exportData,
-                                onContinue: () => { onNavigate('category'); window.scrollTo(0, 0); }
+                                onContinue: () => { 
+                                    markPartAsCompleted('positioning'); 
+                                    onNavigate('category'); 
+                                    window.scrollTo(0, 0); 
+                                }
                             })}
                         </div>
                     </header>
@@ -3295,12 +3411,9 @@
 
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
-                        <div className="flex justify-between items-center py-3">
-                            <div className="flex items-center space-x-4">
-                                <button onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }} className="text-gray-600 hover:scale-gold-text">← Back to Part 3: Positioning</button>
-                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 4: Category Design</h1>
-                            </div>
+                    <header className="bg-white border-b border-gray-200 py-4">
+                        <div className="flex justify-between items-center">
+                            <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 4: Category Design</h1>
                             {React.createElement(PrimaryActions, {
                                 currentPart: 'category',
                                 onReset: () => {
@@ -3628,6 +3741,30 @@
                 saveAppState(appState);
             }, [appState]);
 
+            // Helper function to mark a part as completed
+            const markPartAsCompleted = (partId) => {
+                setAppState(prev => {
+                    const updatedCompletedParts = prev.navigationProgress.completedParts.includes(partId)
+                        ? prev.navigationProgress.completedParts
+                        : [...prev.navigationProgress.completedParts, partId];
+                    
+                    return {
+                        ...prev,
+                        navigationProgress: {
+                            ...prev.navigationProgress,
+                            completedParts: updatedCompletedParts,
+                            partCompletionData: {
+                                ...prev.navigationProgress.partCompletionData,
+                                [partId]: {
+                                    completed: true,
+                                    completedAt: new Date().toISOString()
+                                }
+                            }
+                        }
+                    };
+                });
+            };
+
             const navigate = (view) => {
                 setAppState(prev => {
                     const newState = { ...prev, currentView: view };
@@ -3672,6 +3809,8 @@
                             currentPart={appState.navigationProgress.currentPart}
                             completedParts={appState.navigationProgress.completedParts}
                             onNavigate={navigate}
+                            appState={appState}
+                            saveAppState={saveAppState}
                         />
                     )}
                     {renderCurrentView()}
