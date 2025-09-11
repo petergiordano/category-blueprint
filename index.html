@@ -183,12 +183,32 @@
 
             const isNavigable = (partId) => {
                 // Can navigate to completed parts or the current part
-                return completedParts.includes(partId) || partId === currentPart;
+                if (completedParts.includes(partId) || partId === currentPart) {
+                    return true;
+                }
+                
+                // Auto-allow navigation to previous parts if we're on a later part
+                const partOrder = ['segment', 'icp', 'positioning', 'category'];
+                const partIndex = partOrder.indexOf(partId);
+                const currentIndex = partOrder.indexOf(currentPart);
+                
+                // If the part comes before the current part, it should be navigable
+                return partIndex < currentIndex && currentIndex > 0;
             };
 
             const getStepStatus = (partId) => {
                 if (partId === currentPart) return 'current';
                 if (completedParts.includes(partId)) return 'completed';
+                
+                // Show previous parts as completed if we're on a later part
+                const partOrder = ['segment', 'icp', 'positioning', 'category'];
+                const partIndex = partOrder.indexOf(partId);
+                const currentIndex = partOrder.indexOf(currentPart);
+                
+                if (partIndex < currentIndex && currentIndex > 0) {
+                    return 'completed';
+                }
+                
                 return 'upcoming';
             };
 
@@ -698,7 +718,7 @@
         // Navigation now goes directly from Home to Segment Foundation
 
         // SegmentFoundationTool Component
-        const SegmentFoundationTool = ({ appState, setAppState, onNavigate }) => {
+        const SegmentFoundationTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {
             console.log('SegmentFoundationTool rendering, appState:', appState);
             const [exportModalOpen, setExportModalOpen] = useState(false);
             const [exportContent, setExportContent] = useState('');
@@ -1452,7 +1472,11 @@
                                             
                                             {/* Continue to Part 2 Button */}
                                             <button
-                                                onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }}
+                                                onClick={() => { 
+                                                    markPartAsCompleted('segment');
+                                                    onNavigate('icp'); 
+                                                    window.scrollTo(0, 0); 
+                                                }}
                                                 className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
                                             >
                                                 Continue to Part 2: ICP Definition
@@ -1803,7 +1827,7 @@
         };
 
         // ICPDefinitionTool Component
-        const ICPDefinitionTool = ({ appState, setAppState, onNavigate }) => {
+        const ICPDefinitionTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [gradingState, setGradingState] = useState({});
             const [analysisState, setAnalysisState] = useState({});
@@ -2374,7 +2398,11 @@
                             
                             {/* Continue to Part 3 Button */}
                             <button
-                                onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }}
+                                onClick={() => { 
+                                    markPartAsCompleted('icp');
+                                    onNavigate('positioning'); 
+                                    window.scrollTo(0, 0); 
+                                }}
                                 className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
                             >
                                 Continue to Part 3: Positioning
@@ -2510,7 +2538,7 @@
         );
 
         // PositioningTool Component
-        const PositioningTool = ({ appState, setAppState, onNavigate }) => {
+        const PositioningTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [trendAnalysisResults, setTrendAnalysisResults] = useState({});
             const [pillarGenState, setPillarGenState] = useState({
@@ -3216,7 +3244,11 @@
                                 
                                 {/* Continue to Part 4 Button */}
                                 <button
-                                    onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
+                                    onClick={() => { 
+                                        markPartAsCompleted('positioning');
+                                        onNavigate('category'); 
+                                        window.scrollTo(0, 0); 
+                                    }}
                                     className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
                                 >
                                     Continue to Part 4: Category Design
@@ -3231,7 +3263,7 @@
         };
 
         // CategoryDesignTool Component
-        const CategoryDesignTool = ({ appState, setAppState, onNavigate }) => {
+        const CategoryDesignTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             
 
@@ -3785,13 +3817,13 @@
                 switch (appState.currentView) {
                     // case 'analysis': - REMOVED for simplification
                     case 'segment':
-                        return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                        return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'icp':
-                        return <ICPDefinitionTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                        return <ICPDefinitionTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'positioning':
-                        return <PositioningTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                        return <PositioningTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'category':
-                        return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                        return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
                         return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} />;
@@ -3806,7 +3838,7 @@
                 <div>
                     {showProgressStepper && (
                         <ProgressStepper
-                            currentPart={appState.navigationProgress.currentPart}
+                            currentPart={appState.currentView}
                             completedParts={appState.navigationProgress.completedParts}
                             onNavigate={navigate}
                             appState={appState}
