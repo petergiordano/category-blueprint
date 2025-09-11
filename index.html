@@ -3119,20 +3119,178 @@
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             
 
-            const handleExport = () => {
-                const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
+            // Generate Part 4 specific data for dual-format export
+            const generatePart4SpecificData = () => {
+                const exportDate = new Date().toISOString();
                 
-                let summary = `Part 2: Category Design Blueprint\n==================================\n\n`;
-                summary += `## Positioning Foundation (from Part 1)\n`;
-                summary += `- ICP Summary: ${appState.positioningData.icp_summary || 'N/A'}\n`;
-                summary += `- Unique Value: ${appState.positioningData.values ? appState.positioningData.values.map(v => v.val2).join('; ') : 'N/A'}\n\n`;
+                // Utility to format field values with future-proofing
+                const formatFieldValue = (fieldValue) => {
+                    if (Array.isArray(fieldValue)) {
+                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
+                    }
+                    return fieldValue && fieldValue.toString().trim() || null;
+                };
 
-                summary += `## 5. The Point of View (The "From/To" Shift)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
-                summary += formatSection('6. The New Opportunity', appState.categoryData['new-opportunity']);
-                summary += `## 7. Category Name & Definition\n- Name: ${appState.categoryData['category-name'] || 'N/A'}\n- Definition: ${appState.categoryData['category-definition'] || 'N/A'}\n\n`;
-                summary += formatSection('8. The Manifesto', appState.categoryData['manifesto']);
+                // Generate positioning foundation summary from Part 3 data
+                const generatePositioningFoundationSummary = () => {
+                    if (!appState.positioningData) return null;
+                    
+                    const foundation = {};
+                    
+                    // ICP Summary - check multiple possible sources
+                    if (appState.positioningData.icp_summary) {
+                        foundation.icpSummary = formatFieldValue(appState.positioningData.icp_summary);
+                    } else if (appState.segmentData?.icpDefinition) {
+                        // Generate from ICP definition if no summary exists
+                        const icp = appState.segmentData.icpDefinition;
+                        const characteristics = [];
+                        if (icp.firmographic) characteristics.push(icp.firmographic);
+                        if (icp.technographic) characteristics.push(icp.technographic);
+                        if (icp.behavioral) characteristics.push(icp.behavioral);
+                        foundation.icpSummary = characteristics.length > 0 ? characteristics.join('; ') : null;
+                    }
+                    
+                    // Unique Value - from positioning values
+                    if (appState.positioningData.values && Array.isArray(appState.positioningData.values)) {
+                        const uniqueValues = appState.positioningData.values
+                            .filter(v => v && v.val2)
+                            .map(v => v.val2);
+                        foundation.uniqueValue = uniqueValues.length > 0 ? uniqueValues.join('; ') : null;
+                    }
+                    
+                    return Object.keys(foundation).length > 0 ? foundation : null;
+                };
 
-                setExportModal({ isOpen: true, content: summary, title: 'Category Design Summary' });
+                return {
+                    metadata: {
+                        exportDate: exportDate,
+                        partName: "Category Design",
+                        company: {
+                            name: formatFieldValue(appState.companyData?.name),
+                            url: formatFieldValue(appState.companyData?.url),
+                            productName: formatFieldValue(appState.companyData?.productName),
+                            industry: formatFieldValue(appState.companyData?.industry)
+                        }
+                    },
+                    content: {
+                        positioningFoundation: generatePositioningFoundationSummary(),
+                        pointOfView: {
+                            fromStatement: formatFieldValue(appState.categoryData?.['from-statement']),
+                            toStatement: formatFieldValue(appState.categoryData?.['to-statement'])
+                        },
+                        newOpportunity: formatFieldValue(appState.categoryData?.['new-opportunity']),
+                        categoryNameAndDefinition: {
+                            name: formatFieldValue(appState.categoryData?.['category-name']),
+                            definition: formatFieldValue(appState.categoryData?.['category-definition'])
+                        },
+                        manifesto: formatFieldValue(appState.categoryData?.['manifesto'])
+                    }
+                };
+            };
+
+            // Generate Part 4 markdown content
+            const generatePart4Markdown = (data) => {
+                let markdown = `# Category Design\n\n`;
+                
+                // Add metadata
+                if (data.metadata.company.name) {
+                    markdown += `**Company:** ${data.metadata.company.name}\n`;
+                }
+                if (data.metadata.company.url) {
+                    markdown += `**Website:** ${data.metadata.company.url}\n`;
+                }
+                if (data.metadata.company.productName) {
+                    markdown += `**Product:** ${data.metadata.company.productName}\n`;
+                }
+                if (data.metadata.company.industry) {
+                    markdown += `**Industry:** ${data.metadata.company.industry}\n`;
+                }
+                markdown += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n\n`;
+                
+                markdown += `---\n\n`;
+
+                // Positioning Foundation
+                markdown += `## Positioning Foundation\n\n`;
+                if (data.content.positioningFoundation) {
+                    const foundation = data.content.positioningFoundation;
+                    if (foundation.icpSummary) {
+                        markdown += `    **ICP Summary:** ${foundation.icpSummary}\n`;
+                    }
+                    if (foundation.uniqueValue) {
+                        markdown += `    **Unique Value:** ${foundation.uniqueValue}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No positioning foundation data available*\n\n`;
+                }
+
+                // Point of View (The "From/To" Shift)
+                markdown += `## The Point of View (The "From/To" Shift)\n\n`;
+                if (data.content.pointOfView.fromStatement || data.content.pointOfView.toStatement) {
+                    if (data.content.pointOfView.fromStatement) {
+                        markdown += `    **From:** ${data.content.pointOfView.fromStatement}\n`;
+                    }
+                    if (data.content.pointOfView.toStatement) {
+                        markdown += `    **To:** ${data.content.pointOfView.toStatement}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No point of view defined*\n\n`;
+                }
+
+                // The New Opportunity
+                markdown += `## The New Opportunity\n\n`;
+                if (data.content.newOpportunity) {
+                    markdown += `${data.content.newOpportunity}\n\n`;
+                } else {
+                    markdown += `*No new opportunity defined*\n\n`;
+                }
+
+                // Category Name & Definition
+                markdown += `## Category Name & Definition\n\n`;
+                if (data.content.categoryNameAndDefinition.name || data.content.categoryNameAndDefinition.definition) {
+                    if (data.content.categoryNameAndDefinition.name) {
+                        markdown += `    **Name:** ${data.content.categoryNameAndDefinition.name}\n`;
+                    }
+                    if (data.content.categoryNameAndDefinition.definition) {
+                        markdown += `    **Definition:** ${data.content.categoryNameAndDefinition.definition}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No category name and definition specified*\n\n`;
+                }
+
+                // The Manifesto
+                markdown += `## The Manifesto\n\n`;
+                if (data.content.manifesto) {
+                    markdown += `${data.content.manifesto}\n\n`;
+                } else {
+                    markdown += `*No manifesto defined*\n\n`;
+                }
+
+                return markdown;
+            };
+
+            const handleExport = () => {
+                try {
+                    const data = generatePart4SpecificData();
+                    const markdown = generatePart4Markdown(data);
+                    
+                    setExportModal({
+                        isOpen: true,
+                        content: markdown,
+                        title: 'Category Design Export',
+                        filename: 'category-design-export',
+                        partData: data
+                    });
+                } catch (error) {
+                    console.error("Error during Part 4 export:", error);
+                    setExportModal({
+                        isOpen: true,
+                        content: "Error generating export. Please try again.",
+                        title: 'Export Error'
+                    });
+                }
             };
 
             return (
