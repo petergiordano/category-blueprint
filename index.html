@@ -2494,7 +2494,76 @@
                     {/* Layout with Sidebar Navigation */}
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="lg:flex lg:space-x-8">
-                            <main className="w-full">
+                            {/* Sticky Navigation Sidebar */}
+                            <nav className="hidden lg:block w-64 flex-shrink-0 sticky top-36 h-fit">
+                                <div className="bg-white p-6 rounded-lg shadow-md">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Section Navigation</h3>
+                                    <ul className="space-y-3">
+                                        <li>
+                                            <a 
+                                                href="#section-1" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-1').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Competitive Alternatives
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-2" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-2').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Unique Value and Proof
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-3" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-3').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Market Category
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-4" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-4').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Target Market Characteristics
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-5" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-5').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Relevant Trends
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
+                            
+                            <main className="flex-1 min-w-0">
                                 <div className="space-y-8">
                             
                             {/* Section 1: Competitive Alternatives */}
