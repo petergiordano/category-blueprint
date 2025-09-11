@@ -2,13 +2,36 @@
 
 ## Instructions for Any AI (Claude Desktop, Gemini, ChatGPT, etc.)
 
+This project uses a **database-driven workflow**. GitHub Issues are the single source of truth for all tasks. Your primary role is to execute or validate work based on these issues.
+
+### Step 1: Validate Your Environment
+*Run this script first to ensure your environment is correctly configured.*
+```bash
+./scripts/validate-workflow.sh
+```
+
+### Step 2: Understand the Core Workflow
+*Read these files to understand the project's protocols.*
 ```bash
 # Read these files in order:
-1. /Users/petergiordano/Documents/GitHub/category-blueprint/.aicontext/context.md (this file)
-2. /Users/petergiordano/Documents/GitHub/category-blueprint/docs/specifications/PRD_*.md (current epic PRD)
-3. Check index.html for current implementation state
+1. /Users/petergiordano/Documents/GitHub/category-blueprint/docs/DATABASE_DRIVEN_WORKFLOW.md
+2. /Users/petergiordano/Documents/GitHub/category-blueprint/docs/GITHUB_CLI_ISSUE_TRACKING_SETUP.md
+3. /Users/petergiordano/Documents/GitHub/category-blueprint/.aicontext/context.md (this file)
+```
 
-# Run this to understand current git state:
+### Step 3: Identify Current Work
+*Use these commands to see what tasks are active and their status. Do NOT rely on markdown files for project status.*
+```bash
+# List all open issues in the repository
+gh issue list --repo petergiordano/category-blueprint --state open
+
+# View the live project board in your browser
+gh project view 1 --owner petergiordano --web
+```
+
+### Step 4: Review Recent Code Changes
+*Check the latest commits to understand recent implementation history.*
+```bash
 git log --oneline -10
 ```
 

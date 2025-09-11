@@ -39,64 +39,27 @@
 
         // Enhanced logging that sends to server
         const serverLog = async (level, message, error = null) => {
-            const logData = {
-                level,
-                message,
-                timestamp: new Date().toISOString(),
-                url: window.location.href,
-                stack: error?.stack || null
-            };
-            
-            // Also log to browser console
-            console[level](`[${level.toUpperCase()}]`, message, error);
-            
-            try {
-                await fetch('/api/debug-log', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(logData)
-                });
-            } catch (err) {
-                console.error('Failed to send log to server:', err);
-            }
+            // Temporarily disabled to prevent infinite loops
+            return;
         };
 
-        // Override console methods to also send to server
-        const originalConsoleError = console.error;
-        const originalConsoleLog = console.log;
-        const originalConsoleWarn = console.warn;
+        // Console overrides temporarily disabled to prevent infinite loops
+        // const originalConsoleError = console.error;
+        // const originalConsoleLog = console.log;
+        // const originalConsoleWarn = console.warn;
 
-        console.error = (...args) => {
-            originalConsoleError.apply(console, args);
-            serverLog('error', args.join(' '), args.find(arg => arg instanceof Error));
-        };
+        // Error listeners temporarily disabled to prevent infinite loops
+        // window.addEventListener('error', (event) => {
+        //     serverLog('error', `Unhandled error: ${event.message}`, event.error);
+        // });
 
-        console.log = (...args) => {
-            originalConsoleLog.apply(console, args);
-            if (args[0] && args[0].includes && (args[0].includes('ERROR') || args[0].includes('FAIL'))) {
-                serverLog('log', args.join(' '));
-            }
-        };
+        // window.addEventListener('unhandledrejection', (event) => {
+        //     serverLog('error', `Unhandled promise rejection: ${event.reason}`);
+        // });
 
-        console.warn = (...args) => {
-            originalConsoleWarn.apply(console, args);
-            serverLog('warn', args.join(' '));
-        };
-
-        // Catch unhandled errors
-        window.addEventListener('error', (event) => {
-            serverLog('error', `Unhandled error: ${event.message}`, event.error);
-        });
-
-        window.addEventListener('unhandledrejection', (event) => {
-            serverLog('error', `Unhandled promise rejection: ${event.reason}`);
-        });
-
-        serverLog('log', 'Starting to load application components...');
 
         // localStorage helper functions
         const saveAppState = (state) => {
-          serverLog('log', 'Saving app state to localStorage...');
           try {
             const stateWithTimestamp = {
               ...state,
@@ -104,21 +67,18 @@
             };
             localStorage.setItem('klarityGTMBlueprintState', JSON.stringify(stateWithTimestamp));
           } catch (error) {
-            serverLog('error', 'Could not save state to localStorage', error);
+            console.error('Could not save state to localStorage', error);
           }
         };
 
         const loadAppState = () => {
-          serverLog('log', 'Loading app state from localStorage...');
           try {
             const savedState = localStorage.getItem('klarityGTMBlueprintState');
             if (!savedState) {
-              serverLog('log', 'No saved state found in localStorage');
               return null;
             }
             
             const parsedState = JSON.parse(savedState);
-            serverLog('log', 'Successfully loaded state from localStorage');
             
             // Merge with initial state to ensure all new properties exist
             const initialState = getInitialState();
@@ -141,13 +101,12 @@
             };
             return mergedState;
           } catch (error) {
-            serverLog('error', 'Could not load state from localStorage', error);
+            console.error('Could not load state from localStorage', error);
             return null;
           }
         };
 
         const getInitialState = () => {
-          serverLog('log', 'Getting initial state...');
           return {
             positioningData: {
               icp_common_needs: '',
@@ -207,7 +166,6 @@
 
         // Progress Stepper Component
         const ProgressStepper = ({ currentPart, completedParts, onNavigate }) => {
-            serverLog('log', 'ProgressStepper rendering...');
             
             const parts = [
                 { id: 'segment', name: 'Foundation', number: 1 },
@@ -278,7 +236,6 @@
 
         // Primary Action Buttons Component
         const PrimaryActions = ({ currentPart, onExport, onContinue, onReset }) => {
-            serverLog('log', 'PrimaryActions rendering...');
             
             const getButtonConfig = (part) => {
                 const configs = {
@@ -623,67 +580,8 @@
             }, 'Navigation temporarily disabled');
         };
 
-        // AnalysisView Component
-        const AnalysisView = ({ appState, setAppState, onNavigate }) => {
-            serverLog('log', 'AnalysisView component rendering...');
-            const [isLoading, setIsLoading] = useState(false);
-            const [error, setError] = useState('');
-            
-            const companyContext = appState.companyContext || {};
-            const companyName = companyContext.companyName || 'Your Company';
-            const companyWebsite = companyContext.companyWebsite || '';
-
-            const handleAnalyze = async () => {
-                serverLog('log', 'Starting analysis...');
-                setIsLoading(true);
-                setError('');
-                
-                // Simulate analysis for now
-                setTimeout(() => {
-                    serverLog('log', 'Analysis complete, navigating to segment...');
-                    setIsLoading(false);
-                    onNavigate('segment');
-                }, 2000);
-            };
-
-            return (
-                <div className="container mx-auto px-4 py-8">
-                    <div className="max-w-3xl mx-auto">
-                        <button 
-                            onClick={() => onNavigate('home')}
-                            className="text-blue-600 hover:text-blue-800 mb-6"
-                        >
-                            ← Back to Home
-                        </button>
-                        
-                        <h1 className="text-3xl font-bold mb-6">Company Analysis</h1>
-                        
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <h2 className="text-xl font-semibold mb-4">
-                                {companyName || 'Set Company Name'}
-                            </h2>
-                            <p className="text-gray-600 mb-4">
-                                {companyWebsite || 'No website set'}
-                            </p>
-                            
-                            {error && (
-                                <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-                                    {error}
-                                </div>
-                            )}
-                            
-                            <button 
-                                onClick={handleAnalyze}
-                                disabled={isLoading}
-                                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50"
-                            >
-                                {isLoading ? 'Analyzing...' : 'Analyze Company & Generate JTBD Framework'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+        // AnalysisView Component - REMOVED for simplification
+        // Navigation now goes directly from Home to Segment Foundation
 
         // SegmentFoundationTool Component
         const SegmentFoundationTool = ({ appState, setAppState, onNavigate }) => {
@@ -1004,7 +902,7 @@
                         </div>
                     )}
                     
-                    <header className="sticky-header">
+                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
@@ -1021,10 +919,55 @@
 
                     <div className="mt-8">
                         <div className="lg:flex lg:space-x-8">
-                            <main className="w-full">
+                            {/* Sticky Navigation Sidebar */}
+                            <nav className="hidden lg:block w-64 flex-shrink-0 sticky top-36 h-fit">
+                                <div className="bg-white p-6 rounded-lg shadow-md">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Section Navigation</h3>
+                                    <ul className="space-y-3">
+                                        <li>
+                                            <a 
+                                                href="#jtbd-section" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('jtbd-section').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Jobs to be Done
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#value-section" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('value-section').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Customer Value
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#wtp-section" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('wtp-section').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Willingness to Pay
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
+                            
+                            <main className="flex-1 min-w-0">
                                 <div className="space-y-8">
                                     {/* Market Segment Definition Header */}
-                                    <div id="segment-definition-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                                    <div id="segment-definition-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                         <div className="text-center mb-8">
                                             <p className="text-lg text-gray-700 mb-8 max-w-4xl mx-auto">
                                                 A true market segment is composed of customers who share a common Job to be Done, 
@@ -1115,7 +1058,7 @@
                                     </div>
                                     
                                     {/* Jobs To Be Done Section */}
-                                    <div id="jtbd-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                                    <div id="jtbd-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                         <h2 className="text-2xl font-bold scale-green-text mb-6">Jobs To Be Done</h2>
                                         <div className="space-y-6">
                                             {[
@@ -1142,186 +1085,197 @@
                                                         }}
                                                         placeholder={field.placeholder}
                                                     />
-                                                    <button
-                                                        onClick={() => handleValidateJtbd(field.name, appState.segmentData[field.name])}
-                                                        className="mt-2 text-sm bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
-                                                        disabled={
-                                                            validationState[field.name]?.status === 'validating' || 
-                                                            !appState.segmentData[field.name]?.trim()
-                                                        }
-                                                    >
-                                                        {validationState[field.name]?.status === 'validating' ? 'Validating...' : 'Validate Against Market'}
-                                                    </button>
-                                                    {renderValidationResult(field.name)}
+                                                    {/* Validate button removed for simplification */}
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
 
                                     {/* Customer Value Section */}
-                                    <div id="value-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                                    <div id="value-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                         <h2 className="text-2xl font-bold scale-green-text mb-6">Customer Value</h2>
                                         
-                                        {/* AI Assistant */}
-                                        {!aiDraftsAvailable && !aiDraftLoading && (
-                                            <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                                                <div className="flex items-start space-x-4">
-                                                    <div className="flex-shrink-0">
-                                                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                                            <span className="text-white font-bold text-sm">AI</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <h3 className="text-lg font-semibold text-blue-900 mb-2">AI Customer Value Drafter</h3>
-                                                        <p className="text-blue-700 mb-4">Let AI analyze your Jobs-to-be-Done insights and draft Customer Value propositions tailored to your segment.</p>
-                                                        <button 
-                                                            onClick={handleGenerateCustomerValue}
-                                                            className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700"
-                                                        >
-                                                            Analyze JTBD & Draft Customer Value
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Table Stakes</label>
+                                                <p className="text-gray-600 text-sm mb-3">The non-negotiables for credibility and trust. Baseline requirements.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Table Stakes'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Table Stakes': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: SOC2 certification; ERP integration; 99.9% uptime SLAs."
+                                                />
                                             </div>
-                                        )}
-
-                                        {aiDraftLoading && (
-                                            <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                                                <div className="flex items-start space-x-4">
-                                                    <div className="flex-shrink-0">
-                                                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                                            <div className="animate-spin">
-                                                                <span className="text-white font-bold text-sm">⚡</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <h3 className="text-lg font-semibold text-blue-900 mb-2">Analyzing Your Market Segment...</h3>
-                                                        <div className="space-y-2 text-blue-700 text-sm">
-                                                            <p>• Analyzing Jobs-to-be-Done context and pain points</p>
-                                                            <p>• Researching industry value proposition patterns</p>
-                                                            <p>• Generating tailored Customer Value drafts</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Functional Value</label>
+                                                <p className="text-gray-600 text-sm mb-3">Tangible, measurable outcomes—ROI, efficiency, cost savings, growth, or risk mitigation.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Functional Value'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Functional Value': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: $500K OpEx savings from faster close cycles and fewer errors."
+                                                />
                                             </div>
-                                        )}
-
-                                        {aiDraftError && (
-                                            <div className="mb-8 p-6 bg-red-50 border border-red-200 rounded-lg">
-                                                <div className="flex items-start space-x-4">
-                                                    <div className="flex-shrink-0">
-                                                        <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                                                            <span className="text-white font-bold text-sm">!</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <h3 className="text-lg font-semibold text-red-900 mb-2">AI Assistant Unavailable</h3>
-                                                        <p className="text-red-700 mb-4">{aiDraftError}</p>
-                                                        <button 
-                                                            onClick={() => {
-                                                                setAiDraftError(null);
-                                                                handleGenerateCustomerValue();
-                                                            }}
-                                                            className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 mr-3"
-                                                        >
-                                                            Try Again
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => setAiDraftError(null)}
-                                                            className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300"
-                                                        >
-                                                            Continue Manually
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Ease of Doing Business</label>
+                                                <p className="text-gray-600 text-sm mb-3">How simple you make adoption and daily use. Less friction wins.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Ease of Doing Business'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Ease of Doing Business': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: Fast implementation playbook; role-based onboarding; 24/7 enterprise support."
+                                                />
                                             </div>
-                                        )}
-
-                                        {(aiDraftsAvailable || aiDraftError) && (
-                                            <div className="space-y-6">
-                                                {['Table Stakes', 'Functional Value', 'Ease of Doing Business', 'Individual Value', 'Aspirational Value'].map(field => (
-                                                    <div key={field}>
-                                                        <label className="block text-lg font-semibold text-gray-800 mb-2">{field}</label>
-                                                        <textarea
-                                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                            rows="3"
-                                                            value={appState.segmentData[field] || ''}
-                                                            onChange={(e) => {
-                                                                const newSegmentData = { ...appState.segmentData, [field]: e.target.value };
-                                                                setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                            }}
-                                                            placeholder={`Enter ${field.toLowerCase()}...`}
-                                                        />
-                                                    </div>
-                                                ))}
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Individual Value</label>
+                                                <p className="text-gray-600 text-sm mb-3">What matters to each buyer personally—status, workload relief, confidence, or career gains.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Individual Value'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Individual Value': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: CFO is seen as innovator; IT leader feels secure; end users save hours."
+                                                />
                                             </div>
-                                        )}
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Aspirational Value</label>
+                                                <p className="text-gray-600 text-sm mb-3">Alignment with higher-order goals and purpose. Motivations beyond rational ROI.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Aspirational Value'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Aspirational Value': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: Supports ESG reporting; signals innovation to board and investors."
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Willingness to Pay Section */}
-                                    <div id="wtp-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                                    <div id="wtp-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                         <h2 className="text-2xl font-bold scale-green-text mb-6">Willingness to Pay</h2>
                                         
-                                        {!wtpDraftsAvailable && !wtpDraftLoading && !wtpDraftError && (
-                                            <div className="text-center py-12">
-                                                <div className="mb-6">
-                                                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                        <span className="text-2xl">💰</span>
-                                                    </div>
-                                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Ready to Draft WTP Drivers</h3>
-                                                    <p className="text-gray-600 max-w-2xl mx-auto">
-                                                        Let AI analyze your Customer Value propositions to generate Willingness to Pay drivers.
-                                                    </p>
-                                                </div>
-                                                <button
-                                                    onClick={handleGenerateWTP}
-                                                    className="bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-yellow-700"
-                                                >
-                                                    Generate WTP Drivers
-                                                </button>
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Ability to Pay</label>
+                                                <p className="text-gray-600 text-sm mb-3">Whether the customer has budget and capacity to spend. Even strong solutions fail without funding.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Ability to Pay'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Ability to Pay': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: Line item already approved in FY25 budget for compliance automation."
+                                                />
                                             </div>
-                                        )}
-
-                                        {wtpDraftLoading && (
-                                            <div className="text-center py-12">
-                                                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600 mb-4"></div>
-                                                <h3 className="text-lg font-semibold text-gray-800 mb-2">Generating WTP Analysis...</h3>
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Economic Justification</label>
+                                                <p className="text-gray-600 text-sm mb-3">Whether the ROI and payback case makes financial sense. Customers want proof it pays for itself.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Economic Justification'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Economic Justification': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: Pays for itself in under 12 months through $1M annual cost avoidance."
+                                                />
                                             </div>
-                                        )}
-
-                                        {wtpDraftError && (
-                                            <div className="text-center py-12">
-                                                <h3 className="text-xl font-semibold text-gray-800 mb-2">Generation Failed</h3>
-                                                <p className="text-gray-600 mb-4">{wtpDraftError}</p>
-                                                <button
-                                                    onClick={handleGenerateWTP}
-                                                    className="bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-yellow-700 mr-3"
-                                                >
-                                                    Try Again
-                                                </button>
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Relative Value vs. Alternatives</label>
+                                                <p className="text-gray-600 text-sm mb-3">How your solution compares to competitors or the status quo. Clear differentiation increases willingness to pay.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Relative Value vs. Alternatives'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Relative Value vs. Alternatives': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: Automates 80% of manual work versus consultant-heavy models."
+                                                />
                                             </div>
-                                        )}
-
-                                        {wtpDraftsAvailable && (
-                                            <div className="space-y-6">
-                                                {['Ability to Pay', 'Economic Justification', 'Relative Value vs. Alternatives', 'Risk', 'Market Reference Points'].map(field => (
-                                                    <div key={field}>
-                                                        <label className="block text-lg font-semibold text-gray-800 mb-2">{field}</label>
-                                                        <textarea
-                                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                            rows="3"
-                                                            value={appState.segmentData[field] || ''}
-                                                            onChange={(e) => {
-                                                                const newSegmentData = { ...appState.segmentData, [field]: e.target.value };
-                                                                setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                            }}
-                                                            placeholder={`Enter ${field.toLowerCase()}...`}
-                                                        />
-                                                    </div>
-                                                ))}
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Risk & Switching Costs</label>
+                                                <p className="text-gray-600 text-sm mb-3">How much risk or friction they see in making the change. Higher risk lowers willingness; mitigation raises it.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Risk & Switching Costs'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Risk & Switching Costs': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: Migration takes days, not months; vendor assumes implementation risk."
+                                                />
                                             </div>
-                                        )}
+                                            
+                                            <div>
+                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Market Reference Points</label>
+                                                <p className="text-gray-600 text-sm mb-3">The pricing anchors customers bring from prior spend or competitors. Buyers benchmark against "similar" tools.</p>
+                                                <textarea
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    rows="3"
+                                                    value={appState.segmentData['Market Reference Points'] || ''}
+                                                    onChange={(e) => {
+                                                        const newSegmentData = { ...appState.segmentData, 'Market Reference Points': e.target.value };
+                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                    }}
+                                                    placeholder="Example: Analytics platforms in this space usually run $100K–$150K annually."
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Clear All Fields Button */}
+                                        <div className="mt-8 text-center">
+                                            <button
+                                                onClick={() => {
+                                                    // Clear all JTBD and Customer Value fields
+                                                    const clearedSegmentData = {};
+                                                    setAppState(prev => ({ ...prev, segmentData: clearedSegmentData }));
+                                                    alert('All fields cleared! Refresh the page to see placeholder text.');
+                                                }}
+                                                className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
+                                            >
+                                                Clear All Fields
+                                            </button>
+                                            
+                                            {/* Continue to Part 2 Button */}
+                                            <button
+                                                onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }}
+                                                className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+                                            >
+                                                Continue to Part 2: ICP Definition
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </main>
@@ -1889,7 +1843,7 @@
 
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen pb-16">
-                    <header className="sticky-header">
+                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => onNavigate('segment')} className="text-gray-600 hover:scale-gold-text">← Back to Segment Foundation</button>
@@ -1919,7 +1873,7 @@
                         {/* ICP Flow Visualization */}
                         <ICPFlowVisualization appState={appState} onNavigate={onNavigate} />
                         
-                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">1. Define Your Ideal Customer Profile (ICP)</h2>
                             <p className="text-gray-600 mb-6">This is the foundation. A precise ICP provides the lens through which all other positioning elements are viewed. Be specific and use data where possible.</p>
                             
@@ -2555,7 +2509,7 @@
                     />
                     
                     {/* Header */}
-                    <header className="sticky-header">
+                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => onNavigate('icp')} className="text-gray-600 hover:scale-gold-text">← Back to ICP Definition</button>
@@ -2584,7 +2538,7 @@
                                 <div className="space-y-8">
                             
                             {/* Section 1: Competitive Alternatives */}
-                            <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">1. Competitive Alternatives</h2>
                                 <p className="text-gray-600 mb-6">What are your target customers currently using to solve this problem?</p>
                                 <div className="space-y-4">
@@ -2611,7 +2565,7 @@
                             </div>
                             
                             {/* Section 2: Unique Value & Proof */}
-                            <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">2. Unique Value & Proof</h2>
                                 <p className="text-gray-600 mb-6">What unique attributes deliver measurable value to your customers?</p>
                                 <div className="space-y-4">
@@ -2638,7 +2592,7 @@
                             </div>
                             
                             {/* Section 3: Market Category */}
-                            <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">3. Market Category</h2>
                                 <p className="text-gray-600 mb-6">Define how customers and analysts will categorize your solution.</p>
                                 <div className="space-y-4">
@@ -2679,7 +2633,7 @@
                             </div>
                             
                             {/* Section 4: Target Market Characteristics */}
-                            <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">4. Target Market Characteristics</h2>
                                 <p className="text-gray-600 mb-6">Who will care most about your unique value?</p>
                                 <div className="space-y-4">
@@ -2728,7 +2682,7 @@
                             </div>
                             
                             {/* Section 5: Relevant Trends */}
-                            <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                            <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">5. Relevant Trends</h2>
                                 <p className="text-gray-600 mb-6">What market trends create urgency for your solution?</p>
                                 <div className="space-y-6">
@@ -2872,7 +2826,7 @@
 
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <header className="sticky-header">
+                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }} className="text-gray-600 hover:scale-gold-text">← Back to Part 3: Positioning</button>
@@ -2923,7 +2877,7 @@
                             </div>
                         </div>
 
-                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">1. The Point of View (The "From/To" Shift)</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is the old, broken way of thinking, and what is our new, better way?</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2950,7 +2904,7 @@
                             </div>
                         </div>
 
-                        <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">2. The New Opportunity</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What becomes possible for businesses that adopt our point of view?</p>
                             <textarea 
@@ -2962,7 +2916,7 @@
                             />
                         </div>
 
-                        <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">3. Category Name & Definition</h2>
                             <div className="space-y-4">
                                 <div>
@@ -3062,7 +3016,7 @@
                             </div>
                         </div>
 
-                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
+                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">4. The Manifesto</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is our story?</p>
                             <textarea 
@@ -3116,10 +3070,10 @@
 
                         <main className="w-full max-w-md text-center">
                             <button 
-                                onClick={() => onNavigate('analysis')}
+                                onClick={() => onNavigate('segment')}
                                 className="w-full scale-green-bg text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:bg-opacity-90 transition-transform transform hover:scale-105"
                             >
-                                Analyze with AI →
+                                Get Started →
                             </button>
                         </main>
 
@@ -3171,23 +3125,17 @@
 
         // Main App Component
         const App = () => {
-            serverLog('log', 'App component rendering...');
-            
             const [appState, setAppState] = useState(() => {
-                serverLog('log', 'Initializing app state...');
                 const savedState = loadAppState();
                 const state = savedState || getInitialState();
-                serverLog('log', 'Initial state set with currentView:', state.currentView);
                 return state;
             });
 
             useEffect(() => {
-                serverLog('log', 'App state changed, saving to localStorage...');
                 saveAppState(appState);
             }, [appState]);
 
             const navigate = (view) => {
-                serverLog('log', `Navigating to view: ${view}`);
                 setAppState(prev => {
                     const newState = { ...prev, currentView: view };
                     
@@ -3204,11 +3152,8 @@
             };
 
             const renderCurrentView = () => {
-                serverLog('log', `Rendering view: ${appState.currentView}`);
-                
                 switch (appState.currentView) {
-                    case 'analysis':
-                        return <AnalysisView appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                    // case 'analysis': - REMOVED for simplification
                     case 'segment':
                         return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'icp':
@@ -3226,7 +3171,6 @@
             // Show progress stepper only on workflow pages
             const showProgressStepper = ['segment', 'icp', 'positioning', 'category'].includes(appState.currentView);
 
-            serverLog('log', 'App render successful, returning JSX...');
             
             return (
                 <div>
@@ -3242,18 +3186,13 @@
             );
         };
 
-        serverLog('log', 'Starting application initialization...');
         
         const container = document.getElementById('root');
         if (container) {
-            serverLog('log', 'Root container found, creating React root...');
             try {
                 const root = ReactDOM.createRoot(container);
-                serverLog('log', 'React root created successfully');
                 
-                serverLog('log', 'Attempting to render App component...');
                 root.render(<App />);
-                serverLog('log', 'App render call completed');
             } catch (error) {
                 serverLog('error', 'Failed to create or render React root', error);
             }

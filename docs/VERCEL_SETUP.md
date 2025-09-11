@@ -49,7 +49,7 @@ vercel dev
 ```
 
 This command:
-- Starts local server at `http://localhost:3000`. To use a different port, use the `--listen` flag: `vercel dev --listen 4000`
+- Starts local server at `http://localhost:4000`. To use a different port, use the `--listen` flag: `vercel dev --listen 4000`
 - Enables serverless functions at `/api/*` endpoints
 - Loads environment variables from `.env.local`
 - Provides hot reload for function changes
@@ -146,13 +146,13 @@ const analyzeUniqueness = async (attributeText) => {
 
 ### 1. Server Status Check
 ```bash
-curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/
+curl -s -o /dev/null -w "%{http_code}" http://localhost:4000/
 # Expected: 200
 ```
 
 ### 2. API Endpoint Test
 ```bash
-curl -X POST http://localhost:3000/api/search \
+curl -X POST http://localhost:4000/api/search \
   -H "Content-Type: application/json" \
   -d '{"query": "test software features"}' \
   | head -c 200
