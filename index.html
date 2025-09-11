@@ -2758,20 +2758,35 @@
                                 </div>
                             </div>
                             
-                            {/* Navigation Footer */}
-                            <div className="flex justify-between items-center pt-8">
+                            {/* Clear All Fields Button */}
+                            <div className="mt-8 text-center">
                                 <button
-                                    onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }}
-                                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2"
+                                    onClick={() => {
+                                        // Clear all Positioning fields
+                                        const clearedPositioningData = {};
+                                        setAppState(prev => ({ ...prev, positioningData: clearedPositioningData }));
+                                        alert('All fields cleared! Refresh the page to see placeholder text.');
+                                    }}
+                                    className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
                                 >
-                                    ← Back to Part 2: ICP Definition
+                                    Clear All Fields
                                 </button>
-                                <button
-                                    onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
-                                    className="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 flex items-center gap-2"
-                                >
-                                    Continue to Part 4: Category Design →
-                                </button>
+                                
+                                {/* Navigation Footer */}
+                                <div className="flex justify-between items-center pt-8">
+                                    <button
+                                        onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }}
+                                        className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2"
+                                    >
+                                        ← Back to Part 2: ICP Definition
+                                    </button>
+                                    <button
+                                        onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
+                                        className="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                                    >
+                                        Continue to Part 4: Category Design →
+                                    </button>
+                                </div>
                             </div>
                                 </div>
                             </main>
@@ -3051,6 +3066,41 @@
                                 value={appState.categoryData['manifesto'] || ''}
                                 onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'manifesto': e.target.value } }))}
                             />
+                        </div>
+                        
+                        {/* Clear All Fields Button */}
+                        <div className="mt-8 text-center">
+                            <button
+                                onClick={() => {
+                                    // Clear all Category Design fields
+                                    const clearedCategoryData = {};
+                                    setAppState(prev => ({ ...prev, categoryData: clearedCategoryData }));
+                                    alert('All fields cleared! Refresh the page to see placeholder text.');
+                                }}
+                                className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
+                            >
+                                Clear All Fields
+                            </button>
+                            
+                            {/* Navigation Footer */}
+                            <div className="flex justify-between items-center pt-8">
+                                <button
+                                    onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }}
+                                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2"
+                                >
+                                    ← Back to Part 3: Positioning
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        // Complete Blueprint - could navigate to completion page or show success message
+                                        alert('Blueprint Complete! All parts have been finished.');
+                                        window.scrollTo(0, 0);
+                                    }}
+                                    className="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                                >
+                                    Complete Blueprint
+                                </button>
+                            </div>
                         </div>
                                 </div>
                             </main>
