@@ -227,6 +227,17 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
+            const handleHomeClick = () => {
+                // Save current state before navigating home
+                if (saveAppState && appState) {
+                    saveAppState(appState);
+                }
+                
+                // Navigate to home
+                onNavigate('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
             const getStepStyles = (status, isHoverable) => {
                 const baseStyles = {
                     display: 'flex',
@@ -267,7 +278,7 @@
             return (
                 <div style={{ 
                     display: 'flex', 
-                    justifyContent: 'center', 
+                    justifyContent: 'space-between',  // Changed from 'center'
                     alignItems: 'center',
                     padding: '1rem',
                     backgroundColor: 'white',
@@ -277,6 +288,47 @@
                     zIndex: 50,
                     boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
                 }}>
+                    {/* Home Button - Left Side */}
+                    <button
+                        onClick={handleHomeClick}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '0.5rem',
+                            backgroundColor: '#f3f4f6',
+                            color: '#374151',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            fontSize: '0.9rem',
+                            fontWeight: '500'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#e5e7eb';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#f3f4f6';
+                        }}
+                        title="Return to Home"
+                        aria-label="Return to Home Screen"
+                    >
+                        {/* Home Icon SVG */}
+                        <svg 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 20 20" 
+                            fill="currentColor"
+                            style={{ marginRight: '0.25rem' }}
+                        >
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        <span className="hidden sm:inline">GTM Blueprint</span>
+                        <span className="sm:hidden">Home</span>
+                    </button>
+
+                    {/* Progress Steps - Center */}
                     <nav role="navigation" aria-label="Blueprint progress">
                         <ol role="list" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', listStyle: 'none', margin: 0, padding: 0 }}>
                             {parts.map((part, index) => {
@@ -363,6 +415,9 @@
                             })}
                         </ol>
                     </nav>
+
+                    {/* Spacer for balance - Right Side */}
+                    <div style={{ width: '140px' }}></div>
                 </div>
             );
         };
