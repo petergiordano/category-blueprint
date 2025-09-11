@@ -1,3 +1,5 @@
+> **Note:** This document provides the technical setup instructions for the issue tracking system. For a complete overview of the multi-agent collaboration model and the overall workflow, please see the main protocol file: [**AGENTS.md**](/AGENTS.md).
+
 # GitHub CLI + VS Code Issue Automation Setup (Enhanced v2.0)
 
 This guide documents the **simplified database-driven workflow** with **enhanced resilience features** for GitHub CLI (gh) and VS Code integration. Agents (Claude, Gemini) and users can create and manage GitHub issues directly in the **category-blueprint** repository and project board using automated scripts with multiple fallback options.

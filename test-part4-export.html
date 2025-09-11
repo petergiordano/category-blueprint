@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 4 Export Test</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const TestApp = () => {
+            // Mock appState data structure
+            const [appState] = useState({
+                companyData: {
+                    name: "Test Company",
+                    url: "https://example.com",
+                    productName: "AI Analytics Platform",
+                    industry: "SaaS"
+                },
+                segmentData: {
+                    icpDefinition: {
+                        firmographic: "Mid-market companies with 100-500 employees",
+                        technographic: "Uses CRM and marketing automation tools",
+                        behavioral: "Actively seeking growth solutions"
+                    }
+                },
+                positioningData: {
+                    icp_summary: "Data-driven mid-market companies seeking AI solutions",
+                    values: [
+                        { val1: "Speed", val2: "Faster time to market", val3: "50% reduction in launch time" },
+                        { val1: "Integration", val2: "Seamless data flow", val3: "Works with existing tech stack" }
+                    ]
+                },
+                categoryData: {
+                    'from-statement': "Companies manually analyze data and struggle with insights",
+                    'to-statement': "AI-powered analytics provide instant, actionable intelligence",
+                    'new-opportunity': "The AI Analytics Revolution enables real-time decision making at scale, transforming how businesses understand and act on their data.",
+                    'category-name': "AI-First Analytics",
+                    'category-definition': "A new category of business intelligence that leverages artificial intelligence to automatically discover insights, predict outcomes, and recommend actions from enterprise data in real-time.",
+                    'manifesto': "We believe that every business decision should be powered by AI-driven insights. The era of manual data analysis and delayed reporting is over. Companies that embrace AI-First Analytics will outpace competitors who rely on traditional BI tools. Data is not just information—it's competitive advantage, and AI is the key to unlocking it."
+                }
+            });
+
+            const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+
+            // Generate Part 4 specific data for dual-format export
+            const generatePart4SpecificData = () => {
+                const exportDate = new Date().toISOString();
+                
+                // Utility to format field values with future-proofing
+                const formatFieldValue = (fieldValue) => {
+                    if (Array.isArray(fieldValue)) {
+                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
+                    }
+                    return fieldValue && fieldValue.toString().trim() || null;
+                };
+
+                // Generate positioning foundation summary from Part 3 data
+                const generatePositioningFoundationSummary = () => {
+                    if (!appState.positioningData) return null;
+                    
+                    const foundation = {};
+                    
+                    // ICP Summary - check multiple possible sources
+                    if (appState.positioningData.icp_summary) {
+                        foundation.icpSummary = formatFieldValue(appState.positioningData.icp_summary);
+                    } else if (appState.segmentData?.icpDefinition) {
+                        // Generate from ICP definition if no summary exists
+                        const icp = appState.segmentData.icpDefinition;
+                        const characteristics = [];
+                        if (icp.firmographic) characteristics.push(icp.firmographic);
+                        if (icp.technographic) characteristics.push(icp.technographic);
+                        if (icp.behavioral) characteristics.push(icp.behavioral);
+                        foundation.icpSummary = characteristics.length > 0 ? characteristics.join('; ') : null;
+                    }
+                    
+                    // Unique Value - from positioning values
+                    if (appState.positioningData.values && Array.isArray(appState.positioningData.values)) {
+                        const uniqueValues = appState.positioningData.values
+                            .filter(v => v && v.val2)
+                            .map(v => v.val2);
+                        foundation.uniqueValue = uniqueValues.length > 0 ? uniqueValues.join('; ') : null;
+                    }
+                    
+                    return Object.keys(foundation).length > 0 ? foundation : null;
+                };
+
+                return {
+                    metadata: {
+                        exportDate: exportDate,
+                        partName: "Category Design",
+                        company: {
+                            name: formatFieldValue(appState.companyData?.name),
+                            url: formatFieldValue(appState.companyData?.url),
+                            productName: formatFieldValue(appState.companyData?.productName),
+                            industry: formatFieldValue(appState.companyData?.industry)
+                        }
+                    },
+                    content: {
+                        positioningFoundation: generatePositioningFoundationSummary(),
+                        pointOfView: {
+                            fromStatement: formatFieldValue(appState.categoryData?.['from-statement']),
+                            toStatement: formatFieldValue(appState.categoryData?.['to-statement'])
+                        },
+                        newOpportunity: formatFieldValue(appState.categoryData?.['new-opportunity']),
+                        categoryNameAndDefinition: {
+                            name: formatFieldValue(appState.categoryData?.['category-name']),
+                            definition: formatFieldValue(appState.categoryData?.['category-definition'])
+                        },
+                        manifesto: formatFieldValue(appState.categoryData?.['manifesto'])
+                    }
+                };
+            };
+
+            // Generate Part 4 markdown content
+            const generatePart4Markdown = (data) => {
+                let markdown = `# Category Design\n\n`;
+                
+                // Add metadata
+                if (data.metadata.company.name) {
+                    markdown += `**Company:** ${data.metadata.company.name}\n`;
+                }
+                if (data.metadata.company.url) {
+                    markdown += `**Website:** ${data.metadata.company.url}\n`;
+                }
+                if (data.metadata.company.productName) {
+                    markdown += `**Product:** ${data.metadata.company.productName}\n`;
+                }
+                if (data.metadata.company.industry) {
+                    markdown += `**Industry:** ${data.metadata.company.industry}\n`;
+                }
+                markdown += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n\n`;
+                
+                markdown += `---\n\n`;
+
+                // Positioning Foundation
+                markdown += `## Positioning Foundation\n\n`;
+                if (data.content.positioningFoundation) {
+                    const foundation = data.content.positioningFoundation;
+                    if (foundation.icpSummary) {
+                        markdown += `    **ICP Summary:** ${foundation.icpSummary}\n`;
+                    }
+                    if (foundation.uniqueValue) {
+                        markdown += `    **Unique Value:** ${foundation.uniqueValue}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No positioning foundation data available*\n\n`;
+                }
+
+                // Point of View (The "From/To" Shift)
+                markdown += `## The Point of View (The "From/To" Shift)\n\n`;
+                if (data.content.pointOfView.fromStatement || data.content.pointOfView.toStatement) {
+                    if (data.content.pointOfView.fromStatement) {
+                        markdown += `    **From:** ${data.content.pointOfView.fromStatement}\n`;
+                    }
+                    if (data.content.pointOfView.toStatement) {
+                        markdown += `    **To:** ${data.content.pointOfView.toStatement}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No point of view defined*\n\n`;
+                }
+
+                // The New Opportunity
+                markdown += `## The New Opportunity\n\n`;
+                if (data.content.newOpportunity) {
+                    markdown += `${data.content.newOpportunity}\n\n`;
+                } else {
+                    markdown += `*No new opportunity defined*\n\n`;
+                }
+
+                // Category Name & Definition
+                markdown += `## Category Name & Definition\n\n`;
+                if (data.content.categoryNameAndDefinition.name || data.content.categoryNameAndDefinition.definition) {
+                    if (data.content.categoryNameAndDefinition.name) {
+                        markdown += `    **Name:** ${data.content.categoryNameAndDefinition.name}\n`;
+                    }
+                    if (data.content.categoryNameAndDefinition.definition) {
+                        markdown += `    **Definition:** ${data.content.categoryNameAndDefinition.definition}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No category name and definition specified*\n\n`;
+                }
+
+                // The Manifesto
+                markdown += `## The Manifesto\n\n`;
+                if (data.content.manifesto) {
+                    markdown += `${data.content.manifesto}\n\n`;
+                } else {
+                    markdown += `*No manifesto defined*\n\n`;
+                }
+
+                return markdown;
+            };
+
+            const testExport = () => {
+                try {
+                    console.log("Testing Part 4 export...");
+                    const data = generatePart4SpecificData();
+                    console.log("Generated data:", data);
+                    
+                    const markdown = generatePart4Markdown(data);
+                    console.log("Generated markdown:", markdown);
+                    
+                    setExportModal({
+                        isOpen: true,
+                        content: markdown,
+                        title: 'Category Design Export Test',
+                        filename: 'category-design-export',
+                        partData: data
+                    });
+                } catch (error) {
+                    console.error("Error during export:", error);
+                }
+            };
+
+            return (
+                <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+                    <h1>Part 4 Export Function Test</h1>
+                    <button 
+                        onClick={testExport}
+                        style={{ 
+                            padding: '10px 20px', 
+                            backgroundColor: '#10b981', 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '5px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Test Part 4 Export
+                    </button>
+                    
+                    {exportModal.isOpen && (
+                        <div style={{ 
+                            marginTop: '20px', 
+                            padding: '20px', 
+                            backgroundColor: '#f5f5f5', 
+                            borderRadius: '5px',
+                            maxHeight: '400px',
+                            overflow: 'auto'
+                        }}>
+                            <h2>{exportModal.title}</h2>
+                            <h3>Markdown Content:</h3>
+                            <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
+                                {exportModal.content}
+                            </pre>
+                            <h3>JSON Data:</h3>
+                            <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
+                                {JSON.stringify(exportModal.partData, null, 2)}
+                            </pre>
+                            <button 
+                                onClick={() => setExportModal({ isOpen: false, content: '', title: '' })}
+                                style={{ 
+                                    marginTop: '10px',
+                                    padding: '5px 15px', 
+                                    backgroundColor: '#6b7280', 
+                                    color: 'white', 
+                                    border: 'none', 
+                                    borderRadius: '3px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<TestApp />);
+    </script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+> **Note:** This document details the rules of the database-driven system. For a complete overview of the multi-agent collaboration model and the initial setup steps, please see the main protocol file: [**AGENTS.md**](/AGENTS.md).
+
 # Database-Driven Development Workflow
 
 **Philosophy**: GitHub Issues & Projects are the database. Keep it simple and focused.

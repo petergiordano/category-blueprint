@@ -2,13 +2,36 @@
 
 ## Instructions for Any AI (Claude Desktop, Gemini, ChatGPT, etc.)
 
+This project uses a **database-driven workflow**. GitHub Issues are the single source of truth for all tasks. Your primary role is to execute or validate work based on these issues.
+
+### Step 1: Validate Your Environment
+*Run this script first to ensure your environment is correctly configured.*
+```bash
+./scripts/validate-workflow.sh
+```
+
+### Step 2: Understand the Core Workflow
+*Read these files to understand the project's protocols.*
 ```bash
 # Read these files in order:
-1. /Users/petergiordano/Documents/GitHub/category-blueprint/.aicontext/context.md (this file)
-2. /Users/petergiordano/Documents/GitHub/category-blueprint/docs/specifications/PRD_*.md (current epic PRD)
-3. Check index.html for current implementation state
+1. /Users/petergiordano/Documents/GitHub/category-blueprint/docs/DATABASE_DRIVEN_WORKFLOW.md
+2. /Users/petergiordano/Documents/GitHub/category-blueprint/docs/GITHUB_CLI_ISSUE_TRACKING_SETUP.md
+3. /Users/petergiordano/Documents/GitHub/category-blueprint/.aicontext/context.md (this file)
+```
 
-# Run this to understand current git state:
+### Step 3: Identify Current Work
+*Use these commands to see what tasks are active and their status. Do NOT rely on markdown files for project status.*
+```bash
+# List all open issues in the repository
+gh issue list --repo petergiordano/category-blueprint --state open
+
+# View the live project board in your browser
+gh project view 1 --owner petergiordano --web
+```
+
+### Step 4: Review Recent Code Changes
+*Check the latest commits to understand recent implementation history.*
+```bash
 git log --oneline -10
 ```
 
@@ -1298,4 +1321,28 @@ Successfully implemented and debugged the Company Context Setup Modal feature:
 - Documentation aligned with user requirements for simplified workflow
 - Gemini CLI equipped with complete learning and update guidance
 **Next:** Documentation system complete - Gemini CLI ready to learn simplified workflow and update its own configuration files
+---
+**Timestamp:** 2025-09-10T10:45:00Z
+**From:** Claude Code
+**To:** User/Gemini CLI
+**Status:** CRITICAL_BUGS_FIXED
+**Branch:** feat/positioning-page-infrastructure
+**Issues Worked On:** #22: BUG-002 Page Unresponsive Error, #23: BUG-003 Navigation Button Bug
+**Summary:** Fixed critical application-breaking bugs causing page unresponsive errors and broken navigation.
+**Technical Details:**
+- **Page Unresponsive Bug (Issue #22)**: Fixed infinite loop caused by serverLog function calls during React render cycle
+  - **Root Cause**: serverLog fetch calls failing in render, triggering more renders, creating cascade
+  - **Fix**: Removed problematic serverLog calls from render paths while preserving error handling
+  - **Files Modified**: index.html (serverLog function and multiple component calls)
+- **Navigation Bug (Issue #23)**: Fixed "Continue to Part 2: ICP Definition" button not working
+  - **Root Cause**: Button calling setActiveView('positioning') instead of proper navigation
+  - **Fix**: Changed to onNavigate('icp') with proper scroll behavior
+  - **Files Modified**: index.html:2847 (navigation button onClick handler)
+- **Database-Driven Issue Tracking**: Created GitHub issues #22 and #23, marked both as status-complete
+**Context Preservation:**
+- Application now stable and fully functional after critical performance fixes
+- All existing functionality preserved while eliminating infinite loop bottlenecks
+- Git checkpoint created (commit 8370c85) for safe fallback point
+- Simplified workflow successfully used for issue tracking and completion
+**Next:** Application stable and ready for continued radical simplification work per specifications
 ---

@@ -39,27 +39,64 @@
 
         // Enhanced logging that sends to server
         const serverLog = async (level, message, error = null) => {
-            // Temporarily disabled to prevent infinite loops
-            return;
+            const logData = {
+                level,
+                message,
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+                stack: error?.stack || null
+            };
+            
+            // Also log to browser console
+            console[level](`[${level.toUpperCase()}]`, message, error);
+            
+            try {
+                await fetch('/api/debug-log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(logData)
+                });
+            } catch (err) {
+                console.error('Failed to send log to server:', err);
+            }
         };
 
-        // Console overrides temporarily disabled to prevent infinite loops
-        // const originalConsoleError = console.error;
-        // const originalConsoleLog = console.log;
-        // const originalConsoleWarn = console.warn;
+        // Override console methods to also send to server
+        const originalConsoleError = console.error;
+        const originalConsoleLog = console.log;
+        const originalConsoleWarn = console.warn;
 
-        // Error listeners temporarily disabled to prevent infinite loops
-        // window.addEventListener('error', (event) => {
-        //     serverLog('error', `Unhandled error: ${event.message}`, event.error);
-        // });
+        console.error = (...args) => {
+            originalConsoleError.apply(console, args);
+            serverLog('error', args.join(' '), args.find(arg => arg instanceof Error));
+        };
 
-        // window.addEventListener('unhandledrejection', (event) => {
-        //     serverLog('error', `Unhandled promise rejection: ${event.reason}`);
-        // });
+        console.log = (...args) => {
+            originalConsoleLog.apply(console, args);
+            if (args[0] && args[0].includes && (args[0].includes('ERROR') || args[0].includes('FAIL'))) {
+                serverLog('log', args.join(' '));
+            }
+        };
 
+        console.warn = (...args) => {
+            originalConsoleWarn.apply(console, args);
+            serverLog('warn', args.join(' '));
+        };
+
+        // Catch unhandled errors
+        window.addEventListener('error', (event) => {
+            serverLog('error', `Unhandled error: ${event.message}`, event.error);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            serverLog('error', `Unhandled promise rejection: ${event.reason}`);
+        });
+
+        serverLog('log', 'Starting to load application components...');
 
         // localStorage helper functions
         const saveAppState = (state) => {
+          serverLog('log', 'Saving app state to localStorage...');
           try {
             const stateWithTimestamp = {
               ...state,
@@ -67,18 +104,21 @@
             };
             localStorage.setItem('klarityGTMBlueprintState', JSON.stringify(stateWithTimestamp));
           } catch (error) {
-            console.error('Could not save state to localStorage', error);
+            serverLog('error', 'Could not save state to localStorage', error);
           }
         };
 
         const loadAppState = () => {
+          serverLog('log', 'Loading app state from localStorage...');
           try {
             const savedState = localStorage.getItem('klarityGTMBlueprintState');
             if (!savedState) {
+              serverLog('log', 'No saved state found in localStorage');
               return null;
             }
             
             const parsedState = JSON.parse(savedState);
+            serverLog('log', 'Successfully loaded state from localStorage');
             
             // Merge with initial state to ensure all new properties exist
             const initialState = getInitialState();
@@ -101,12 +141,13 @@
             };
             return mergedState;
           } catch (error) {
-            console.error('Could not load state from localStorage', error);
+            serverLog('error', 'Could not load state from localStorage', error);
             return null;
           }
         };
 
         const getInitialState = () => {
+          serverLog('log', 'Getting initial state...');
           return {
             positioningData: {
               icp_common_needs: '',
@@ -124,7 +165,7 @@
               'market-context-other': '',
               alternatives: [{ val1: '', val2: '' }],
               pillars: [{ id: 1, name: '', benefit: '' }],
-              values: [{ val1: '', val2: '', val3: '', val4: '', pillarId: null }],
+              values: [{ val1: '', val2: '', val3: '', pillarId: null }],
               trend1_desc: '',
               trend2_desc: '',
               trend3_desc: '',
@@ -166,6 +207,7 @@
 
         // Progress Stepper Component
         const ProgressStepper = ({ currentPart, completedParts, onNavigate }) => {
+            serverLog('log', 'ProgressStepper rendering...');
             
             const parts = [
                 { id: 'segment', name: 'Foundation', number: 1 },
@@ -236,6 +278,7 @@
 
         // Primary Action Buttons Component
         const PrimaryActions = ({ currentPart, onExport, onContinue, onReset }) => {
+            serverLog('log', 'PrimaryActions rendering...');
             
             const getButtonConfig = (part) => {
                 const configs = {
@@ -312,7 +355,7 @@
         };
 
         // Export Modal Component
-        const ExportModal = ({ isOpen, onClose, title, content, appState, filename = 'gtm-blueprint-export', partData = null }) => {
+        const ExportModal = ({ isOpen, onClose, title, content, appState, filename = 'gtm-blueprint-export' }) => {
             const [copied, setCopied] = useState(false);
 
             const handleCopy = () => {
@@ -325,8 +368,7 @@
             };
 
             const handleDownloadJSON = () => {
-                // Use part-specific data if available, otherwise fall back to full appState
-                const jsonData = JSON.stringify(partData || appState, null, 2);
+                const jsonData = JSON.stringify(appState, null, 2);
                 const blob = new Blob([jsonData], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -581,15 +623,73 @@
             }, 'Navigation temporarily disabled');
         };
 
-        // AnalysisView Component - REMOVED for simplification
-        // Navigation now goes directly from Home to Segment Foundation
+        // AnalysisView Component
+        const AnalysisView = ({ appState, setAppState, onNavigate }) => {
+            serverLog('log', 'AnalysisView component rendering...');
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState('');
+            
+            const companyContext = appState.companyContext || {};
+            const companyName = companyContext.companyName || 'Your Company';
+            const companyWebsite = companyContext.companyWebsite || '';
+
+            const handleAnalyze = async () => {
+                serverLog('log', 'Starting analysis...');
+                setIsLoading(true);
+                setError('');
+                
+                // Simulate analysis for now
+                setTimeout(() => {
+                    serverLog('log', 'Analysis complete, navigating to segment...');
+                    setIsLoading(false);
+                    onNavigate('segment');
+                }, 2000);
+            };
+
+            return (
+                <div className="container mx-auto px-4 py-8">
+                    <div className="max-w-3xl mx-auto">
+                        <button 
+                            onClick={() => onNavigate('home')}
+                            className="text-blue-600 hover:text-blue-800 mb-6"
+                        >
+                            ← Back to Home
+                        </button>
+                        
+                        <h1 className="text-3xl font-bold mb-6">Company Analysis</h1>
+                        
+                        <div className="bg-white rounded-lg shadow-md p-6">
+                            <h2 className="text-xl font-semibold mb-4">
+                                {companyName || 'Set Company Name'}
+                            </h2>
+                            <p className="text-gray-600 mb-4">
+                                {companyWebsite || 'No website set'}
+                            </p>
+                            
+                            {error && (
+                                <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+                                    {error}
+                                </div>
+                            )}
+                            
+                            <button 
+                                onClick={handleAnalyze}
+                                disabled={isLoading}
+                                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50"
+                            >
+                                {isLoading ? 'Analyzing...' : 'Analyze Company & Generate JTBD Framework'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
         // SegmentFoundationTool Component
         const SegmentFoundationTool = ({ appState, setAppState, onNavigate }) => {
             console.log('SegmentFoundationTool rendering, appState:', appState);
             const [exportModalOpen, setExportModalOpen] = useState(false);
             const [exportContent, setExportContent] = useState('');
-            const [exportData, setExportData] = useState(null);
             const [validationState, setValidationState] = useState({});
             
             // AI Draft State Variables
@@ -702,118 +802,52 @@
                 }
             };
 
-            // Generate part-specific structured data for consistent exports
-            const generatePartSpecificData = () => {
-                const formatFieldValue = (fieldValue) => {
-                    // Handle arrays (future dynamic content)
-                    if (Array.isArray(fieldValue)) {
-                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
-                    }
-                    // Handle objects (future complex data)
-                    if (typeof fieldValue === 'object' && fieldValue !== null) {
-                        return Object.entries(fieldValue)
-                            .filter(([k, v]) => v && v.toString().trim())
-                            .map(([k, v]) => `${k}: ${v}`)
-                            .join('; ');
-                    }
-                    // Handle strings (current implementation)
-                    return fieldValue && fieldValue.toString().trim() || null;
+            const generateExportContent = () => {
+                const formatSection = (title, fields) => {
+                    let section = `## ${title}\n`;
+                    fields.forEach(field => {
+                        const value = appState.segmentData[field] || 'Not provided';
+                        section += `**${field}:** ${value}\n\n`;
+                    });
+                    return section;
                 };
-
-                return {
-                    metadata: {
-                        exportDate: new Date().toISOString(),
-                        partName: "Segment Foundation",
-                        partNumber: 1,
-                        company: {
-                            name: formatFieldValue(appState.companyData?.companyName),
-                            website: formatFieldValue(appState.companyData?.companyWebsite),
-                            industry: formatFieldValue(appState.companyData?.industry),
-                            productName: formatFieldValue(appState.companyData?.productName),
-                            targetMarket: formatFieldValue(appState.companyData?.targetMarket)
-                        }
-                    },
-                    content: {
-                        jobsToBeDone: {
-                            "Context": formatFieldValue(appState.segmentData?.['Context']),
-                            "Struggling Moments": formatFieldValue(appState.segmentData?.['Struggling Moments']),
-                            "Pushes & Pulls": formatFieldValue(appState.segmentData?.['Pushes & Pulls']),
-                            "Anxieties & Habits": formatFieldValue(appState.segmentData?.['Anxieties & Habits']),
-                            "Desired Outcomes": formatFieldValue(appState.segmentData?.['Desired Outcomes']),
-                            "Basic Quality (Table Stakes)": formatFieldValue(appState.segmentData?.['Basic Quality (Table Stakes)']),
-                            "Hiring Criteria": formatFieldValue(appState.segmentData?.['Hiring Criteria']),
-                            "Firing Criteria": formatFieldValue(appState.segmentData?.['Firing Criteria']),
-                            "Key Trade-offs": formatFieldValue(appState.segmentData?.['Key Trade-offs'])
-                        },
-                        customerValue: {
-                            "Table Stakes": formatFieldValue(appState.segmentData?.['Table Stakes']),
-                            "Functional Value": formatFieldValue(appState.segmentData?.['Functional Value']),
-                            "Ease of Doing Business": formatFieldValue(appState.segmentData?.['Ease of Doing Business']),
-                            "Individual Value": formatFieldValue(appState.segmentData?.['Individual Value']),
-                            "Aspirational Value": formatFieldValue(appState.segmentData?.['Aspirational Value'])
-                        },
-                        willingnessToPay: {
-                            "Ability to Pay": formatFieldValue(appState.segmentData?.['Ability to Pay']),
-                            "Economic Justification": formatFieldValue(appState.segmentData?.['Economic Justification']),
-                            "Relative Value vs. Alternatives": formatFieldValue(appState.segmentData?.['Relative Value vs. Alternatives']),
-                            "Risk & Switching Costs": formatFieldValue(appState.segmentData?.['Risk & Switching Costs']),
-                            "Market Reference Points": formatFieldValue(appState.segmentData?.['Market Reference Points'])
-                        }
-                    }
-                };
-            };
-
-            // Generate markdown from structured data
-            const generateMarkdownFromData = (data) => {
-                const { metadata, content } = data;
                 
-                let markdown = `# Segment Foundation Summary\n\n`;
+                let summary = `# Segment Foundation Summary\n\n`;
                 
-                // Add company context header
-                if (metadata.company.name || metadata.company.website) {
-                    markdown += `**Export Date:** ${new Date(metadata.exportDate).toLocaleDateString()}\n`;
-                    if (metadata.company.name) {
-                        markdown += `**Company:** ${metadata.company.name}`;
-                        if (metadata.company.website) markdown += ` (${metadata.company.website})`;
-                        markdown += `\n`;
-                    }
-                    if (metadata.company.industry || metadata.company.productName || metadata.company.targetMarket) {
-                        const companyDetails = [];
-                        if (metadata.company.industry) companyDetails.push(`**Industry:** ${metadata.company.industry}`);
-                        if (metadata.company.productName) companyDetails.push(`**Product:** ${metadata.company.productName}`);
-                        if (metadata.company.targetMarket) companyDetails.push(`**Market:** ${metadata.company.targetMarket}`);
-                        markdown += `${companyDetails.join(' | ')}\n`;
-                    }
-                    markdown += `\n`;
-                }
-
-                // Jobs to be Done section
-                markdown += `## Jobs to be Done\n`;
-                Object.entries(content.jobsToBeDone).forEach(([key, value]) => {
-                    markdown += `**${key}:** ${value || 'Not provided'}\n\n`;
-                });
-
-                // Customer Value section
-                markdown += `## Customer Value\n`;
-                Object.entries(content.customerValue).forEach(([key, value]) => {
-                    markdown += `**${key}:** ${value || 'Not provided'}\n\n`;
-                });
-
-                // Willingness to Pay section
-                markdown += `## Willingness to Pay\n`;
-                Object.entries(content.willingnessToPay).forEach(([key, value]) => {
-                    markdown += `**${key}:** ${value || 'Not provided'}\n\n`;
-                });
-
-                return markdown;
+                summary += formatSection('Jobs To Be Done', [
+                    'Context',
+                    'Struggling Moments', 
+                    'Pushes & Pulls',
+                    'Anxieties & Habits',
+                    'Desired Outcomes',
+                    'Basic Quality (Table Stakes)',
+                    'Hiring Criteria',
+                    'Firing Criteria',
+                    'Key Trade-offs'
+                ]);
+                
+                summary += formatSection('Customer Value', [
+                    'Table Stakes',
+                    'Functional Value',
+                    'Ease of Doing Business', 
+                    'Individual Value',
+                    'Aspirational Value'
+                ]);
+                
+                summary += formatSection('Willingness to Pay', [
+                    'Ability to Pay',
+                    'Economic Justification',
+                    'Relative Value vs. Alternatives',
+                    'Risk',
+                    'Market Reference Points'
+                ]);
+                
+                return summary;
             };
             
             const handleExport = () => {
-                const partData = generatePartSpecificData();
-                const markdownContent = generateMarkdownFromData(partData);
-                
-                setExportData(partData);
-                setExportContent(markdownContent);
+                const content = generateExportContent();
+                setExportContent(content);
                 setExportModalOpen(true);
             };
             
@@ -970,7 +1004,7 @@
                         </div>
                     )}
                     
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
+                    <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => onNavigate('home')} className="text-gray-600 hover:scale-gold-text">← Back to Home</button>
@@ -987,55 +1021,10 @@
 
                     <div className="mt-8">
                         <div className="lg:flex lg:space-x-8">
-                            {/* Sticky Navigation Sidebar */}
-                            <nav className="hidden lg:block w-64 flex-shrink-0 sticky top-36 h-fit">
-                                <div className="bg-white p-6 rounded-lg shadow-md">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Section Navigation</h3>
-                                    <ul className="space-y-3">
-                                        <li>
-                                            <a 
-                                                href="#jtbd-section" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('jtbd-section').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Jobs to be Done
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#value-section" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('value-section').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Customer Value
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#wtp-section" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('wtp-section').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Willingness to Pay
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </nav>
-                            
-                            <main className="flex-1 min-w-0">
+                            <main className="w-full">
                                 <div className="space-y-8">
                                     {/* Market Segment Definition Header */}
-                                    <div id="segment-definition-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                                    <div id="segment-definition-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                         <div className="text-center mb-8">
                                             <p className="text-lg text-gray-700 mb-8 max-w-4xl mx-auto">
                                                 A true market segment is composed of customers who share a common Job to be Done, 
@@ -1126,7 +1115,7 @@
                                     </div>
                                     
                                     {/* Jobs To Be Done Section */}
-                                    <div id="jtbd-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                                    <div id="jtbd-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                         <h2 className="text-2xl font-bold scale-green-text mb-6">Jobs To Be Done</h2>
                                         <div className="space-y-6">
                                             {[
@@ -1153,197 +1142,186 @@
                                                         }}
                                                         placeholder={field.placeholder}
                                                     />
-                                                    {/* Validate button removed for simplification */}
+                                                    <button
+                                                        onClick={() => handleValidateJtbd(field.name, appState.segmentData[field.name])}
+                                                        className="mt-2 text-sm bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
+                                                        disabled={
+                                                            validationState[field.name]?.status === 'validating' || 
+                                                            !appState.segmentData[field.name]?.trim()
+                                                        }
+                                                    >
+                                                        {validationState[field.name]?.status === 'validating' ? 'Validating...' : 'Validate Against Market'}
+                                                    </button>
+                                                    {renderValidationResult(field.name)}
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
 
                                     {/* Customer Value Section */}
-                                    <div id="value-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                                    <div id="value-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                         <h2 className="text-2xl font-bold scale-green-text mb-6">Customer Value</h2>
                                         
-                                        <div className="space-y-6">
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Table Stakes</label>
-                                                <p className="text-gray-600 text-sm mb-3">The non-negotiables for credibility and trust. Baseline requirements.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Table Stakes'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Table Stakes': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: SOC2 certification; ERP integration; 99.9% uptime SLAs."
-                                                />
+                                        {/* AI Assistant */}
+                                        {!aiDraftsAvailable && !aiDraftLoading && (
+                                            <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                                                <div className="flex items-start space-x-4">
+                                                    <div className="flex-shrink-0">
+                                                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                                            <span className="text-white font-bold text-sm">AI</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-lg font-semibold text-blue-900 mb-2">AI Customer Value Drafter</h3>
+                                                        <p className="text-blue-700 mb-4">Let AI analyze your Jobs-to-be-Done insights and draft Customer Value propositions tailored to your segment.</p>
+                                                        <button 
+                                                            onClick={handleGenerateCustomerValue}
+                                                            className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700"
+                                                        >
+                                                            Analyze JTBD & Draft Customer Value
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Functional Value</label>
-                                                <p className="text-gray-600 text-sm mb-3">Tangible, measurable outcomes—ROI, efficiency, cost savings, growth, or risk mitigation.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Functional Value'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Functional Value': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: $500K OpEx savings from faster close cycles and fewer errors."
-                                                />
+                                        )}
+
+                                        {aiDraftLoading && (
+                                            <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                                                <div className="flex items-start space-x-4">
+                                                    <div className="flex-shrink-0">
+                                                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                                            <div className="animate-spin">
+                                                                <span className="text-white font-bold text-sm">⚡</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-lg font-semibold text-blue-900 mb-2">Analyzing Your Market Segment...</h3>
+                                                        <div className="space-y-2 text-blue-700 text-sm">
+                                                            <p>• Analyzing Jobs-to-be-Done context and pain points</p>
+                                                            <p>• Researching industry value proposition patterns</p>
+                                                            <p>• Generating tailored Customer Value drafts</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Ease of Doing Business</label>
-                                                <p className="text-gray-600 text-sm mb-3">How simple you make adoption and daily use. Less friction wins.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Ease of Doing Business'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Ease of Doing Business': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: Fast implementation playbook; role-based onboarding; 24/7 enterprise support."
-                                                />
+                                        )}
+
+                                        {aiDraftError && (
+                                            <div className="mb-8 p-6 bg-red-50 border border-red-200 rounded-lg">
+                                                <div className="flex items-start space-x-4">
+                                                    <div className="flex-shrink-0">
+                                                        <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                                                            <span className="text-white font-bold text-sm">!</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-lg font-semibold text-red-900 mb-2">AI Assistant Unavailable</h3>
+                                                        <p className="text-red-700 mb-4">{aiDraftError}</p>
+                                                        <button 
+                                                            onClick={() => {
+                                                                setAiDraftError(null);
+                                                                handleGenerateCustomerValue();
+                                                            }}
+                                                            className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 mr-3"
+                                                        >
+                                                            Try Again
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setAiDraftError(null)}
+                                                            className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300"
+                                                        >
+                                                            Continue Manually
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Individual Value</label>
-                                                <p className="text-gray-600 text-sm mb-3">What matters to each buyer personally—status, workload relief, confidence, or career gains.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Individual Value'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Individual Value': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: CFO is seen as innovator; IT leader feels secure; end users save hours."
-                                                />
+                                        )}
+
+                                        {(aiDraftsAvailable || aiDraftError) && (
+                                            <div className="space-y-6">
+                                                {['Table Stakes', 'Functional Value', 'Ease of Doing Business', 'Individual Value', 'Aspirational Value'].map(field => (
+                                                    <div key={field}>
+                                                        <label className="block text-lg font-semibold text-gray-800 mb-2">{field}</label>
+                                                        <textarea
+                                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                            rows="3"
+                                                            value={appState.segmentData[field] || ''}
+                                                            onChange={(e) => {
+                                                                const newSegmentData = { ...appState.segmentData, [field]: e.target.value };
+                                                                setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                            }}
+                                                            placeholder={`Enter ${field.toLowerCase()}...`}
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Aspirational Value</label>
-                                                <p className="text-gray-600 text-sm mb-3">Alignment with higher-order goals and purpose. Motivations beyond rational ROI.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Aspirational Value'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Aspirational Value': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: Supports ESG reporting; signals innovation to board and investors."
-                                                />
-                                            </div>
-                                        </div>
+                                        )}
                                     </div>
 
                                     {/* Willingness to Pay Section */}
-                                    <div id="wtp-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                                    <div id="wtp-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                         <h2 className="text-2xl font-bold scale-green-text mb-6">Willingness to Pay</h2>
                                         
-                                        <div className="space-y-6">
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Ability to Pay</label>
-                                                <p className="text-gray-600 text-sm mb-3">Whether the customer has budget and capacity to spend. Even strong solutions fail without funding.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Ability to Pay'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Ability to Pay': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: Line item already approved in FY25 budget for compliance automation."
-                                                />
+                                        {!wtpDraftsAvailable && !wtpDraftLoading && !wtpDraftError && (
+                                            <div className="text-center py-12">
+                                                <div className="mb-6">
+                                                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                        <span className="text-2xl">💰</span>
+                                                    </div>
+                                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Ready to Draft WTP Drivers</h3>
+                                                    <p className="text-gray-600 max-w-2xl mx-auto">
+                                                        Let AI analyze your Customer Value propositions to generate Willingness to Pay drivers.
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={handleGenerateWTP}
+                                                    className="bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-yellow-700"
+                                                >
+                                                    Generate WTP Drivers
+                                                </button>
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Economic Justification</label>
-                                                <p className="text-gray-600 text-sm mb-3">Whether the ROI and payback case makes financial sense. Customers want proof it pays for itself.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Economic Justification'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Economic Justification': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: Pays for itself in under 12 months through $1M annual cost avoidance."
-                                                />
+                                        )}
+
+                                        {wtpDraftLoading && (
+                                            <div className="text-center py-12">
+                                                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600 mb-4"></div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-2">Generating WTP Analysis...</h3>
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Relative Value vs. Alternatives</label>
-                                                <p className="text-gray-600 text-sm mb-3">How your solution compares to competitors or the status quo. Clear differentiation increases willingness to pay.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Relative Value vs. Alternatives'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Relative Value vs. Alternatives': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: Automates 80% of manual work versus consultant-heavy models."
-                                                />
+                                        )}
+
+                                        {wtpDraftError && (
+                                            <div className="text-center py-12">
+                                                <h3 className="text-xl font-semibold text-gray-800 mb-2">Generation Failed</h3>
+                                                <p className="text-gray-600 mb-4">{wtpDraftError}</p>
+                                                <button
+                                                    onClick={handleGenerateWTP}
+                                                    className="bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-yellow-700 mr-3"
+                                                >
+                                                    Try Again
+                                                </button>
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Risk & Switching Costs</label>
-                                                <p className="text-gray-600 text-sm mb-3">How much risk or friction they see in making the change. Higher risk lowers willingness; mitigation raises it.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Risk & Switching Costs'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Risk & Switching Costs': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: Migration takes days, not months; vendor assumes implementation risk."
-                                                />
+                                        )}
+
+                                        {wtpDraftsAvailable && (
+                                            <div className="space-y-6">
+                                                {['Ability to Pay', 'Economic Justification', 'Relative Value vs. Alternatives', 'Risk', 'Market Reference Points'].map(field => (
+                                                    <div key={field}>
+                                                        <label className="block text-lg font-semibold text-gray-800 mb-2">{field}</label>
+                                                        <textarea
+                                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                            rows="3"
+                                                            value={appState.segmentData[field] || ''}
+                                                            onChange={(e) => {
+                                                                const newSegmentData = { ...appState.segmentData, [field]: e.target.value };
+                                                                setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
+                                                            }}
+                                                            placeholder={`Enter ${field.toLowerCase()}...`}
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
-                                            
-                                            <div>
-                                                <label className="block text-lg font-semibold text-gray-800 mb-2">Market Reference Points</label>
-                                                <p className="text-gray-600 text-sm mb-3">The pricing anchors customers bring from prior spend or competitors. Buyers benchmark against "similar" tools.</p>
-                                                <textarea
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                                    rows="3"
-                                                    value={appState.segmentData['Market Reference Points'] || ''}
-                                                    onChange={(e) => {
-                                                        const newSegmentData = { ...appState.segmentData, 'Market Reference Points': e.target.value };
-                                                        setAppState(prev => ({ ...prev, segmentData: newSegmentData }));
-                                                    }}
-                                                    placeholder="Example: Analytics platforms in this space usually run $100K–$150K annually."
-                                                />
-                                            </div>
-                                        </div>
-                                        
-                                        {/* Clear All Fields Button */}
-                                        <div className="mt-8 text-center">
-                                            <button
-                                                onClick={() => {
-                                                    // Clear all JTBD and Customer Value fields
-                                                    const clearedSegmentData = {};
-                                                    setAppState(prev => ({ ...prev, segmentData: clearedSegmentData }));
-                                                    alert('All fields cleared! Refresh the page to see placeholder text.');
-                                                }}
-                                                className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
-                                            >
-                                                Clear All Fields
-                                            </button>
-                                            
-                                            {/* Continue to Part 2 Button */}
-                                            <button
-                                                onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }}
-                                                className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
-                                            >
-                                                Continue to Part 2: ICP Definition
-                                            </button>
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
                             </main>
@@ -1357,7 +1335,6 @@
                         content={exportContent}
                         appState={appState}
                         filename="segment-foundation-export"
-                        partData={exportData}
                     />
                 </div>
             );
@@ -1882,159 +1859,37 @@
                 }
             };
 
-            // Generate Part 2 specific structured data for dual-format export
-            const generatePart2SpecificData = () => {
-                // Utility to format field values (arrays, objects, strings) with future-proofing
-                const formatFieldValue = (fieldValue) => {
-                    if (Array.isArray(fieldValue)) {
-                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
-                    }
-                    if (fieldValue && typeof fieldValue === 'object' && fieldValue.val1 && fieldValue.val2) {
-                        return `${fieldValue.val1}: ${fieldValue.val2}`;
-                    }
-                    return fieldValue && fieldValue.toString().trim() || null;
-                };
-
-                // Include Segment Foundation summary as requested by user
-                const segmentFoundationSummary = {
-                    jobsToBeDone: {},
-                    customerValue: {},
-                    willingnessToPay: {}
-                };
-
-                // Extract Jobs to be Done data from segmentData
-                if (appState.segmentData) {
-                    const jtbdFields = [
-                        'jtbd_functional_job', 'jtbd_emotional_job', 'jtbd_social_job',
-                        'jtbd_main_thing', 'jtbd_other_solutions', 'jtbd_success_metrics',
-                        'jtbd_anxieties_habits', 'jtbd_context_triggers', 'jtbd_current_alternatives'
-                    ];
-                    jtbdFields.forEach(field => {
-                        segmentFoundationSummary.jobsToBeDone[field] = formatFieldValue(appState.segmentData[field]);
-                    });
-
-                    const customerValueFields = [
-                        'customer_value_table_stakes', 'customer_value_functional', 'customer_value_ease_of_business',
-                        'customer_value_individual', 'customer_value_aspirational'
-                    ];
-                    customerValueFields.forEach(field => {
-                        segmentFoundationSummary.customerValue[field] = formatFieldValue(appState.segmentData[field]);
-                    });
-
-                    const willingnessToPayFields = [
-                        'willingness_ability_to_pay', 'willingness_economic_justification', 'willingness_relative_value',
-                        'willingness_risk_switching_costs', 'willingness_market_reference_points'
-                    ];
-                    willingnessToPayFields.forEach(field => {
-                        segmentFoundationSummary.willingnessToPay[field] = formatFieldValue(appState.segmentData[field]);
-                    });
-                }
-
-                return {
-                    metadata: {
-                        exportDate: new Date().toISOString(),
-                        partName: "ICP Definition",
-                        company: {
-                            name: appState.companyData?.companyName || null,
-                            url: appState.companyData?.companyURL || null,
-                            industry: appState.companyData?.industry || null
-                        }
-                    },
-                    segmentFoundationSummary: segmentFoundationSummary,
-                    content: {
-                        icpDefinition: {
-                            quickDecisionMaking: formatFieldValue(appState.positioningData?.icp_quick_decision_making),
-                            prioritizedRequirements: formatFieldValue(appState.positioningData?.icp_prioritized_requirements),
-                            implementationReadiness: formatFieldValue(appState.positioningData?.icp_implementation_readiness),
-                            firmographic: formatFieldValue(appState.positioningData?.icp_firmographic),
-                            technographic: formatFieldValue(appState.positioningData?.icp_technographic),
-                            behavioral: formatFieldValue(appState.positioningData?.icp_behavioral)
-                        }
-                    }
-                };
-            };
-
-            // Generate markdown content from structured data
-            const generatePart2Markdown = (partData) => {
-                let markdown = `# ICP Definition\n\n`;
-                
-                // Company context
-                if (partData.metadata.company.name) {
-                    markdown += `**Company:** ${partData.metadata.company.name}\n`;
-                    if (partData.metadata.company.url) {
-                        markdown += `**URL:** ${partData.metadata.company.url}\n`;
-                    }
-                    if (partData.metadata.company.industry) {
-                        markdown += `**Industry:** ${partData.metadata.company.industry}\n`;
-                    }
-                    markdown += `\n`;
-                }
-
-                // Segment Foundation Summary (as requested by user)
-                markdown += `## Segment Foundation Summary\n\n`;
-                
-                markdown += `### Jobs to be Done\n`;
-                Object.entries(partData.segmentFoundationSummary.jobsToBeDone).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace('jtbd_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n`;
-
-                markdown += `### Customer Value\n`;
-                Object.entries(partData.segmentFoundationSummary.customerValue).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace('customer_value_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n`;
-
-                markdown += `### Willingness to Pay\n`;
-                Object.entries(partData.segmentFoundationSummary.willingnessToPay).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace('willingness_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n---\n\n`;
-
-                // ICP Definition fields
-                markdown += `## ICP Definition\n\n`;
-                Object.entries(partData.content.icpDefinition).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n`;
-
-
-                markdown += `\n---\n*Export generated on ${new Date().toLocaleString()}*`;
-                return markdown;
-            };
-
             const handleExport = () => {
-                // Generate structured data for both formats
-                const partData = generatePart2SpecificData();
+                const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
+                const formatList = (items, k1, k2) => items.map(item => `- ${item[k1]}: ${item[k2]}`).join('\n');
                 
-                // Generate markdown from structured data  
-                const markdownContent = generatePart2Markdown(partData);
-                
-                // Open modal with both markdown and JSON data (fixed title)
-                setExportModal({ 
-                    isOpen: true, 
-                    content: markdownContent, 
-                    title: 'ICP Definition Summary',
-                    partData: partData,
-                    filename: 'icp-definition-export'
-                });
+                let summary = `Part 2: ICP & Positioning Blueprint\n======================================\n\n`;
+                summary += `## 1. Ideal Customer Profile (ICP)\n`;
+                summary += `- Segment Foundation: See Part 1 export for complete segment data\n`;
+                summary += `- Quick Decision Making: ${appState.positioningData.icp_quick_decision_making || 'N/A'}\n`;
+                summary += `- Prioritized Requirements: ${appState.positioningData.icp_prioritized_requirements || 'N/A'}\n`;
+                summary += `- Implementation Readiness: ${appState.positioningData.icp_implementation_readiness || 'N/A'}\n`;
+                summary += `- Firmographic: ${appState.positioningData.icp_firmographic || 'N/A'}\n`;
+                summary += `- Technographic: ${appState.positioningData.icp_technographic || 'N/A'}\n`;
+                summary += `- Behavioral: ${appState.positioningData.icp_behavioral || 'N/A'}\n\n`;
+
+                summary += formatSection('2. Competitive Alternatives', appState.positioningData.alternatives ? formatList(appState.positioningData.alternatives, 'val1', 'val2') : 'N/A');
+                summary += formatSection('5. Summarize Target Market', appState.positioningData.icp_summary || 'N/A');
+                let marketContext = appState.positioningData['market-context'] === 'Other' ? appState.positioningData['market-context-other'] : appState.positioningData['market-context'];
+                summary += formatSection('6. Market Context (Today)', marketContext);
+                let trendsContent = '';
+                if (appState.positioningData.trend1_desc) trendsContent += `- Industry Trend 1: ${appState.positioningData.trend1_desc}\n`;
+                if (appState.positioningData.trend2_desc) trendsContent += `- Industry Trend 2: ${appState.positioningData.trend2_desc}\n`;
+                if (appState.positioningData.trend3_desc) trendsContent += `- Industry Trend 3: ${appState.positioningData.trend3_desc}\n`;
+                if (appState.positioningData.trend4_desc) trendsContent += `- Industry Trend 4: ${appState.positioningData.trend4_desc}\n`;
+                summary += formatSection('4. Relevant Trends', trendsContent || 'N/A');
+
+                setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
             };
 
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen pb-16">
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
+                    <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => onNavigate('segment')} className="text-gray-600 hover:scale-gold-text">← Back to Segment Foundation</button>
@@ -2064,7 +1919,7 @@
                         {/* ICP Flow Visualization */}
                         <ICPFlowVisualization appState={appState} onNavigate={onNavigate} />
                         
-                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">1. Define Your Ideal Customer Profile (ICP)</h2>
                             <p className="text-gray-600 mb-6">This is the foundation. A precise ICP provides the lens through which all other positioning elements are viewed. Be specific and use data where possible.</p>
                             
@@ -2241,28 +2096,12 @@
                         </div>
 
 
-                        {/* Navigation Buttons */}
-                        <div className="mt-8 text-center">
-                            <button
-                                onClick={() => {
-                                    // Clear all ICP and Positioning fields
-                                    setAppState(prev => ({
-                                        ...prev,
-                                        positioningData: getInitialState().positioningData
-                                    }));
-                                    alert('All fields cleared! Refresh the page to see placeholder text.');
-                                }}
-                                className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
-                            >
-                                Clear All Fields
-                            </button>
-                            
-                            {/* Continue to Part 3 Button */}
-                            <button
+                        <div className="text-center mt-12 pb-24">
+                            <button 
                                 onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }}
-                                className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+                                className="scale-gold-bg text-white font-bold py-4 px-8 rounded-lg hover:bg-opacity-90 text-lg"
                             >
-                                Continue to Part 3: Positioning
+                                Continue to Part 3: Positioning →
                             </button>
                         </div>
                                 </div>
@@ -2276,8 +2115,7 @@
                         title={exportModal.title}
                         content={exportModal.content}
                         appState={appState}
-                        filename={exportModal.filename || "icp-definition-export"}
-                        partData={exportModal.partData}
+                        filename="positioning-blueprint"
                     />
                     
                 </div>
@@ -2285,7 +2123,7 @@
         };
 
         // Dynamic Field Components for PositioningTool
-        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2 }) => (
+        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2, onAnalyze, analysisResult }) => (
             <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                     <input 
@@ -2309,9 +2147,43 @@
                         >
                             ×
                         </button>
+                        {onAnalyze && (
+                            <button 
+                                onClick={() => onAnalyze(item, index)}
+                                disabled={analysisResult?.isAnalyzing}
+                                className="text-xs font-bold py-1 px-2 rounded transition-colors bg-blue-100 hover:bg-blue-200 text-blue-700 disabled:opacity-50"
+                            >
+                                {analysisResult?.isAnalyzing ? 'Analyzing...' : 'Analyze Weakness'}
+                            </button>
+                        )}
                     </div>
                 </div>
                 
+                {analysisResult && !analysisResult.isAnalyzing && analysisResult.angles && (
+                    <div className="bg-white p-4 rounded-md border-l-4 border-blue-500 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-bold text-gray-800">Strategic Angles</h4>
+                            <span className="text-xs text-gray-500">{analysisResult.angles.length} talking points</span>
+                        </div>
+                        <ul className="space-y-2">
+                            {analysisResult.angles.map((angle, idx) => (
+                                <li key={idx} className="text-sm text-gray-700 flex items-start">
+                                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-3 mt-1.5 flex-shrink-0"></span>
+                                    <span>{angle}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <button 
+                            onClick={() => {
+                                const text = analysisResult.angles.join('\n• ');
+                                navigator.clipboard.writeText(`Strategic angles for ${item.val1}:\n• ${text}`);
+                            }}
+                            className="mt-3 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                            Copy talking points
+                        </button>
+                    </div>
+                )}
             </div>
         );
 
@@ -2333,17 +2205,17 @@
             </div>
         );
 
-        const RemovableTriple = ({ index, item, onUpdate, onRemove }) => (
+        const RemovableTriple = ({ index, item, onUpdate, onRemove, onGrade, gradingResult, onAnalyzeUniqueness, uniquenessResult }) => (
             <div className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50">
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            Truly Unique Attribute Name (&lt; 5 word name for the Feature or Capability):
+                            Truly Unique Attribute: The Feature or Capability
                         </label>
                         <input 
                             type="text" 
                             className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                            placeholder="Example: Real-time collaborative analytics"
+                            placeholder="Example: Day-one insights from existing documents"
                             value={item.val1}
                             onChange={(e) => onUpdate(index, 'val1', e.target.value)}
                         />
@@ -2357,39 +2229,93 @@
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Attribute Description: (10+ word description highlighting the differentiation)
+                        Benefit: What the attribute enables for a customer
                     </label>
                     <textarea 
                         className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                        rows="3" 
-                        placeholder="Example: Industry's only platform enabling simultaneous multi-user data exploration with instant synchronization across all dashboards"
+                        rows="2" 
+                        placeholder="Example: Enables immediate analysis without lengthy discovery interviews"
                         value={item.val2}
                         onChange={(e) => onUpdate(index, 'val2', e.target.value)}
                     ></textarea>
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Benefit: What the attribute enables for a customer
-                    </label>
-                    <textarea 
-                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                        rows="2" 
-                        placeholder="Example: Enables teams to make data-driven decisions together in real-time, eliminating version control issues and reducing meeting cycles"
-                        value={item.val3}
-                        onChange={(e) => onUpdate(index, 'val3', e.target.value)}
-                    ></textarea>
-                </div>
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
                         Value: The metrics and KPIs the customer use to measure value created by this attribute
                     </label>
-                    <textarea 
+                    <input 
+                        type="text" 
                         className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                        rows="2" 
-                        placeholder="Example: 50% reduction in decision-making time, 3x faster insight discovery, $2M annual savings from eliminated redundant analysis"
-                        value={item.val4}
-                        onChange={(e) => onUpdate(index, 'val4', e.target.value)}
-                    ></textarea>
+                        placeholder="Example: Reduces transformation timeline by 6 months, saving $500k in consulting fees"
+                        value={item.val3}
+                        onChange={(e) => onUpdate(index, 'val3', e.target.value)}
+                    />
+                </div>
+                <div className="pt-2 space-y-3">
+                    <div className="flex space-x-2">
+                        <button 
+                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50"
+                            onClick={() => onGrade(item, index)}
+                            disabled={gradingResult?.isGrading}
+                        >
+                            {gradingResult?.isGrading ? 'Grading...' : 'Grade Proposition'}
+                        </button>
+                        <button 
+                            className="text-sm font-bold py-2 px-3 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                            onClick={() => onAnalyzeUniqueness(item.val1, index)}
+                            disabled={uniquenessResult?.isAnalyzing || !item.val1?.trim()}
+                        >
+                            {uniquenessResult?.isAnalyzing ? 'Analyzing market...' : 'Analyze Uniqueness'}
+                        </button>
+                    </div>
+                    
+                    {gradingResult && !gradingResult.isGrading && gradingResult.score && (
+                        <div className="bg-white p-3 rounded-md border border-gray-300">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-bold text-gray-700">AI Grade:</span>
+                                <span 
+                                    className={`text-lg font-bold px-2 py-1 rounded ${ 
+                                        gradingResult.score.startsWith('A') ? 'bg-green-100 text-green-800' :
+                                        gradingResult.score.startsWith('B') ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-red-100 text-red-800'
+                                    }`}
+                                >
+                                    {gradingResult.score}
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                                {gradingResult.feedback}
+                            </p>
+                        </div>
+                    )}
+
+                    {uniquenessResult && !uniquenessResult.isAnalyzing && (
+                        <div className="bg-white p-3 rounded-md border border-gray-300">
+                            <div className="mb-2">
+                                <span className="text-sm font-bold text-gray-700">Uniqueness Analysis:</span>
+                            </div>
+                            {uniquenessResult.error ? (
+                                <div className="text-sm text-red-600">
+                                    {uniquenessResult.error}
+                                </div>
+                            ) : uniquenessResult.results && uniquenessResult.results.length > 0 ? (
+                                <div className="space-y-2">
+                                    {uniquenessResult.results.slice(0, 3).map((result, idx) => (
+                                        <div key={idx} className="text-sm text-gray-600">
+                                            <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">
+                                                {result.title}
+                                            </a>
+                                            <p className="text-xs text-gray-500 mt-1">{result.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-green-600 font-medium">
+                                    No similar claims found - this appears to be a unique attribute!
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -2397,7 +2323,10 @@
         // PositioningTool Component
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+            const [analysisState, setAnalysisState] = useState({});
+            const [uniquenessResults, setUniquenessResults] = useState({});
             const [trendAnalysisResults, setTrendAnalysisResults] = useState({});
+            const [gradingState, setGradingState] = useState({});
             const [pillarGenState, setPillarGenState] = useState({
                 isGenerating: false,
                 suggestedPillars: [],
@@ -2556,232 +2485,62 @@
                 }
             };
 
-
-
-            // Generate Part 3 specific data for dual-format export
-            const generatePart3SpecificData = () => {
-                const exportDate = new Date().toISOString();
+            // AI Analysis functions (placeholders for now)
+            const simulateCompetitiveAnalysis = async (item, idx) => {
+                setAnalysisState(prev => ({ ...prev, [idx]: { isAnalyzing: true, result: null } }));
                 
-                // Utility to format field values with future-proofing
-                const formatFieldValue = (fieldValue) => {
-                    if (Array.isArray(fieldValue)) {
-                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
-                    }
-                    return fieldValue && fieldValue.toString().trim() || null;
-                };
-
-                // Generate focused ICP summary for Target Market Characteristics
-                const generateTargetMarketIcpSummary = () => {
-                    if (!appState.segmentData?.icpDefinition) return null;
-                    
-                    const icp = appState.segmentData.icpDefinition;
-                    const characteristics = {};
-                    
-                    if (icp.firmographic) {
-                        characteristics.firmographic = formatFieldValue(icp.firmographic);
-                    }
-                    if (icp.technographic) {
-                        characteristics.technographic = formatFieldValue(icp.technographic);
-                    }
-                    if (icp.behavioral) {
-                        characteristics.behavioral = formatFieldValue(icp.behavioral);
-                    }
-                    if (icp.quickDecisionMaking) {
-                        characteristics.decisionMaking = formatFieldValue(icp.quickDecisionMaking);
-                    }
-                    if (icp.prioritizedRequirements) {
-                        characteristics.keyRequirements = formatFieldValue(icp.prioritizedRequirements);
-                    }
-                    
-                    return Object.keys(characteristics).length > 0 ? characteristics : null;
-                };
-
-                // Format competitive alternatives
-                const formatCompetitiveAlternatives = () => {
-                    if (!appState.positioningData.alternatives || !Array.isArray(appState.positioningData.alternatives)) {
-                        return [{ alternative: null, description: null }];
-                    }
-                    
-                    return appState.positioningData.alternatives.map(alt => ({
-                        alternative: formatFieldValue(alt.val1),
-                        description: formatFieldValue(alt.val2)
-                    }));
-                };
-
-                // Format unique value and proof
-                const formatUniqueValueAndProof = () => {
-                    if (!appState.positioningData.values || !Array.isArray(appState.positioningData.values)) {
-                        return [{ attribute: null, benefit: null, value: null }];
-                    }
-                    
-                    return appState.positioningData.values.map(val => ({
-                        attribute: formatFieldValue(val.val1),
-                        benefit: formatFieldValue(val.val2),
-                        value: formatFieldValue(val.val3)
-                    }));
-                };
-
-                // Get market category
-                const getMarketCategory = () => {
-                    if (appState.positioningData['market-context'] === 'Other') {
-                        return formatFieldValue(appState.positioningData['market-context-other']);
-                    }
-                    return formatFieldValue(appState.positioningData['market-context']);
-                };
-
-                // Format relevant trends
-                const formatRelevantTrends = () => {
-                    return {
-                        trend1: formatFieldValue(appState.positioningData.trend1_desc),
-                        trend2: formatFieldValue(appState.positioningData.trend2_desc),
-                        trend3: formatFieldValue(appState.positioningData.trend3_desc),
-                        trend4: formatFieldValue(appState.positioningData.trend4_desc)
-                    };
-                };
-
-                return {
-                    metadata: {
-                        exportDate: exportDate,
-                        partName: "Positioning",
-                        company: {
-                            name: formatFieldValue(appState.companyData?.name),
-                            url: formatFieldValue(appState.companyData?.url),
-                            productName: formatFieldValue(appState.companyData?.productName),
-                            industry: formatFieldValue(appState.companyData?.industry)
+                // Simulate API call
+                setTimeout(() => {
+                    setAnalysisState(prev => ({
+                        ...prev,
+                        [idx]: {
+                            isAnalyzing: false,
+                            angles: [
+                                'Emphasize speed advantage over their legacy systems',
+                                'Position as future-ready while they require modernization',
+                                'Highlight cost benefits vs their hidden fees',
+                                'Showcase intuitive UX vs their complexity'
+                            ]
                         }
-                    },
-                    content: {
-                        competitiveAlternatives: formatCompetitiveAlternatives(),
-                        uniqueValueAndProof: formatUniqueValueAndProof(),
-                        marketCategory: getMarketCategory(),
-                        targetMarketCharacteristics: generateTargetMarketIcpSummary(),
-                        relevantTrends: formatRelevantTrends()
-                    }
-                };
+                    }));
+                }, 1500);
             };
 
-            // Generate Part 3 markdown content
-            const generatePart3Markdown = (data) => {
-                let markdown = `# Positioning\n\n`;
-                
-                // Add metadata
-                if (data.metadata.company.name) {
-                    markdown += `**Company:** ${data.metadata.company.name}\n`;
-                }
-                if (data.metadata.company.url) {
-                    markdown += `**Website:** ${data.metadata.company.url}\n`;
-                }
-                if (data.metadata.company.productName) {
-                    markdown += `**Product:** ${data.metadata.company.productName}\n`;
-                }
-                if (data.metadata.company.industry) {
-                    markdown += `**Industry:** ${data.metadata.company.industry}\n`;
-                }
-                markdown += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n\n`;
-                
-                markdown += `---\n\n`;
 
-                // Competitive Alternatives
-                markdown += `## Competitive Alternatives\n\n`;
-                if (data.content.competitiveAlternatives.length > 0 && data.content.competitiveAlternatives[0].alternative) {
-                    data.content.competitiveAlternatives.forEach((alt, index) => {
-                        if (alt.alternative) {
-                            markdown += `**${index + 1}. ${alt.alternative}**\n`;
-                            if (alt.description) {
-                                markdown += `   ${alt.description}\n\n`;
-                            } else {
-                                markdown += `\n`;
-                            }
-                        }
-                    });
-                } else {
-                    markdown += `*No competitive alternatives defined*\n\n`;
-                }
-
-                // Unique Value and Proof
-                markdown += `## Unique Value and Proof\n\n`;
-                if (data.content.uniqueValueAndProof.length > 0 && data.content.uniqueValueAndProof[0].attribute) {
-                    data.content.uniqueValueAndProof.forEach((item, index) => {
-                        if (item.attribute) {
-                            markdown += `**${index + 1}. ${item.attribute}**\n`;
-                            if (item.benefit) {
-                                markdown += `   **Benefit:** ${item.benefit}\n`;
-                            }
-                            if (item.value) {
-                                markdown += `   **Value:** ${item.value}\n`;
-                            }
-                            markdown += `\n`;
-                        }
-                    });
-                } else {
-                    markdown += `*No unique value and proof defined*\n\n`;
-                }
-
-                // Market Category
-                markdown += `## Market Category\n\n`;
-                if (data.content.marketCategory) {
-                    markdown += `${data.content.marketCategory}\n\n`;
-                } else {
-                    markdown += `*No market category defined*\n\n`;
-                }
-
-                // Target Market Characteristics
-                markdown += `## Target Market Characteristics\n\n`;
-                if (data.content.targetMarketCharacteristics) {
-                    const characteristics = data.content.targetMarketCharacteristics;
-                    if (characteristics.firmographic) {
-                        markdown += `    **Firmographic**: ${characteristics.firmographic}\n`;
-                    }
-                    if (characteristics.technographic) {
-                        markdown += `    **Technographic**: ${characteristics.technographic}\n`;
-                    }
-                    if (characteristics.behavioral) {
-                        markdown += `    **Behavioral**: ${characteristics.behavioral}\n`;
-                    }
-                    if (characteristics.decisionMaking) {
-                        markdown += `    **Decision Making**: ${characteristics.decisionMaking}\n`;
-                    }
-                    if (characteristics.keyRequirements) {
-                        markdown += `    **Key Requirements**: ${characteristics.keyRequirements}\n`;
-                    }
-                    markdown += `\n`;
-                } else {
-                    markdown += `*No target market characteristics defined*\n\n`;
-                }
-
-                // Relevant Trends
-                markdown += `## Relevant Trends\n\n`;
-                const trends = data.content.relevantTrends;
-                let hasTrends = false;
-                
-                ['trend1', 'trend2', 'trend3', 'trend4'].forEach((trendKey, index) => {
-                    if (trends[trendKey]) {
-                        markdown += `    **Trend ${index + 1}:** ${trends[trendKey]}\n`;
-                        hasTrends = true;
-                    }
-                });
-                
-                if (hasTrends) {
-                    markdown += `\n`;
-                } else {
-                    markdown += `*No relevant trends defined*\n\n`;
-                }
-
-                return markdown;
-            };
-
-            // Export functionality for positioning data (dual-format)
+            // Export functionality for positioning data
             const exportData = () => {
-                const data = generatePart3SpecificData();
-                const markdownContent = generatePart3Markdown(data);
+                const formatSection = (title, content) => content ? `## ${title}\n${content}\n\n` : '';
+                const formatList = (items, k1, k2) => items.map(item => `- ${item[k1]}: ${item[k2]}`).join('\n');
                 
-                setExportModal({
-                    isOpen: true,
-                    content: markdownContent,
-                    title: 'Positioning Export',
-                    filename: 'positioning-export',
-                    partData: data
-                });
+                let summary = `Part 3: Positioning Blueprint\n======================================\n\n`;
+                
+                summary += formatSection('1. Competitive Alternatives', 
+                    appState.positioningData.alternatives ? 
+                    formatList(appState.positioningData.alternatives, 'val1', 'val2') : 'N/A');
+                
+                let valuesContent = '';
+                if (appState.positioningData.values) {
+                    appState.positioningData.values.forEach(v => {
+                        if (v.val1) valuesContent += `- Attribute: ${v.val1}\n  Benefit: ${v.val2}\n  Value: ${v.val3}\n\n`;
+                    });
+                }
+                summary += formatSection('2. Unique Value & Proof', valuesContent || 'N/A');
+                
+                let marketContext = appState.positioningData['market-context'] === 'Other' ? 
+                    appState.positioningData['market-context-other'] : appState.positioningData['market-context'];
+                summary += formatSection('3. Market Category', marketContext || 'N/A');
+                
+                summary += formatSection('4. Target Market Characteristics', 
+                    appState.positioningData.icp_summary || 'N/A');
+                
+                let trendsContent = '';
+                if (appState.positioningData.trend1_desc) trendsContent += `- Trend 1: ${appState.positioningData.trend1_desc}\n`;
+                if (appState.positioningData.trend2_desc) trendsContent += `- Trend 2: ${appState.positioningData.trend2_desc}\n`;
+                if (appState.positioningData.trend3_desc) trendsContent += `- Trend 3: ${appState.positioningData.trend3_desc}\n`;
+                if (appState.positioningData.trend4_desc) trendsContent += `- Trend 4: ${appState.positioningData.trend4_desc}\n`;
+                summary += formatSection('5. Relevant Trends', trendsContent || 'N/A');
+                
+                setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
             };
 
             return (
@@ -2792,12 +2551,11 @@
                         title={exportModal.title}
                         content={exportModal.content}
                         appState={appState}
-                        filename={exportModal.filename || "positioning-export"}
-                        partData={exportModal.partData}
+                        filename="positioning-blueprint"
                     />
                     
                     {/* Header */}
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
+                    <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => onNavigate('icp')} className="text-gray-600 hover:scale-gold-text">← Back to ICP Definition</button>
@@ -2822,80 +2580,11 @@
                     {/* Layout with Sidebar Navigation */}
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="lg:flex lg:space-x-8">
-                            {/* Sticky Navigation Sidebar */}
-                            <nav className="hidden lg:block w-64 flex-shrink-0 sticky top-36 h-fit">
-                                <div className="bg-white p-6 rounded-lg shadow-md">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Section Navigation</h3>
-                                    <ul className="space-y-3">
-                                        <li>
-                                            <a 
-                                                href="#section-1" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-1').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Competitive Alternatives
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-2" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-2').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Unique Value and Proof
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-3" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-3').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Market Category
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-4" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-4').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Target Market Characteristics
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-5" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-5').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Relevant Trends
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </nav>
-                            
-                            <main className="flex-1 min-w-0">
+                            <main className="w-full">
                                 <div className="space-y-8">
                             
                             {/* Section 1: Competitive Alternatives */}
-                            <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                            <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">1. Competitive Alternatives</h2>
                                 <p className="text-gray-600 mb-6">What are your target customers currently using to solve this problem?</p>
                                 <div className="space-y-4">
@@ -2907,7 +2596,9 @@
                                             onUpdate: (idx, key, value) => updateNestedValue('alternatives', idx, key, value),
                                             onRemove: (idx) => removeItem('alternatives', idx),
                                             placeholder1: 'Alternative',
-                                            placeholder2: 'Why it\'s inadequate'
+                                            placeholder2: 'Why it\'s inadequate',
+                                            onAnalyze: (item, idx) => simulateCompetitiveAnalysis(item, idx),
+                                            analysisResult: analysisState[index]
                                         })
                                     )}
                                     <button
@@ -2920,7 +2611,7 @@
                             </div>
                             
                             {/* Section 2: Unique Value & Proof */}
-                            <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                            <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">2. Unique Value & Proof</h2>
                                 <p className="text-gray-600 mb-6">What unique attributes deliver measurable value to your customers?</p>
                                 <div className="space-y-4">
@@ -2930,11 +2621,15 @@
                                             index: index,
                                             item: item,
                                             onUpdate: (idx, key, value) => updateNestedValue('values', idx, key, value),
-                                            onRemove: (idx) => removeItem('values', idx)
+                                            onRemove: (idx) => removeItem('values', idx),
+                                            onGrade: (item, idx) => simulateAIGrading(item, idx),
+                                            gradingResult: gradingState[index],
+                                            onAnalyzeUniqueness: (attributeText, idx) => analyzeUniqueness(attributeText, idx),
+                                            uniquenessResult: uniquenessResults[index]
                                         })
                                     )}
                                     <button
-                                        onClick={() => addItem('values', { val1: '', val2: '', val3: '', val4: '' })}
+                                        onClick={() => addItem('values', { val1: '', val2: '', val3: '' })}
                                         className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
                                     >
                                         + Add Value Proposition
@@ -2943,7 +2638,7 @@
                             </div>
                             
                             {/* Section 3: Market Category */}
-                            <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                            <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">3. Market Category</h2>
                                 <p className="text-gray-600 mb-6">Define how customers and analysts will categorize your solution.</p>
                                 <div className="space-y-4">
@@ -2984,7 +2679,7 @@
                             </div>
                             
                             {/* Section 4: Target Market Characteristics */}
-                            <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                            <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">4. Target Market Characteristics</h2>
                                 <p className="text-gray-600 mb-6">Who will care most about your unique value?</p>
                                 <div className="space-y-4">
@@ -3033,7 +2728,7 @@
                             </div>
                             
                             {/* Section 5: Relevant Trends */}
-                            <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                            <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">5. Relevant Trends</h2>
                                 <p className="text-gray-600 mb-6">What market trends create urgency for your solution?</p>
                                 <div className="space-y-6">
@@ -3084,26 +2779,19 @@
                                 </div>
                             </div>
                             
-                            {/* Clear All Fields Button */}
-                            <div className="mt-8 text-center">
+                            {/* Navigation Footer */}
+                            <div className="flex justify-between items-center pt-8">
                                 <button
-                                    onClick={() => {
-                                        // Clear all Positioning fields
-                                        const clearedPositioningData = {};
-                                        setAppState(prev => ({ ...prev, positioningData: clearedPositioningData }));
-                                        alert('All fields cleared! Refresh the page to see placeholder text.');
-                                    }}
-                                    className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
+                                    onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }}
+                                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2"
                                 >
-                                    Clear All Fields
+                                    ← Back to Part 2: ICP Definition
                                 </button>
-                                
-                                {/* Continue to Part 4 Button */}
                                 <button
                                     onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
-                                    className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+                                    className="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 flex items-center gap-2"
                                 >
-                                    Continue to Part 4: Category Design
+                                    Continue to Part 4: Category Design →
                                 </button>
                             </div>
                                 </div>
@@ -3117,185 +2805,74 @@
         // CategoryDesignTool Component
         const CategoryDesignTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+            const [showSuggestions, setShowSuggestions] = useState(false);
+            const [isLoadingNames, setIsLoadingNames] = useState(false);
+            const [suggestedNames, setSuggestedNames] = useState([]);
             
-
-            // Generate Part 4 specific data for dual-format export
-            const generatePart4SpecificData = () => {
-                const exportDate = new Date().toISOString();
+            // AI Category State Variables
+            const [aiCategoryLoading, setAiCategoryLoading] = useState(false);
+            const [aiCategoryError, setAiCategoryError] = useState(null);
+            
+            // AI Category Drafter API Integration
+            const handleGenerateCategory = async (context) => {
+                setAiCategoryLoading(true);
+                setAiCategoryError(null);
                 
-                // Utility to format field values with future-proofing
-                const formatFieldValue = (fieldValue) => {
-                    if (Array.isArray(fieldValue)) {
-                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
-                    }
-                    return fieldValue && fieldValue.toString().trim() || null;
-                };
-
-                // Generate positioning foundation summary from Part 3 data
-                const generatePositioningFoundationSummary = () => {
-                    if (!appState.positioningData) return null;
-                    
-                    const foundation = {};
-                    
-                    // ICP Summary - check multiple possible sources
-                    if (appState.positioningData.icp_summary) {
-                        foundation.icpSummary = formatFieldValue(appState.positioningData.icp_summary);
-                    } else if (appState.segmentData?.icpDefinition) {
-                        // Generate from ICP definition if no summary exists
-                        const icp = appState.segmentData.icpDefinition;
-                        const characteristics = [];
-                        if (icp.firmographic) characteristics.push(icp.firmographic);
-                        if (icp.technographic) characteristics.push(icp.technographic);
-                        if (icp.behavioral) characteristics.push(icp.behavioral);
-                        foundation.icpSummary = characteristics.length > 0 ? characteristics.join('; ') : null;
-                    }
-                    
-                    // Unique Value - from positioning values
-                    if (appState.positioningData.values && Array.isArray(appState.positioningData.values)) {
-                        const uniqueValues = appState.positioningData.values
-                            .filter(v => v && v.val2)
-                            .map(v => v.val2);
-                        foundation.uniqueValue = uniqueValues.length > 0 ? uniqueValues.join('; ') : null;
-                    }
-                    
-                    return Object.keys(foundation).length > 0 ? foundation : null;
-                };
-
-                return {
-                    metadata: {
-                        exportDate: exportDate,
-                        partName: "Category Design",
-                        company: {
-                            name: formatFieldValue(appState.companyData?.name),
-                            url: formatFieldValue(appState.companyData?.url),
-                            productName: formatFieldValue(appState.companyData?.productName),
-                            industry: formatFieldValue(appState.companyData?.industry)
-                        }
-                    },
-                    content: {
-                        positioningFoundation: generatePositioningFoundationSummary(),
-                        pointOfView: {
-                            fromStatement: formatFieldValue(appState.categoryData?.['from-statement']),
-                            toStatement: formatFieldValue(appState.categoryData?.['to-statement'])
+                try {
+                    const response = await fetch('/api/draft-category', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
                         },
-                        newOpportunity: formatFieldValue(appState.categoryData?.['new-opportunity']),
-                        categoryNameAndDefinition: {
-                            name: formatFieldValue(appState.categoryData?.['category-name']),
-                            definition: formatFieldValue(appState.categoryData?.['category-definition'])
-                        },
-                        manifesto: formatFieldValue(appState.categoryData?.['manifesto'])
+                        body: JSON.stringify({
+                            icpSummary: context.icpSummary,
+                            valueProps: context.valueProps,
+                            fromStatement: context.fromStatement,
+                            toStatement: context.toStatement
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                };
-            };
-
-            // Generate Part 4 markdown content
-            const generatePart4Markdown = (data) => {
-                let markdown = `# Category Design\n\n`;
-                
-                // Add metadata
-                if (data.metadata.company.name) {
-                    markdown += `**Company:** ${data.metadata.company.name}\n`;
+                    
+                    const data = await response.json();
+                    return data.categories || [];
+                } catch (error) {
+                    console.error('Category generation failed:', error);
+                    setAiCategoryError(error.message);
+                    // Fallback names on error
+                    return [
+                        'Digital Transformation Platform',
+                        'Business Intelligence Suite', 
+                        'Operational Excellence System',
+                        'Market Innovation Engine',
+                        'Growth Acceleration Framework'
+                    ];
+                } finally {
+                    setAiCategoryLoading(false);
                 }
-                if (data.metadata.company.url) {
-                    markdown += `**Website:** ${data.metadata.company.url}\n`;
-                }
-                if (data.metadata.company.productName) {
-                    markdown += `**Product:** ${data.metadata.company.productName}\n`;
-                }
-                if (data.metadata.company.industry) {
-                    markdown += `**Industry:** ${data.metadata.company.industry}\n`;
-                }
-                markdown += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n\n`;
-                
-                markdown += `---\n\n`;
-
-                // Positioning Foundation
-                markdown += `## Positioning Foundation\n\n`;
-                if (data.content.positioningFoundation) {
-                    const foundation = data.content.positioningFoundation;
-                    if (foundation.icpSummary) {
-                        markdown += `    **ICP Summary:** ${foundation.icpSummary}\n`;
-                    }
-                    if (foundation.uniqueValue) {
-                        markdown += `    **Unique Value:** ${foundation.uniqueValue}\n`;
-                    }
-                    markdown += `\n`;
-                } else {
-                    markdown += `*No positioning foundation data available*\n\n`;
-                }
-
-                // Point of View (The "From/To" Shift)
-                markdown += `## The Point of View (The "From/To" Shift)\n\n`;
-                if (data.content.pointOfView.fromStatement || data.content.pointOfView.toStatement) {
-                    if (data.content.pointOfView.fromStatement) {
-                        markdown += `    **From:** ${data.content.pointOfView.fromStatement}\n`;
-                    }
-                    if (data.content.pointOfView.toStatement) {
-                        markdown += `    **To:** ${data.content.pointOfView.toStatement}\n`;
-                    }
-                    markdown += `\n`;
-                } else {
-                    markdown += `*No point of view defined*\n\n`;
-                }
-
-                // The New Opportunity
-                markdown += `## The New Opportunity\n\n`;
-                if (data.content.newOpportunity) {
-                    markdown += `${data.content.newOpportunity}\n\n`;
-                } else {
-                    markdown += `*No new opportunity defined*\n\n`;
-                }
-
-                // Category Name & Definition
-                markdown += `## Category Name & Definition\n\n`;
-                if (data.content.categoryNameAndDefinition.name || data.content.categoryNameAndDefinition.definition) {
-                    if (data.content.categoryNameAndDefinition.name) {
-                        markdown += `    **Name:** ${data.content.categoryNameAndDefinition.name}\n`;
-                    }
-                    if (data.content.categoryNameAndDefinition.definition) {
-                        markdown += `    **Definition:** ${data.content.categoryNameAndDefinition.definition}\n`;
-                    }
-                    markdown += `\n`;
-                } else {
-                    markdown += `*No category name and definition specified*\n\n`;
-                }
-
-                // The Manifesto
-                markdown += `## The Manifesto\n\n`;
-                if (data.content.manifesto) {
-                    markdown += `${data.content.manifesto}\n\n`;
-                } else {
-                    markdown += `*No manifesto defined*\n\n`;
-                }
-
-                return markdown;
             };
 
             const handleExport = () => {
-                try {
-                    const data = generatePart4SpecificData();
-                    const markdown = generatePart4Markdown(data);
-                    
-                    setExportModal({
-                        isOpen: true,
-                        content: markdown,
-                        title: 'Category Design Export',
-                        filename: 'category-design-export',
-                        partData: data
-                    });
-                } catch (error) {
-                    console.error("Error during Part 4 export:", error);
-                    setExportModal({
-                        isOpen: true,
-                        content: "Error generating export. Please try again.",
-                        title: 'Export Error'
-                    });
-                }
+                const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
+                
+                let summary = `Part 2: Category Design Blueprint\n==================================\n\n`;
+                summary += `## Positioning Foundation (from Part 1)\n`;
+                summary += `- ICP Summary: ${appState.positioningData.icp_summary || 'N/A'}\n`;
+                summary += `- Unique Value: ${appState.positioningData.values ? appState.positioningData.values.map(v => v.val2).join('; ') : 'N/A'}\n\n`;
+
+                summary += `## 5. The Point of View (The "From/To" Shift)\n- From: ${appState.categoryData['from-statement'] || 'N/A'}\n- To: ${appState.categoryData['to-statement'] || 'N/A'}\n\n`;
+                summary += formatSection('6. The New Opportunity', appState.categoryData['new-opportunity']);
+                summary += `## 7. Category Name & Definition\n- Name: ${appState.categoryData['category-name'] || 'N/A'}\n- Definition: ${appState.categoryData['category-definition'] || 'N/A'}\n\n`;
+                summary += formatSection('8. The Manifesto', appState.categoryData['manifesto']);
+
+                setExportModal({ isOpen: true, content: summary, title: 'Category Design Summary' });
             };
 
             return (
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <header className="sticky top-16 bg-white border-b border-gray-200 z-40 py-3">
+                    <header className="sticky-header">
                         <div className="flex justify-between items-center py-3">
                             <div className="flex items-center space-x-4">
                                 <button onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }} className="text-gray-600 hover:scale-gold-text">← Back to Part 3: Positioning</button>
@@ -3323,78 +2900,9 @@
 
                     <div className="mt-8">
                         <div className="lg:flex lg:space-x-8">
-                            {/* Sticky Navigation Sidebar */}
-                            <nav className="hidden lg:block w-64 flex-shrink-0 sticky top-36 h-fit">
-                                <div className="bg-white p-6 rounded-lg shadow-md">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Section Navigation</h3>
-                                    <ul className="space-y-3">
-                                        <li>
-                                            <a 
-                                                href="#positioning-foundation" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('positioning-foundation').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Positioning Foundation
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-1" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-1').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                The Point of View
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-2" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-2').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                The New Opportunity
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-3" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-3').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                Category Name & Definition
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a 
-                                                href="#section-4" 
-                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    document.getElementById('section-4').scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                            >
-                                                The Manifesto
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </nav>
-
                             <main className="w-full">
                                 <div className="space-y-8">
-                        <div id="positioning-foundation" className="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg shadow-sm scroll-mt-32">
+                        <div className="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg shadow-sm">
                             <h3 className="text-xl font-bold text-green-800 mb-3">Positioning Foundation</h3>
                             <p className="text-green-700 mb-4">This category design exercise builds upon the positioning work from Part 1. Here is a summary of your key inputs:</p>
                             <div className="bg-white p-4 rounded-md border border-green-200">
@@ -3415,7 +2923,7 @@
                             </div>
                         </div>
 
-                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                        <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">1. The Point of View (The "From/To" Shift)</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is the old, broken way of thinking, and what is our new, better way?</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -3442,7 +2950,7 @@
                             </div>
                         </div>
 
-                        <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                        <div id="section-2" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">2. The New Opportunity</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What becomes possible for businesses that adopt our point of view?</p>
                             <textarea 
@@ -3454,7 +2962,7 @@
                             />
                         </div>
 
-                        <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                        <div id="section-3" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">3. Category Name & Definition</h2>
                             <div className="space-y-4">
                                 <div>
@@ -3467,7 +2975,79 @@
                                             value={appState.categoryData['category-name'] || ''}
                                             onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
                                         />
+                                        <button 
+                                            className="px-4 py-2 text-white font-bold rounded-md transition-colors hover:opacity-90 disabled:opacity-50"
+                                            style={{backgroundColor: '#e5a819'}}
+                                            onClick={async () => {
+                                                // Gather strategic inputs from appState
+                                                const icpSummary = appState.positioningData.icp_summary || '';
+                                                const valueProps = appState.positioningData.values 
+                                                    ? appState.positioningData.values
+                                                        .filter(v => v.val3)
+                                                        .map(v => v.val3)
+                                                    : [];
+                                                const fromStatement = appState.categoryData['from-statement'] || '';
+                                                const toStatement = appState.categoryData['to-statement'] || '';
+                                                
+                                                // Construct context for AI
+                                                const context = {
+                                                    icpSummary,
+                                                    valueProps,
+                                                    fromStatement,
+                                                    toStatement
+                                                };
+                                                
+                                                // Show loading state
+                                                setShowSuggestions(true);
+                                                setIsLoadingNames(true);
+                                                
+                                                try {
+                                                    // Call AI Category Drafter API
+                                                    const names = await handleGenerateCategory(context);
+                                                    setSuggestedNames(names);
+                                                } catch (error) {
+                                                    console.error('Failed to generate names:', error);
+                                                    setSuggestedNames(['Error generating names']);
+                                                } finally {
+                                                    setIsLoadingNames(false);
+                                                }
+                                            }}
+                                            disabled={isLoadingNames}
+                                        >
+                                            {isLoadingNames ? 'Brainstorming...' : 'Brainstorm with AI'}
+                                        </button>
                                     </div>
+                                    {showSuggestions && (
+                                        <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                                            {isLoadingNames ? (
+                                                <p className="text-sm text-gray-600 italic">Analyzing your strategic context and generating category names...</p>
+                                            ) : (
+                                                <>
+                                                    <p className="text-sm font-medium text-gray-700 mb-2">Select a category name:</p>
+                                                    <div className="space-y-1">
+                                                        {suggestedNames.map((name, index) => (
+                                                    <button
+                                                        key={index}
+                                                        className="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors"
+                                                        onClick={() => {
+                                                            setAppState(prev => ({
+                                                                ...prev, 
+                                                                categoryData: {
+                                                                    ...prev.categoryData, 
+                                                                    'category-name': name 
+                                                                }
+                                                            }));
+                                                            setShowSuggestions(false);
+                                                        }}
+                                                    >
+                                                        {name}
+                                                    </button>
+                                                ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">One-Sentence Definition</label>
@@ -3482,7 +3062,7 @@
                             </div>
                         </div>
 
-                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                        <div id="section-4" className="bg-white p-8 rounded-lg shadow-md scroll-mt-24">
                             <h2 className="text-2xl font-bold scale-green-text mb-2">4. The Manifesto</h2>
                             <p className="font-semibold text-gray-600 mb-2">Question: What is our story?</p>
                             <textarea 
@@ -3492,33 +3072,6 @@
                                 value={appState.categoryData['manifesto'] || ''}
                                 onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'manifesto': e.target.value } }))}
                             />
-                        </div>
-                        
-                        {/* Clear All Fields Button */}
-                        <div className="mt-8 text-center">
-                            <button
-                                onClick={() => {
-                                    // Clear all Category Design fields
-                                    const clearedCategoryData = {};
-                                    setAppState(prev => ({ ...prev, categoryData: clearedCategoryData }));
-                                    alert('All fields cleared! Refresh the page to see placeholder text.');
-                                }}
-                                className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition-colors mr-4"
-                            >
-                                Clear All Fields
-                            </button>
-                            
-                            {/* Complete Blueprint Button */}
-                            <button
-                                onClick={() => {
-                                    // Complete Blueprint - could navigate to completion page or show success message
-                                    alert('Blueprint Complete! All parts have been finished.');
-                                    window.scrollTo(0, 0);
-                                }}
-                                className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
-                            >
-                                Complete Blueprint
-                            </button>
                         </div>
                                 </div>
                             </main>
@@ -3563,10 +3116,10 @@
 
                         <main className="w-full max-w-md text-center">
                             <button 
-                                onClick={() => onNavigate('segment')}
+                                onClick={() => onNavigate('analysis')}
                                 className="w-full scale-green-bg text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:bg-opacity-90 transition-transform transform hover:scale-105"
                             >
-                                Get Started →
+                                Analyze with AI →
                             </button>
                         </main>
 
@@ -3618,17 +3171,23 @@
 
         // Main App Component
         const App = () => {
+            serverLog('log', 'App component rendering...');
+            
             const [appState, setAppState] = useState(() => {
+                serverLog('log', 'Initializing app state...');
                 const savedState = loadAppState();
                 const state = savedState || getInitialState();
+                serverLog('log', 'Initial state set with currentView:', state.currentView);
                 return state;
             });
 
             useEffect(() => {
+                serverLog('log', 'App state changed, saving to localStorage...');
                 saveAppState(appState);
             }, [appState]);
 
             const navigate = (view) => {
+                serverLog('log', `Navigating to view: ${view}`);
                 setAppState(prev => {
                     const newState = { ...prev, currentView: view };
                     
@@ -3645,8 +3204,11 @@
             };
 
             const renderCurrentView = () => {
+                serverLog('log', `Rendering view: ${appState.currentView}`);
+                
                 switch (appState.currentView) {
-                    // case 'analysis': - REMOVED for simplification
+                    case 'analysis':
+                        return <AnalysisView appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'segment':
                         return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                     case 'icp':
@@ -3664,6 +3226,7 @@
             // Show progress stepper only on workflow pages
             const showProgressStepper = ['segment', 'icp', 'positioning', 'category'].includes(appState.currentView);
 
+            serverLog('log', 'App render successful, returning JSX...');
             
             return (
                 <div>
@@ -3679,13 +3242,18 @@
             );
         };
 
+        serverLog('log', 'Starting application initialization...');
         
         const container = document.getElementById('root');
         if (container) {
+            serverLog('log', 'Root container found, creating React root...');
             try {
                 const root = ReactDOM.createRoot(container);
+                serverLog('log', 'React root created successfully');
                 
+                serverLog('log', 'Attempting to render App component...');
                 root.render(<App />);
+                serverLog('log', 'App render call completed');
             } catch (error) {
                 serverLog('error', 'Failed to create or render React root', error);
             }

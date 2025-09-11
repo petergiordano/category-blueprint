@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 3 Export Test</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const TestApp = () => {
+            // Mock appState data structure
+            const [appState] = useState({
+                companyData: {
+                    name: "Test Company",
+                    url: "https://example.com",
+                    productName: "AI Analytics Platform",
+                    industry: "SaaS"
+                },
+                segmentData: {
+                    icpDefinition: {
+                        firmographic: "Mid-market companies with 100-500 employees",
+                        technographic: "Uses CRM and marketing automation tools",
+                        behavioral: "Actively seeking growth solutions",
+                        quickDecisionMaking: "Can make decisions within 30 days",
+                        prioritizedRequirements: "ROI tracking, easy integration"
+                    }
+                },
+                positioningData: {
+                    alternatives: [
+                        { val1: "Competitor A", val2: "Direct competitor with similar features" },
+                        { val1: "In-house solution", val2: "Building custom tools internally" }
+                    ],
+                    values: [
+                        { val1: "Speed", val2: "Faster time to market", val3: "50% reduction in launch time" },
+                        { val1: "Integration", val2: "Seamless data flow", val3: "Works with existing tech stack" }
+                    ],
+                    'market-context': 'New Market',
+                    'market-context-other': null,
+                    trend1_desc: "Increasing focus on AI automation",
+                    trend2_desc: "Remote work driving digital transformation",
+                    trend3_desc: "Data privacy regulations getting stricter",
+                    trend4_desc: "Customer experience becoming key differentiator"
+                }
+            });
+
+            const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+
+            // Generate Part 3 specific data for dual-format export
+            const generatePart3SpecificData = () => {
+                const exportDate = new Date().toISOString();
+                
+                // Utility to format field values with future-proofing
+                const formatFieldValue = (fieldValue) => {
+                    if (Array.isArray(fieldValue)) {
+                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
+                    }
+                    return fieldValue && fieldValue.toString().trim() || null;
+                };
+
+                // Generate focused ICP summary for Target Market Characteristics
+                const generateTargetMarketIcpSummary = () => {
+                    if (!appState.segmentData?.icpDefinition) return null;
+                    
+                    const icp = appState.segmentData.icpDefinition;
+                    const characteristics = {};
+                    
+                    if (icp.firmographic) {
+                        characteristics.firmographic = formatFieldValue(icp.firmographic);
+                    }
+                    if (icp.technographic) {
+                        characteristics.technographic = formatFieldValue(icp.technographic);
+                    }
+                    if (icp.behavioral) {
+                        characteristics.behavioral = formatFieldValue(icp.behavioral);
+                    }
+                    if (icp.quickDecisionMaking) {
+                        characteristics.decisionMaking = formatFieldValue(icp.quickDecisionMaking);
+                    }
+                    if (icp.prioritizedRequirements) {
+                        characteristics.keyRequirements = formatFieldValue(icp.prioritizedRequirements);
+                    }
+                    
+                    return Object.keys(characteristics).length > 0 ? characteristics : null;
+                };
+
+                // Format competitive alternatives
+                const formatCompetitiveAlternatives = () => {
+                    if (!appState.positioningData.alternatives || !Array.isArray(appState.positioningData.alternatives)) {
+                        return [{ alternative: null, description: null }];
+                    }
+                    
+                    return appState.positioningData.alternatives.map(alt => ({
+                        alternative: formatFieldValue(alt.val1),
+                        description: formatFieldValue(alt.val2)
+                    }));
+                };
+
+                // Format unique value and proof
+                const formatUniqueValueAndProof = () => {
+                    if (!appState.positioningData.values || !Array.isArray(appState.positioningData.values)) {
+                        return [{ attribute: null, benefit: null, value: null }];
+                    }
+                    
+                    return appState.positioningData.values.map(val => ({
+                        attribute: formatFieldValue(val.val1),
+                        benefit: formatFieldValue(val.val2),
+                        value: formatFieldValue(val.val3)
+                    }));
+                };
+
+                // Get market category
+                const getMarketCategory = () => {
+                    if (appState.positioningData['market-context'] === 'Other') {
+                        return formatFieldValue(appState.positioningData['market-context-other']);
+                    }
+                    return formatFieldValue(appState.positioningData['market-context']);
+                };
+
+                // Format relevant trends
+                const formatRelevantTrends = () => {
+                    return {
+                        trend1: formatFieldValue(appState.positioningData.trend1_desc),
+                        trend2: formatFieldValue(appState.positioningData.trend2_desc),
+                        trend3: formatFieldValue(appState.positioningData.trend3_desc),
+                        trend4: formatFieldValue(appState.positioningData.trend4_desc)
+                    };
+                };
+
+                return {
+                    metadata: {
+                        exportDate: exportDate,
+                        partName: "Positioning",
+                        company: {
+                            name: formatFieldValue(appState.companyData?.name),
+                            url: formatFieldValue(appState.companyData?.url),
+                            productName: formatFieldValue(appState.companyData?.productName),
+                            industry: formatFieldValue(appState.companyData?.industry)
+                        }
+                    },
+                    content: {
+                        competitiveAlternatives: formatCompetitiveAlternatives(),
+                        uniqueValueAndProof: formatUniqueValueAndProof(),
+                        marketCategory: getMarketCategory(),
+                        targetMarketCharacteristics: generateTargetMarketIcpSummary(),
+                        relevantTrends: formatRelevantTrends()
+                    }
+                };
+            };
+
+            // Generate Part 3 markdown content
+            const generatePart3Markdown = (data) => {
+                let markdown = `# Positioning\n\n`;
+                
+                // Add metadata
+                if (data.metadata.company.name) {
+                    markdown += `**Company:** ${data.metadata.company.name}\n`;
+                }
+                if (data.metadata.company.url) {
+                    markdown += `**Website:** ${data.metadata.company.url}\n`;
+                }
+                if (data.metadata.company.productName) {
+                    markdown += `**Product:** ${data.metadata.company.productName}\n`;
+                }
+                if (data.metadata.company.industry) {
+                    markdown += `**Industry:** ${data.metadata.company.industry}\n`;
+                }
+                markdown += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n\n`;
+                
+                markdown += `---\n\n`;
+
+                // Competitive Alternatives
+                markdown += `## Competitive Alternatives\n\n`;
+                if (data.content.competitiveAlternatives.length > 0 && data.content.competitiveAlternatives[0].alternative) {
+                    data.content.competitiveAlternatives.forEach((alt, index) => {
+                        if (alt.alternative) {
+                            markdown += `**${index + 1}. ${alt.alternative}**\n`;
+                            if (alt.description) {
+                                markdown += `   ${alt.description}\n\n`;
+                            } else {
+                                markdown += `\n`;
+                            }
+                        }
+                    });
+                } else {
+                    markdown += `*No competitive alternatives defined*\n\n`;
+                }
+
+                // Unique Value and Proof
+                markdown += `## Unique Value and Proof\n\n`;
+                if (data.content.uniqueValueAndProof.length > 0 && data.content.uniqueValueAndProof[0].attribute) {
+                    data.content.uniqueValueAndProof.forEach((item, index) => {
+                        if (item.attribute) {
+                            markdown += `**${index + 1}. ${item.attribute}**\n`;
+                            if (item.benefit) {
+                                markdown += `   **Benefit:** ${item.benefit}\n`;
+                            }
+                            if (item.value) {
+                                markdown += `   **Value:** ${item.value}\n`;
+                            }
+                            markdown += `\n`;
+                        }
+                    });
+                } else {
+                    markdown += `*No unique value and proof defined*\n\n`;
+                }
+
+                // Market Category
+                markdown += `## Market Category\n\n`;
+                if (data.content.marketCategory) {
+                    markdown += `${data.content.marketCategory}\n\n`;
+                } else {
+                    markdown += `*No market category defined*\n\n`;
+                }
+
+                // Target Market Characteristics
+                markdown += `## Target Market Characteristics\n\n`;
+                if (data.content.targetMarketCharacteristics) {
+                    const characteristics = data.content.targetMarketCharacteristics;
+                    if (characteristics.firmographic) {
+                        markdown += `    **Firmographic**: ${characteristics.firmographic}\n`;
+                    }
+                    if (characteristics.technographic) {
+                        markdown += `    **Technographic**: ${characteristics.technographic}\n`;
+                    }
+                    if (characteristics.behavioral) {
+                        markdown += `    **Behavioral**: ${characteristics.behavioral}\n`;
+                    }
+                    if (characteristics.decisionMaking) {
+                        markdown += `    **Decision Making**: ${characteristics.decisionMaking}\n`;
+                    }
+                    if (characteristics.keyRequirements) {
+                        markdown += `    **Key Requirements**: ${characteristics.keyRequirements}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No target market characteristics defined*\n\n`;
+                }
+
+                // Relevant Trends
+                markdown += `## Relevant Trends\n\n`;
+                const trends = data.content.relevantTrends;
+                let hasTrends = false;
+                
+                ['trend1', 'trend2', 'trend3', 'trend4'].forEach((trendKey, index) => {
+                    if (trends[trendKey]) {
+                        markdown += `    **Trend ${index + 1}:** ${trends[trendKey]}\n`;
+                        hasTrends = true;
+                    }
+                });
+                
+                if (hasTrends) {
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No relevant trends defined*\n\n`;
+                }
+
+                return markdown;
+            };
+
+            const testExport = () => {
+                try {
+                    console.log("Testing Part 3 export...");
+                    const data = generatePart3SpecificData();
+                    console.log("Generated data:", data);
+                    
+                    const markdown = generatePart3Markdown(data);
+                    console.log("Generated markdown:", markdown);
+                    
+                    setExportModal({
+                        isOpen: true,
+                        content: markdown,
+                        title: 'Positioning Export Test',
+                        filename: 'positioning-export',
+                        partData: data
+                    });
+                } catch (error) {
+                    console.error("Error during export:", error);
+                }
+            };
+
+            return (
+                <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+                    <h1>Part 3 Export Function Test</h1>
+                    <button 
+                        onClick={testExport}
+                        style={{ 
+                            padding: '10px 20px', 
+                            backgroundColor: '#10b981', 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '5px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Test Part 3 Export
+                    </button>
+                    
+                    {exportModal.isOpen && (
+                        <div style={{ 
+                            marginTop: '20px', 
+                            padding: '20px', 
+                            backgroundColor: '#f5f5f5', 
+                            borderRadius: '5px',
+                            maxHeight: '400px',
+                            overflow: 'auto'
+                        }}>
+                            <h2>{exportModal.title}</h2>
+                            <h3>Markdown Content:</h3>
+                            <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
+                                {exportModal.content}
+                            </pre>
+                            <h3>JSON Data:</h3>
+                            <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>
+                                {JSON.stringify(exportModal.partData, null, 2)}
+                            </pre>
+                            <button 
+                                onClick={() => setExportModal({ isOpen: false, content: '', title: '' })}
+                                style={{ 
+                                    marginTop: '10px',
+                                    padding: '5px 15px', 
+                                    backgroundColor: '#6b7280', 
+                                    color: 'white', 
+                                    border: 'none', 
+                                    borderRadius: '3px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<TestApp />);
+    </script>
+</body>
+</html>
