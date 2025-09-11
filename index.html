@@ -124,7 +124,7 @@
               'market-context-other': '',
               alternatives: [{ val1: '', val2: '' }],
               pillars: [{ id: 1, name: '', benefit: '' }],
-              values: [{ val1: '', val2: '', val3: '', pillarId: null }],
+              values: [{ val1: '', val2: '', val3: '', val4: '', pillarId: null }],
               trend1_desc: '',
               trend2_desc: '',
               trend3_desc: '',
@@ -2180,12 +2180,12 @@
                 <div className="flex items-start space-x-2">
                     <div className="flex-grow">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
-                            Truly Unique Attribute: The Feature or Capability
+                            Truly Unique Attribute Name (&lt; 5 word name for the Feature or Capability):
                         </label>
                         <input 
                             type="text" 
                             className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                            placeholder="Example: Day-one insights from existing documents"
+                            placeholder="Example: Real-time collaborative analytics"
                             value={item.val1}
                             onChange={(e) => onUpdate(index, 'val1', e.target.value)}
                         />
@@ -2199,27 +2199,39 @@
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Benefit: What the attribute enables for a customer
+                        Attribute Description: (10+ word description highlighting the differentiation)
                     </label>
                     <textarea 
                         className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                        rows="2" 
-                        placeholder="Example: Enables immediate analysis without lengthy discovery interviews"
+                        rows="3" 
+                        placeholder="Example: Industry's only platform enabling simultaneous multi-user data exploration with instant synchronization across all dashboards"
                         value={item.val2}
                         onChange={(e) => onUpdate(index, 'val2', e.target.value)}
                     ></textarea>
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Value: The metrics and KPIs the customer use to measure value created by this attribute
+                        Benefit: What the attribute enables for a customer
                     </label>
-                    <input 
-                        type="text" 
+                    <textarea 
                         className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
-                        placeholder="Example: Reduces transformation timeline by 6 months, saving $500k in consulting fees"
+                        rows="2" 
+                        placeholder="Example: Enables teams to make data-driven decisions together in real-time, eliminating version control issues and reducing meeting cycles"
                         value={item.val3}
                         onChange={(e) => onUpdate(index, 'val3', e.target.value)}
-                    />
+                    ></textarea>
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Value: The metrics and KPIs the customer use to measure value created by this attribute
+                    </label>
+                    <textarea 
+                        className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                        rows="2" 
+                        placeholder="Example: 50% reduction in decision-making time, 3x faster insight discovery, $2M annual savings from eliminated redundant analysis"
+                        value={item.val4}
+                        onChange={(e) => onUpdate(index, 'val4', e.target.value)}
+                    ></textarea>
                 </div>
                 <div className="pt-2 space-y-3">
                     <div className="flex space-x-2">
@@ -2599,7 +2611,7 @@
                                         })
                                     )}
                                     <button
-                                        onClick={() => addItem('values', { val1: '', val2: '', val3: '' })}
+                                        onClick={() => addItem('values', { val1: '', val2: '', val3: '', val4: '' })}
                                         className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
                                     >
                                         + Add Value Proposition
