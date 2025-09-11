@@ -312,7 +312,7 @@
         };
 
         // Export Modal Component
-        const ExportModal = ({ isOpen, onClose, title, content, appState, filename = 'gtm-blueprint-export' }) => {
+        const ExportModal = ({ isOpen, onClose, title, content, appState, filename = 'gtm-blueprint-export', partData = null }) => {
             const [copied, setCopied] = useState(false);
 
             const handleCopy = () => {
@@ -325,7 +325,8 @@
             };
 
             const handleDownloadJSON = () => {
-                const jsonData = JSON.stringify(appState, null, 2);
+                // Use part-specific data if available, otherwise fall back to full appState
+                const jsonData = JSON.stringify(partData || appState, null, 2);
                 const blob = new Blob([jsonData], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -588,6 +589,7 @@
             console.log('SegmentFoundationTool rendering, appState:', appState);
             const [exportModalOpen, setExportModalOpen] = useState(false);
             const [exportContent, setExportContent] = useState('');
+            const [exportData, setExportData] = useState(null);
             const [validationState, setValidationState] = useState({});
             
             // AI Draft State Variables
@@ -700,52 +702,118 @@
                 }
             };
 
-            const generateExportContent = () => {
-                const formatSection = (title, fields) => {
-                    let section = `## ${title}\n`;
-                    fields.forEach(field => {
-                        const value = appState.segmentData[field] || 'Not provided';
-                        section += `**${field}:** ${value}\n\n`;
-                    });
-                    return section;
+            // Generate part-specific structured data for consistent exports
+            const generatePartSpecificData = () => {
+                const formatFieldValue = (fieldValue) => {
+                    // Handle arrays (future dynamic content)
+                    if (Array.isArray(fieldValue)) {
+                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
+                    }
+                    // Handle objects (future complex data)
+                    if (typeof fieldValue === 'object' && fieldValue !== null) {
+                        return Object.entries(fieldValue)
+                            .filter(([k, v]) => v && v.toString().trim())
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join('; ');
+                    }
+                    // Handle strings (current implementation)
+                    return fieldValue && fieldValue.toString().trim() || null;
                 };
+
+                return {
+                    metadata: {
+                        exportDate: new Date().toISOString(),
+                        partName: "Segment Foundation",
+                        partNumber: 1,
+                        company: {
+                            name: formatFieldValue(appState.companyData?.companyName),
+                            website: formatFieldValue(appState.companyData?.companyWebsite),
+                            industry: formatFieldValue(appState.companyData?.industry),
+                            productName: formatFieldValue(appState.companyData?.productName),
+                            targetMarket: formatFieldValue(appState.companyData?.targetMarket)
+                        }
+                    },
+                    content: {
+                        jobsToBeDone: {
+                            "Context": formatFieldValue(appState.segmentData?.['Context']),
+                            "Struggling Moments": formatFieldValue(appState.segmentData?.['Struggling Moments']),
+                            "Pushes & Pulls": formatFieldValue(appState.segmentData?.['Pushes & Pulls']),
+                            "Anxieties & Habits": formatFieldValue(appState.segmentData?.['Anxieties & Habits']),
+                            "Desired Outcomes": formatFieldValue(appState.segmentData?.['Desired Outcomes']),
+                            "Basic Quality (Table Stakes)": formatFieldValue(appState.segmentData?.['Basic Quality (Table Stakes)']),
+                            "Hiring Criteria": formatFieldValue(appState.segmentData?.['Hiring Criteria']),
+                            "Firing Criteria": formatFieldValue(appState.segmentData?.['Firing Criteria']),
+                            "Key Trade-offs": formatFieldValue(appState.segmentData?.['Key Trade-offs'])
+                        },
+                        customerValue: {
+                            "Table Stakes": formatFieldValue(appState.segmentData?.['Table Stakes']),
+                            "Functional Value": formatFieldValue(appState.segmentData?.['Functional Value']),
+                            "Ease of Doing Business": formatFieldValue(appState.segmentData?.['Ease of Doing Business']),
+                            "Individual Value": formatFieldValue(appState.segmentData?.['Individual Value']),
+                            "Aspirational Value": formatFieldValue(appState.segmentData?.['Aspirational Value'])
+                        },
+                        willingnessToPay: {
+                            "Ability to Pay": formatFieldValue(appState.segmentData?.['Ability to Pay']),
+                            "Economic Justification": formatFieldValue(appState.segmentData?.['Economic Justification']),
+                            "Relative Value vs. Alternatives": formatFieldValue(appState.segmentData?.['Relative Value vs. Alternatives']),
+                            "Risk & Switching Costs": formatFieldValue(appState.segmentData?.['Risk & Switching Costs']),
+                            "Market Reference Points": formatFieldValue(appState.segmentData?.['Market Reference Points'])
+                        }
+                    }
+                };
+            };
+
+            // Generate markdown from structured data
+            const generateMarkdownFromData = (data) => {
+                const { metadata, content } = data;
                 
-                let summary = `# Segment Foundation Summary\n\n`;
+                let markdown = `# Segment Foundation Summary\n\n`;
                 
-                summary += formatSection('Jobs To Be Done', [
-                    'Context',
-                    'Struggling Moments', 
-                    'Pushes & Pulls',
-                    'Anxieties & Habits',
-                    'Desired Outcomes',
-                    'Basic Quality (Table Stakes)',
-                    'Hiring Criteria',
-                    'Firing Criteria',
-                    'Key Trade-offs'
-                ]);
-                
-                summary += formatSection('Customer Value', [
-                    'Table Stakes',
-                    'Functional Value',
-                    'Ease of Doing Business', 
-                    'Individual Value',
-                    'Aspirational Value'
-                ]);
-                
-                summary += formatSection('Willingness to Pay', [
-                    'Ability to Pay',
-                    'Economic Justification',
-                    'Relative Value vs. Alternatives',
-                    'Risk',
-                    'Market Reference Points'
-                ]);
-                
-                return summary;
+                // Add company context header
+                if (metadata.company.name || metadata.company.website) {
+                    markdown += `**Export Date:** ${new Date(metadata.exportDate).toLocaleDateString()}\n`;
+                    if (metadata.company.name) {
+                        markdown += `**Company:** ${metadata.company.name}`;
+                        if (metadata.company.website) markdown += ` (${metadata.company.website})`;
+                        markdown += `\n`;
+                    }
+                    if (metadata.company.industry || metadata.company.productName || metadata.company.targetMarket) {
+                        const companyDetails = [];
+                        if (metadata.company.industry) companyDetails.push(`**Industry:** ${metadata.company.industry}`);
+                        if (metadata.company.productName) companyDetails.push(`**Product:** ${metadata.company.productName}`);
+                        if (metadata.company.targetMarket) companyDetails.push(`**Market:** ${metadata.company.targetMarket}`);
+                        markdown += `${companyDetails.join(' | ')}\n`;
+                    }
+                    markdown += `\n`;
+                }
+
+                // Jobs to be Done section
+                markdown += `## Jobs to be Done\n`;
+                Object.entries(content.jobsToBeDone).forEach(([key, value]) => {
+                    markdown += `**${key}:** ${value || 'Not provided'}\n\n`;
+                });
+
+                // Customer Value section
+                markdown += `## Customer Value\n`;
+                Object.entries(content.customerValue).forEach(([key, value]) => {
+                    markdown += `**${key}:** ${value || 'Not provided'}\n\n`;
+                });
+
+                // Willingness to Pay section
+                markdown += `## Willingness to Pay\n`;
+                Object.entries(content.willingnessToPay).forEach(([key, value]) => {
+                    markdown += `**${key}:** ${value || 'Not provided'}\n\n`;
+                });
+
+                return markdown;
             };
             
             const handleExport = () => {
-                const content = generateExportContent();
-                setExportContent(content);
+                const partData = generatePartSpecificData();
+                const markdownContent = generateMarkdownFromData(partData);
+                
+                setExportData(partData);
+                setExportContent(markdownContent);
                 setExportModalOpen(true);
             };
             
@@ -1289,6 +1357,7 @@
                         content={exportContent}
                         appState={appState}
                         filename="segment-foundation-export"
+                        partData={exportData}
                     />
                 </div>
             );
@@ -1813,32 +1882,154 @@
                 }
             };
 
-            const handleExport = () => {
-                const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
-                const formatList = (items, k1, k2) => items.map(item => `- ${item[k1]}: ${item[k2]}`).join('\n');
+            // Generate Part 2 specific structured data for dual-format export
+            const generatePart2SpecificData = () => {
+                // Utility to format field values (arrays, objects, strings) with future-proofing
+                const formatFieldValue = (fieldValue) => {
+                    if (Array.isArray(fieldValue)) {
+                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
+                    }
+                    if (fieldValue && typeof fieldValue === 'object' && fieldValue.val1 && fieldValue.val2) {
+                        return `${fieldValue.val1}: ${fieldValue.val2}`;
+                    }
+                    return fieldValue && fieldValue.toString().trim() || null;
+                };
+
+                // Include Segment Foundation summary as requested by user
+                const segmentFoundationSummary = {
+                    jobsToBeDone: {},
+                    customerValue: {},
+                    willingnessToPay: {}
+                };
+
+                // Extract Jobs to be Done data from segmentData
+                if (appState.segmentData) {
+                    const jtbdFields = [
+                        'jtbd_functional_job', 'jtbd_emotional_job', 'jtbd_social_job',
+                        'jtbd_main_thing', 'jtbd_other_solutions', 'jtbd_success_metrics',
+                        'jtbd_anxieties_habits', 'jtbd_context_triggers', 'jtbd_current_alternatives'
+                    ];
+                    jtbdFields.forEach(field => {
+                        segmentFoundationSummary.jobsToBeDone[field] = formatFieldValue(appState.segmentData[field]);
+                    });
+
+                    const customerValueFields = [
+                        'customer_value_table_stakes', 'customer_value_functional', 'customer_value_ease_of_business',
+                        'customer_value_individual', 'customer_value_aspirational'
+                    ];
+                    customerValueFields.forEach(field => {
+                        segmentFoundationSummary.customerValue[field] = formatFieldValue(appState.segmentData[field]);
+                    });
+
+                    const willingnessToPayFields = [
+                        'willingness_ability_to_pay', 'willingness_economic_justification', 'willingness_relative_value',
+                        'willingness_risk_switching_costs', 'willingness_market_reference_points'
+                    ];
+                    willingnessToPayFields.forEach(field => {
+                        segmentFoundationSummary.willingnessToPay[field] = formatFieldValue(appState.segmentData[field]);
+                    });
+                }
+
+                return {
+                    metadata: {
+                        exportDate: new Date().toISOString(),
+                        partName: "ICP Definition",
+                        company: {
+                            name: appState.companyData?.companyName || null,
+                            url: appState.companyData?.companyURL || null,
+                            industry: appState.companyData?.industry || null
+                        }
+                    },
+                    segmentFoundationSummary: segmentFoundationSummary,
+                    content: {
+                        icpDefinition: {
+                            quickDecisionMaking: formatFieldValue(appState.positioningData?.icp_quick_decision_making),
+                            prioritizedRequirements: formatFieldValue(appState.positioningData?.icp_prioritized_requirements),
+                            implementationReadiness: formatFieldValue(appState.positioningData?.icp_implementation_readiness),
+                            firmographic: formatFieldValue(appState.positioningData?.icp_firmographic),
+                            technographic: formatFieldValue(appState.positioningData?.icp_technographic),
+                            behavioral: formatFieldValue(appState.positioningData?.icp_behavioral)
+                        }
+                    }
+                };
+            };
+
+            // Generate markdown content from structured data
+            const generatePart2Markdown = (partData) => {
+                let markdown = `# ICP Definition\n\n`;
                 
-                let summary = `Part 2: ICP & Positioning Blueprint\n======================================\n\n`;
-                summary += `## 1. Ideal Customer Profile (ICP)\n`;
-                summary += `- Segment Foundation: See Part 1 export for complete segment data\n`;
-                summary += `- Quick Decision Making: ${appState.positioningData.icp_quick_decision_making || 'N/A'}\n`;
-                summary += `- Prioritized Requirements: ${appState.positioningData.icp_prioritized_requirements || 'N/A'}\n`;
-                summary += `- Implementation Readiness: ${appState.positioningData.icp_implementation_readiness || 'N/A'}\n`;
-                summary += `- Firmographic: ${appState.positioningData.icp_firmographic || 'N/A'}\n`;
-                summary += `- Technographic: ${appState.positioningData.icp_technographic || 'N/A'}\n`;
-                summary += `- Behavioral: ${appState.positioningData.icp_behavioral || 'N/A'}\n\n`;
+                // Company context
+                if (partData.metadata.company.name) {
+                    markdown += `**Company:** ${partData.metadata.company.name}\n`;
+                    if (partData.metadata.company.url) {
+                        markdown += `**URL:** ${partData.metadata.company.url}\n`;
+                    }
+                    if (partData.metadata.company.industry) {
+                        markdown += `**Industry:** ${partData.metadata.company.industry}\n`;
+                    }
+                    markdown += `\n`;
+                }
 
-                summary += formatSection('2. Competitive Alternatives', appState.positioningData.alternatives ? formatList(appState.positioningData.alternatives, 'val1', 'val2') : 'N/A');
-                summary += formatSection('5. Summarize Target Market', appState.positioningData.icp_summary || 'N/A');
-                let marketContext = appState.positioningData['market-context'] === 'Other' ? appState.positioningData['market-context-other'] : appState.positioningData['market-context'];
-                summary += formatSection('6. Market Context (Today)', marketContext);
-                let trendsContent = '';
-                if (appState.positioningData.trend1_desc) trendsContent += `- Industry Trend 1: ${appState.positioningData.trend1_desc}\n`;
-                if (appState.positioningData.trend2_desc) trendsContent += `- Industry Trend 2: ${appState.positioningData.trend2_desc}\n`;
-                if (appState.positioningData.trend3_desc) trendsContent += `- Industry Trend 3: ${appState.positioningData.trend3_desc}\n`;
-                if (appState.positioningData.trend4_desc) trendsContent += `- Industry Trend 4: ${appState.positioningData.trend4_desc}\n`;
-                summary += formatSection('4. Relevant Trends', trendsContent || 'N/A');
+                // Segment Foundation Summary (as requested by user)
+                markdown += `## Segment Foundation Summary\n\n`;
+                
+                markdown += `### Jobs to be Done\n`;
+                Object.entries(partData.segmentFoundationSummary.jobsToBeDone).forEach(([key, value]) => {
+                    if (value) {
+                        const fieldName = key.replace('jtbd_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        markdown += `- **${fieldName}:** ${value}\n`;
+                    }
+                });
+                markdown += `\n`;
 
-                setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
+                markdown += `### Customer Value\n`;
+                Object.entries(partData.segmentFoundationSummary.customerValue).forEach(([key, value]) => {
+                    if (value) {
+                        const fieldName = key.replace('customer_value_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        markdown += `- **${fieldName}:** ${value}\n`;
+                    }
+                });
+                markdown += `\n`;
+
+                markdown += `### Willingness to Pay\n`;
+                Object.entries(partData.segmentFoundationSummary.willingnessToPay).forEach(([key, value]) => {
+                    if (value) {
+                        const fieldName = key.replace('willingness_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        markdown += `- **${fieldName}:** ${value}\n`;
+                    }
+                });
+                markdown += `\n---\n\n`;
+
+                // ICP Definition fields
+                markdown += `## ICP Definition\n\n`;
+                Object.entries(partData.content.icpDefinition).forEach(([key, value]) => {
+                    if (value) {
+                        const fieldName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                        markdown += `- **${fieldName}:** ${value}\n`;
+                    }
+                });
+                markdown += `\n`;
+
+
+                markdown += `\n---\n*Export generated on ${new Date().toLocaleString()}*`;
+                return markdown;
+            };
+
+            const handleExport = () => {
+                // Generate structured data for both formats
+                const partData = generatePart2SpecificData();
+                
+                // Generate markdown from structured data  
+                const markdownContent = generatePart2Markdown(partData);
+                
+                // Open modal with both markdown and JSON data (fixed title)
+                setExportModal({ 
+                    isOpen: true, 
+                    content: markdownContent, 
+                    title: 'ICP Definition Summary',
+                    partData: partData,
+                    filename: 'icp-definition-export'
+                });
             };
 
             return (
@@ -2085,7 +2276,8 @@
                         title={exportModal.title}
                         content={exportModal.content}
                         appState={appState}
-                        filename="positioning-blueprint"
+                        filename={exportModal.filename || "icp-definition-export"}
+                        partData={exportModal.partData}
                     />
                     
                 </div>
@@ -2366,40 +2558,230 @@
 
 
 
-            // Export functionality for positioning data
-            const exportData = () => {
-                const formatSection = (title, content) => content ? `## ${title}\n${content}\n\n` : '';
-                const formatList = (items, k1, k2) => items.map(item => `- ${item[k1]}: ${item[k2]}`).join('\n');
+            // Generate Part 3 specific data for dual-format export
+            const generatePart3SpecificData = () => {
+                const exportDate = new Date().toISOString();
                 
-                let summary = `Part 3: Positioning Blueprint\n======================================\n\n`;
+                // Utility to format field values with future-proofing
+                const formatFieldValue = (fieldValue) => {
+                    if (Array.isArray(fieldValue)) {
+                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
+                    }
+                    return fieldValue && fieldValue.toString().trim() || null;
+                };
+
+                // Generate focused ICP summary for Target Market Characteristics
+                const generateTargetMarketIcpSummary = () => {
+                    if (!appState.segmentData?.icpDefinition) return null;
+                    
+                    const icp = appState.segmentData.icpDefinition;
+                    const characteristics = {};
+                    
+                    if (icp.firmographic) {
+                        characteristics.firmographic = formatFieldValue(icp.firmographic);
+                    }
+                    if (icp.technographic) {
+                        characteristics.technographic = formatFieldValue(icp.technographic);
+                    }
+                    if (icp.behavioral) {
+                        characteristics.behavioral = formatFieldValue(icp.behavioral);
+                    }
+                    if (icp.quickDecisionMaking) {
+                        characteristics.decisionMaking = formatFieldValue(icp.quickDecisionMaking);
+                    }
+                    if (icp.prioritizedRequirements) {
+                        characteristics.keyRequirements = formatFieldValue(icp.prioritizedRequirements);
+                    }
+                    
+                    return Object.keys(characteristics).length > 0 ? characteristics : null;
+                };
+
+                // Format competitive alternatives
+                const formatCompetitiveAlternatives = () => {
+                    if (!appState.positioningData.alternatives || !Array.isArray(appState.positioningData.alternatives)) {
+                        return [{ alternative: null, description: null }];
+                    }
+                    
+                    return appState.positioningData.alternatives.map(alt => ({
+                        alternative: formatFieldValue(alt.val1),
+                        description: formatFieldValue(alt.val2)
+                    }));
+                };
+
+                // Format unique value and proof
+                const formatUniqueValueAndProof = () => {
+                    if (!appState.positioningData.values || !Array.isArray(appState.positioningData.values)) {
+                        return [{ attribute: null, benefit: null, value: null }];
+                    }
+                    
+                    return appState.positioningData.values.map(val => ({
+                        attribute: formatFieldValue(val.val1),
+                        benefit: formatFieldValue(val.val2),
+                        value: formatFieldValue(val.val3)
+                    }));
+                };
+
+                // Get market category
+                const getMarketCategory = () => {
+                    if (appState.positioningData['market-context'] === 'Other') {
+                        return formatFieldValue(appState.positioningData['market-context-other']);
+                    }
+                    return formatFieldValue(appState.positioningData['market-context']);
+                };
+
+                // Format relevant trends
+                const formatRelevantTrends = () => {
+                    return {
+                        trend1: formatFieldValue(appState.positioningData.trend1_desc),
+                        trend2: formatFieldValue(appState.positioningData.trend2_desc),
+                        trend3: formatFieldValue(appState.positioningData.trend3_desc),
+                        trend4: formatFieldValue(appState.positioningData.trend4_desc)
+                    };
+                };
+
+                return {
+                    metadata: {
+                        exportDate: exportDate,
+                        partName: "Positioning",
+                        company: {
+                            name: formatFieldValue(appState.companyData?.name),
+                            url: formatFieldValue(appState.companyData?.url),
+                            productName: formatFieldValue(appState.companyData?.productName),
+                            industry: formatFieldValue(appState.companyData?.industry)
+                        }
+                    },
+                    content: {
+                        competitiveAlternatives: formatCompetitiveAlternatives(),
+                        uniqueValueAndProof: formatUniqueValueAndProof(),
+                        marketCategory: getMarketCategory(),
+                        targetMarketCharacteristics: generateTargetMarketIcpSummary(),
+                        relevantTrends: formatRelevantTrends()
+                    }
+                };
+            };
+
+            // Generate Part 3 markdown content
+            const generatePart3Markdown = (data) => {
+                let markdown = `# Positioning\n\n`;
                 
-                summary += formatSection('1. Competitive Alternatives', 
-                    appState.positioningData.alternatives ? 
-                    formatList(appState.positioningData.alternatives, 'val1', 'val2') : 'N/A');
-                
-                let valuesContent = '';
-                if (appState.positioningData.values) {
-                    appState.positioningData.values.forEach(v => {
-                        if (v.val1) valuesContent += `- Attribute: ${v.val1}\n  Benefit: ${v.val2}\n  Value: ${v.val3}\n\n`;
-                    });
+                // Add metadata
+                if (data.metadata.company.name) {
+                    markdown += `**Company:** ${data.metadata.company.name}\n`;
                 }
-                summary += formatSection('2. Unique Value & Proof', valuesContent || 'N/A');
+                if (data.metadata.company.url) {
+                    markdown += `**Website:** ${data.metadata.company.url}\n`;
+                }
+                if (data.metadata.company.productName) {
+                    markdown += `**Product:** ${data.metadata.company.productName}\n`;
+                }
+                if (data.metadata.company.industry) {
+                    markdown += `**Industry:** ${data.metadata.company.industry}\n`;
+                }
+                markdown += `**Export Date:** ${new Date(data.metadata.exportDate).toLocaleString()}\n\n`;
                 
-                let marketContext = appState.positioningData['market-context'] === 'Other' ? 
-                    appState.positioningData['market-context-other'] : appState.positioningData['market-context'];
-                summary += formatSection('3. Market Category', marketContext || 'N/A');
+                markdown += `---\n\n`;
+
+                // Competitive Alternatives
+                markdown += `## Competitive Alternatives\n\n`;
+                if (data.content.competitiveAlternatives.length > 0 && data.content.competitiveAlternatives[0].alternative) {
+                    data.content.competitiveAlternatives.forEach((alt, index) => {
+                        if (alt.alternative) {
+                            markdown += `**${index + 1}. ${alt.alternative}**\n`;
+                            if (alt.description) {
+                                markdown += `   ${alt.description}\n\n`;
+                            } else {
+                                markdown += `\n`;
+                            }
+                        }
+                    });
+                } else {
+                    markdown += `*No competitive alternatives defined*\n\n`;
+                }
+
+                // Unique Value and Proof
+                markdown += `## Unique Value and Proof\n\n`;
+                if (data.content.uniqueValueAndProof.length > 0 && data.content.uniqueValueAndProof[0].attribute) {
+                    data.content.uniqueValueAndProof.forEach((item, index) => {
+                        if (item.attribute) {
+                            markdown += `**${index + 1}. ${item.attribute}**\n`;
+                            if (item.benefit) {
+                                markdown += `   **Benefit:** ${item.benefit}\n`;
+                            }
+                            if (item.value) {
+                                markdown += `   **Value:** ${item.value}\n`;
+                            }
+                            markdown += `\n`;
+                        }
+                    });
+                } else {
+                    markdown += `*No unique value and proof defined*\n\n`;
+                }
+
+                // Market Category
+                markdown += `## Market Category\n\n`;
+                if (data.content.marketCategory) {
+                    markdown += `${data.content.marketCategory}\n\n`;
+                } else {
+                    markdown += `*No market category defined*\n\n`;
+                }
+
+                // Target Market Characteristics
+                markdown += `## Target Market Characteristics\n\n`;
+                if (data.content.targetMarketCharacteristics) {
+                    const characteristics = data.content.targetMarketCharacteristics;
+                    if (characteristics.firmographic) {
+                        markdown += `    **Firmographic**: ${characteristics.firmographic}\n`;
+                    }
+                    if (characteristics.technographic) {
+                        markdown += `    **Technographic**: ${characteristics.technographic}\n`;
+                    }
+                    if (characteristics.behavioral) {
+                        markdown += `    **Behavioral**: ${characteristics.behavioral}\n`;
+                    }
+                    if (characteristics.decisionMaking) {
+                        markdown += `    **Decision Making**: ${characteristics.decisionMaking}\n`;
+                    }
+                    if (characteristics.keyRequirements) {
+                        markdown += `    **Key Requirements**: ${characteristics.keyRequirements}\n`;
+                    }
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No target market characteristics defined*\n\n`;
+                }
+
+                // Relevant Trends
+                markdown += `## Relevant Trends\n\n`;
+                const trends = data.content.relevantTrends;
+                let hasTrends = false;
                 
-                summary += formatSection('4. Target Market Characteristics', 
-                    appState.positioningData.icp_summary || 'N/A');
+                ['trend1', 'trend2', 'trend3', 'trend4'].forEach((trendKey, index) => {
+                    if (trends[trendKey]) {
+                        markdown += `    **Trend ${index + 1}:** ${trends[trendKey]}\n`;
+                        hasTrends = true;
+                    }
+                });
                 
-                let trendsContent = '';
-                if (appState.positioningData.trend1_desc) trendsContent += `- Trend 1: ${appState.positioningData.trend1_desc}\n`;
-                if (appState.positioningData.trend2_desc) trendsContent += `- Trend 2: ${appState.positioningData.trend2_desc}\n`;
-                if (appState.positioningData.trend3_desc) trendsContent += `- Trend 3: ${appState.positioningData.trend3_desc}\n`;
-                if (appState.positioningData.trend4_desc) trendsContent += `- Trend 4: ${appState.positioningData.trend4_desc}\n`;
-                summary += formatSection('5. Relevant Trends', trendsContent || 'N/A');
+                if (hasTrends) {
+                    markdown += `\n`;
+                } else {
+                    markdown += `*No relevant trends defined*\n\n`;
+                }
+
+                return markdown;
+            };
+
+            // Export functionality for positioning data (dual-format)
+            const exportData = () => {
+                const data = generatePart3SpecificData();
+                const markdownContent = generatePart3Markdown(data);
                 
-                setExportModal({ isOpen: true, content: summary, title: 'Positioning Summary' });
+                setExportModal({
+                    isOpen: true,
+                    content: markdownContent,
+                    title: 'Positioning Export',
+                    filename: 'positioning-export',
+                    partData: data
+                });
             };
 
             return (
@@ -2410,7 +2792,8 @@
                         title={exportModal.title}
                         content={exportModal.content}
                         appState={appState}
-                        filename="positioning-blueprint"
+                        filename={exportModal.filename || "positioning-export"}
+                        partData={exportModal.partData}
                     />
                     
                     {/* Header */}
