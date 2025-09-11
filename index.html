@@ -2772,21 +2772,13 @@
                                     Clear All Fields
                                 </button>
                                 
-                                {/* Navigation Footer */}
-                                <div className="flex justify-between items-center pt-8">
-                                    <button
-                                        onClick={() => { onNavigate('icp'); window.scrollTo(0, 0); }}
-                                        className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2"
-                                    >
-                                        ← Back to Part 2: ICP Definition
-                                    </button>
-                                    <button
-                                        onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
-                                        className="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 flex items-center gap-2"
-                                    >
-                                        Continue to Part 4: Category Design →
-                                    </button>
-                                </div>
+                                {/* Continue to Part 4 Button */}
+                                <button
+                                    onClick={() => { onNavigate('category'); window.scrollTo(0, 0); }}
+                                    className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+                                >
+                                    Continue to Part 4: Category Design
+                                </button>
                             </div>
                                 </div>
                             </main>
@@ -3082,25 +3074,17 @@
                                 Clear All Fields
                             </button>
                             
-                            {/* Navigation Footer */}
-                            <div className="flex justify-between items-center pt-8">
-                                <button
-                                    onClick={() => { onNavigate('positioning'); window.scrollTo(0, 0); }}
-                                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2"
-                                >
-                                    ← Back to Part 3: Positioning
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        // Complete Blueprint - could navigate to completion page or show success message
-                                        alert('Blueprint Complete! All parts have been finished.');
-                                        window.scrollTo(0, 0);
-                                    }}
-                                    className="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 flex items-center gap-2"
-                                >
-                                    Complete Blueprint
-                                </button>
-                            </div>
+                            {/* Complete Blueprint Button */}
+                            <button
+                                onClick={() => {
+                                    // Complete Blueprint - could navigate to completion page or show success message
+                                    alert('Blueprint Complete! All parts have been finished.');
+                                    window.scrollTo(0, 0);
+                                }}
+                                className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                                Complete Blueprint
+                            </button>
                         </div>
                                 </div>
                             </main>
