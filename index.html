@@ -2093,7 +2093,7 @@
         };
 
         // Dynamic Field Components for PositioningTool
-        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2, onAnalyze, analysisResult }) => (
+        const RemovableRow = ({ index, item, onUpdate, onRemove, placeholder1, placeholder2 }) => (
             <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                     <input 
@@ -2117,43 +2117,9 @@
                         >
                             ×
                         </button>
-                        {onAnalyze && (
-                            <button 
-                                onClick={() => onAnalyze(item, index)}
-                                disabled={analysisResult?.isAnalyzing}
-                                className="text-xs font-bold py-1 px-2 rounded transition-colors bg-blue-100 hover:bg-blue-200 text-blue-700 disabled:opacity-50"
-                            >
-                                {analysisResult?.isAnalyzing ? 'Analyzing...' : 'Analyze Weakness'}
-                            </button>
-                        )}
                     </div>
                 </div>
                 
-                {analysisResult && !analysisResult.isAnalyzing && analysisResult.angles && (
-                    <div className="bg-white p-4 rounded-md border-l-4 border-blue-500 shadow-sm">
-                        <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-sm font-bold text-gray-800">Strategic Angles</h4>
-                            <span className="text-xs text-gray-500">{analysisResult.angles.length} talking points</span>
-                        </div>
-                        <ul className="space-y-2">
-                            {analysisResult.angles.map((angle, idx) => (
-                                <li key={idx} className="text-sm text-gray-700 flex items-start">
-                                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-3 mt-1.5 flex-shrink-0"></span>
-                                    <span>{angle}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button 
-                            onClick={() => {
-                                const text = analysisResult.angles.join('\n• ');
-                                navigator.clipboard.writeText(`Strategic angles for ${item.val1}:\n• ${text}`);
-                            }}
-                            className="mt-3 text-xs text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                            Copy talking points
-                        </button>
-                    </div>
-                )}
             </div>
         );
 
@@ -2239,7 +2205,6 @@
         // PositioningTool Component
         const PositioningTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
-            const [analysisState, setAnalysisState] = useState({});
             const [trendAnalysisResults, setTrendAnalysisResults] = useState({});
             const [pillarGenState, setPillarGenState] = useState({
                 isGenerating: false,
@@ -2399,26 +2364,6 @@
                 }
             };
 
-            // AI Analysis functions (placeholders for now)
-            const simulateCompetitiveAnalysis = async (item, idx) => {
-                setAnalysisState(prev => ({ ...prev, [idx]: { isAnalyzing: true, result: null } }));
-                
-                // Simulate API call
-                setTimeout(() => {
-                    setAnalysisState(prev => ({
-                        ...prev,
-                        [idx]: {
-                            isAnalyzing: false,
-                            angles: [
-                                'Emphasize speed advantage over their legacy systems',
-                                'Position as future-ready while they require modernization',
-                                'Highlight cost benefits vs their hidden fees',
-                                'Showcase intuitive UX vs their complexity'
-                            ]
-                        }
-                    }));
-                }, 1500);
-            };
 
 
             // Export functionality for positioning data
@@ -2579,9 +2524,7 @@
                                             onUpdate: (idx, key, value) => updateNestedValue('alternatives', idx, key, value),
                                             onRemove: (idx) => removeItem('alternatives', idx),
                                             placeholder1: 'Alternative',
-                                            placeholder2: 'Why it\'s inadequate',
-                                            onAnalyze: (item, idx) => simulateCompetitiveAnalysis(item, idx),
-                                            analysisResult: analysisState[index]
+                                            placeholder2: 'Why it\'s inadequate'
                                         })
                                     )}
                                     <button
@@ -2791,54 +2734,7 @@
         // CategoryDesignTool Component
         const CategoryDesignTool = ({ appState, setAppState, onNavigate }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
-            const [showSuggestions, setShowSuggestions] = useState(false);
-            const [isLoadingNames, setIsLoadingNames] = useState(false);
-            const [suggestedNames, setSuggestedNames] = useState([]);
             
-            // AI Category State Variables
-            const [aiCategoryLoading, setAiCategoryLoading] = useState(false);
-            const [aiCategoryError, setAiCategoryError] = useState(null);
-            
-            // AI Category Drafter API Integration
-            const handleGenerateCategory = async (context) => {
-                setAiCategoryLoading(true);
-                setAiCategoryError(null);
-                
-                try {
-                    const response = await fetch('/api/draft-category', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            icpSummary: context.icpSummary,
-                            valueProps: context.valueProps,
-                            fromStatement: context.fromStatement,
-                            toStatement: context.toStatement
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    return data.categories || [];
-                } catch (error) {
-                    console.error('Category generation failed:', error);
-                    setAiCategoryError(error.message);
-                    // Fallback names on error
-                    return [
-                        'Digital Transformation Platform',
-                        'Business Intelligence Suite', 
-                        'Operational Excellence System',
-                        'Market Innovation Engine',
-                        'Growth Acceleration Framework'
-                    ];
-                } finally {
-                    setAiCategoryLoading(false);
-                }
-            };
 
             const handleExport = () => {
                 const formatSection = (title, content) => `## ${title}\n${content || 'N/A'}\n\n`;
@@ -2886,9 +2782,78 @@
 
                     <div className="mt-8">
                         <div className="lg:flex lg:space-x-8">
+                            {/* Sticky Navigation Sidebar */}
+                            <nav className="hidden lg:block w-64 flex-shrink-0 sticky top-36 h-fit">
+                                <div className="bg-white p-6 rounded-lg shadow-md">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Section Navigation</h3>
+                                    <ul className="space-y-3">
+                                        <li>
+                                            <a 
+                                                href="#positioning-foundation" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('positioning-foundation').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Positioning Foundation
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-1" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-1').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                The Point of View
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-2" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-2').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                The New Opportunity
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-3" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-3').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Category Name & Definition
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-4" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-4').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                The Manifesto
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
+
                             <main className="w-full">
                                 <div className="space-y-8">
-                        <div className="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg shadow-sm">
+                        <div id="positioning-foundation" className="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg shadow-sm scroll-mt-32">
                             <h3 className="text-xl font-bold text-green-800 mb-3">Positioning Foundation</h3>
                             <p className="text-green-700 mb-4">This category design exercise builds upon the positioning work from Part 1. Here is a summary of your key inputs:</p>
                             <div className="bg-white p-4 rounded-md border border-green-200">
@@ -2961,79 +2926,7 @@
                                             value={appState.categoryData['category-name'] || ''}
                                             onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'category-name': e.target.value } }))}
                                         />
-                                        <button 
-                                            className="px-4 py-2 text-white font-bold rounded-md transition-colors hover:opacity-90 disabled:opacity-50"
-                                            style={{backgroundColor: '#e5a819'}}
-                                            onClick={async () => {
-                                                // Gather strategic inputs from appState
-                                                const icpSummary = appState.positioningData.icp_summary || '';
-                                                const valueProps = appState.positioningData.values 
-                                                    ? appState.positioningData.values
-                                                        .filter(v => v.val3)
-                                                        .map(v => v.val3)
-                                                    : [];
-                                                const fromStatement = appState.categoryData['from-statement'] || '';
-                                                const toStatement = appState.categoryData['to-statement'] || '';
-                                                
-                                                // Construct context for AI
-                                                const context = {
-                                                    icpSummary,
-                                                    valueProps,
-                                                    fromStatement,
-                                                    toStatement
-                                                };
-                                                
-                                                // Show loading state
-                                                setShowSuggestions(true);
-                                                setIsLoadingNames(true);
-                                                
-                                                try {
-                                                    // Call AI Category Drafter API
-                                                    const names = await handleGenerateCategory(context);
-                                                    setSuggestedNames(names);
-                                                } catch (error) {
-                                                    console.error('Failed to generate names:', error);
-                                                    setSuggestedNames(['Error generating names']);
-                                                } finally {
-                                                    setIsLoadingNames(false);
-                                                }
-                                            }}
-                                            disabled={isLoadingNames}
-                                        >
-                                            {isLoadingNames ? 'Brainstorming...' : 'Brainstorm with AI'}
-                                        </button>
                                     </div>
-                                    {showSuggestions && (
-                                        <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
-                                            {isLoadingNames ? (
-                                                <p className="text-sm text-gray-600 italic">Analyzing your strategic context and generating category names...</p>
-                                            ) : (
-                                                <>
-                                                    <p className="text-sm font-medium text-gray-700 mb-2">Select a category name:</p>
-                                                    <div className="space-y-1">
-                                                        {suggestedNames.map((name, index) => (
-                                                    <button
-                                                        key={index}
-                                                        className="block w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors"
-                                                        onClick={() => {
-                                                            setAppState(prev => ({
-                                                                ...prev, 
-                                                                categoryData: {
-                                                                    ...prev.categoryData, 
-                                                                    'category-name': name 
-                                                                }
-                                                            }));
-                                                            setShowSuggestions(false);
-                                                        }}
-                                                    >
-                                                        {name}
-                                                    </button>
-                                                ))}
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                    )}
                                 </div>
                                 <div>
                                     <label className="block font-bold text-gray-700">One-Sentence Definition</label>
