@@ -2868,6 +2868,7 @@
                         competitiveAlternatives: formatCompetitiveAlternatives(),
                         uniqueValueAndProof: formatUniqueValueAndProof(),
                         marketCategory: getMarketCategory(),
+                        categoryName: formatFieldValue(appState.positioningData?.['category-name']),
                         targetMarketCharacteristics: generateTargetMarketIcpSummary(),
                         relevantTrends: formatRelevantTrends()
                     }
@@ -2934,9 +2935,16 @@
                 // Market Category
                 markdown += `## Market Category\n\n`;
                 if (data.content.marketCategory) {
-                    markdown += `${data.content.marketCategory}\n\n`;
+                    markdown += `**Market Context:** ${data.content.marketCategory}\n\n`;
                 } else {
-                    markdown += `*No market category defined*\n\n`;
+                    markdown += `**Market Context:** *No market category defined*\n\n`;
+                }
+                
+                // Category Name
+                if (data.content.categoryName) {
+                    markdown += `**Category Name:** ${data.content.categoryName}\n\n`;
+                } else {
+                    markdown += `**Category Name:** *No category name specified*\n\n`;
                 }
 
                 // Target Market Characteristics
@@ -3020,8 +3028,9 @@
                         padding: '1rem 0',
                         boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
                     }}>
-                        <div className="flex justify-between items-center">
-                            <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 3: Positioning</h1>
+                        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center">
+                                <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 3: Positioning</h1>
                             {React.createElement(PrimaryActions, {
                                 currentPart: 'positioning',
                                 onReset: () => {
@@ -3039,6 +3048,7 @@
                                     window.scrollTo(0, 0); 
                                 }
                             })}
+                            </div>
                         </div>
                     </header>
 
@@ -3203,6 +3213,21 @@
                                             />
                                         </div>
                                     )}
+                                    
+                                    {/* Category Name Field */}
+                                    <div>
+                                        <label className="block font-bold text-gray-700 mb-2">Category Name</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-2 border border-gray-300 rounded-md"
+                                            placeholder="Enter the name of your chosen category..."
+                                            value={appState.positioningData?.['category-name'] || ''}
+                                            onChange={(e) => setAppState(prev => ({ 
+                                                ...prev, 
+                                                positioningData: { ...prev.positioningData, 'category-name': e.target.value } 
+                                            }))}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             
