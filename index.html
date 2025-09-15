@@ -3383,31 +3383,75 @@
                     return fieldValue && fieldValue.toString().trim() || null;
                 };
 
-                // Generate positioning foundation summary from Part 3 data
+                // Generate comprehensive positioning foundation summary from Part 3 data
                 const generatePositioningFoundationSummary = () => {
                     if (!appState.positioningData) return null;
                     
                     const foundation = {};
                     
-                    // ICP Summary - check multiple possible sources
-                    if (appState.positioningData.icp_summary) {
-                        foundation.icpSummary = formatFieldValue(appState.positioningData.icp_summary);
-                    } else if (appState.segmentData?.icpDefinition) {
-                        // Generate from ICP definition if no summary exists
-                        const icp = appState.segmentData.icpDefinition;
-                        const characteristics = [];
-                        if (icp.firmographic) characteristics.push(icp.firmographic);
-                        if (icp.technographic) characteristics.push(icp.technographic);
-                        if (icp.behavioral) characteristics.push(icp.behavioral);
-                        foundation.icpSummary = characteristics.length > 0 ? characteristics.join('; ') : null;
+                    // 1. Competitive Alternatives
+                    if (appState.positioningData.alternatives && Array.isArray(appState.positioningData.alternatives)) {
+                        const alternatives = appState.positioningData.alternatives
+                            .filter(alt => alt && alt.val1)
+                            .map(alt => ({
+                                name: formatFieldValue(alt.val1),
+                                description: formatFieldValue(alt.val2)
+                            }));
+                        if (alternatives.length > 0) {
+                            foundation.competitiveAlternatives = alternatives;
+                        }
                     }
                     
-                    // Unique Value - from positioning values
+                    // 2. Unique Value & Proof
                     if (appState.positioningData.values && Array.isArray(appState.positioningData.values)) {
-                        const uniqueValues = appState.positioningData.values
-                            .filter(v => v && v.val2)
-                            .map(v => v.val2);
-                        foundation.uniqueValue = uniqueValues.length > 0 ? uniqueValues.join('; ') : null;
+                        const values = appState.positioningData.values
+                            .filter(v => v && v.val1)
+                            .map(v => ({
+                                attribute: formatFieldValue(v.val1),
+                                benefit: formatFieldValue(v.val2),
+                                proof: formatFieldValue(v.val3)
+                            }));
+                        if (values.length > 0) {
+                            foundation.uniqueValueAndProof = values;
+                        }
+                    }
+                    
+                    // 3. Market Category
+                    if (appState.positioningData['market-context']) {
+                        foundation.marketCategory = appState.positioningData['market-context'] === 'Other' 
+                            ? formatFieldValue(appState.positioningData['market-context-other'])
+                            : formatFieldValue(appState.positioningData['market-context']);
+                    }
+                    
+                    // 4. Target Market Characteristics
+                    const targetMarket = {};
+                    if (appState.positioningData.icp_summary) {
+                        targetMarket.summary = formatFieldValue(appState.positioningData.icp_summary);
+                    }
+                    if (appState.positioningData.icp_firmographic) {
+                        targetMarket.firmographic = formatFieldValue(appState.positioningData.icp_firmographic);
+                    }
+                    if (appState.positioningData.icp_technographic) {
+                        targetMarket.technographic = formatFieldValue(appState.positioningData.icp_technographic);
+                    }
+                    if (appState.positioningData.icp_behavioral) {
+                        targetMarket.behavioral = formatFieldValue(appState.positioningData.icp_behavioral);
+                    }
+                    if (appState.positioningData.icp_implementation_readiness) {
+                        targetMarket.implementationReadiness = formatFieldValue(appState.positioningData.icp_implementation_readiness);
+                    }
+                    if (Object.keys(targetMarket).length > 0) {
+                        foundation.targetMarketCharacteristics = targetMarket;
+                    }
+                    
+                    // 5. Relevant Trends
+                    const trends = [];
+                    if (appState.positioningData.trend1_desc) trends.push(formatFieldValue(appState.positioningData.trend1_desc));
+                    if (appState.positioningData.trend2_desc) trends.push(formatFieldValue(appState.positioningData.trend2_desc));
+                    if (appState.positioningData.trend3_desc) trends.push(formatFieldValue(appState.positioningData.trend3_desc));
+                    if (appState.positioningData.trend4_desc) trends.push(formatFieldValue(appState.positioningData.trend4_desc));
+                    if (trends.length > 0) {
+                        foundation.relevantTrends = trends;
                     }
                     
                     return Object.keys(foundation).length > 0 ? foundation : null;
@@ -3465,13 +3509,63 @@
                 markdown += `## Positioning Foundation\n\n`;
                 if (data.content.positioningFoundation) {
                     const foundation = data.content.positioningFoundation;
-                    if (foundation.icpSummary) {
-                        markdown += `    **ICP Summary:** ${foundation.icpSummary}\n`;
+                    
+                    // 1. Competitive Alternatives
+                    if (foundation.competitiveAlternatives && foundation.competitiveAlternatives.length > 0) {
+                        markdown += `### 1. Competitive Alternatives\n`;
+                        foundation.competitiveAlternatives.forEach(alt => {
+                            markdown += `- **${alt.name}**${alt.description ? `: ${alt.description}` : ''}\n`;
+                        });
+                        markdown += `\n`;
                     }
-                    if (foundation.uniqueValue) {
-                        markdown += `    **Unique Value:** ${foundation.uniqueValue}\n`;
+                    
+                    // 2. Unique Value & Proof
+                    if (foundation.uniqueValueAndProof && foundation.uniqueValueAndProof.length > 0) {
+                        markdown += `### 2. Unique Value & Proof\n`;
+                        foundation.uniqueValueAndProof.forEach(value => {
+                            markdown += `- **${value.attribute}**`;
+                            if (value.benefit) markdown += `: ${value.benefit}`;
+                            if (value.proof) markdown += ` - ${value.proof}`;
+                            markdown += `\n`;
+                        });
+                        markdown += `\n`;
                     }
-                    markdown += `\n`;
+                    
+                    // 3. Market Category
+                    if (foundation.marketCategory) {
+                        markdown += `### 3. Market Category\n`;
+                        markdown += `${foundation.marketCategory}\n\n`;
+                    }
+                    
+                    // 4. Target Market Characteristics
+                    if (foundation.targetMarketCharacteristics) {
+                        markdown += `### 4. Target Market Characteristics\n`;
+                        const tm = foundation.targetMarketCharacteristics;
+                        if (tm.summary) {
+                            markdown += `**Summary:** ${tm.summary}\n\n`;
+                        }
+                        if (tm.firmographic) {
+                            markdown += `**Firmographic:** ${tm.firmographic}\n\n`;
+                        }
+                        if (tm.technographic) {
+                            markdown += `**Technographic:** ${tm.technographic}\n\n`;
+                        }
+                        if (tm.behavioral) {
+                            markdown += `**Behavioral:** ${tm.behavioral}\n\n`;
+                        }
+                        if (tm.implementationReadiness) {
+                            markdown += `**Implementation Readiness:** ${tm.implementationReadiness}\n\n`;
+                        }
+                    }
+                    
+                    // 5. Relevant Trends
+                    if (foundation.relevantTrends && foundation.relevantTrends.length > 0) {
+                        markdown += `### 5. Relevant Trends\n`;
+                        foundation.relevantTrends.forEach((trend, index) => {
+                            markdown += `${index + 1}. ${trend}\n`;
+                        });
+                        markdown += `\n`;
+                    }
                 } else {
                     markdown += `*No positioning foundation data available*\n\n`;
                 }
