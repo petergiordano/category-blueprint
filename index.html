@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive GTM Blueprint Series</title>
+    <title>Interactive Category Blueprint Series</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -65,7 +65,7 @@
               ...state,
               lastSaved: new Date().toISOString()
             };
-            localStorage.setItem('klarityGTMBlueprintState', JSON.stringify(stateWithTimestamp));
+            localStorage.setItem('klarityCategoryBlueprintState', JSON.stringify(stateWithTimestamp));
           } catch (error) {
             console.error('Could not save state to localStorage', error);
           }
@@ -73,7 +73,7 @@
 
         const loadAppState = () => {
           try {
-            const savedState = localStorage.getItem('klarityGTMBlueprintState');
+            const savedState = localStorage.getItem('klarityCategoryBlueprintState');
             if (!savedState) {
               return null;
             }
@@ -324,7 +324,7 @@
                         >
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
-                        <span className="hidden sm:inline">GTM Blueprint</span>
+                        <span className="hidden sm:inline">Category Blueprint</span>
                         <span className="sm:hidden">Home</span>
                     </button>
 
@@ -500,7 +500,7 @@
         };
 
         // Export Modal Component
-        const ExportModal = ({ isOpen, onClose, title, content, appState, filename = 'gtm-blueprint-export', partData = null }) => {
+        const ExportModal = ({ isOpen, onClose, title, content, appState, filename = 'category-blueprint-export', partData = null }) => {
             const [copied, setCopied] = useState(false);
 
             const handleCopy = () => {
@@ -599,8 +599,8 @@
             
             if (!safeCompanyData.companyWebsite) {
               newErrors.companyWebsite = 'Website is required';
-            } else if (!/^https?:\/\/.+/.test(safeCompanyData.companyWebsite)) {
-              newErrors.companyWebsite = 'Website must start with http:// or https://';
+            } else if (!/^[a-zA-Z0-9][a-zA-Z0-9-_.]*\.[a-zA-Z]{2,}/.test(safeCompanyData.companyWebsite.replace(/^https?:\/\//, ''))) {
+              newErrors.companyWebsite = 'Please enter a valid domain (e.g., example.com)';
             }
             
             if (!safeCompanyData.industry) {
@@ -617,7 +617,17 @@
 
           const handleSubmit = () => {
             if (validateForm()) {
-              setCompanyData(prev => ({ ...safeCompanyData, ...prev, isSetupComplete: true }));
+              // Ensure website has https:// prefix
+              const websiteWithProtocol = safeCompanyData.companyWebsite.startsWith('http://') || safeCompanyData.companyWebsite.startsWith('https://') 
+                ? safeCompanyData.companyWebsite 
+                : `https://${safeCompanyData.companyWebsite}`;
+              
+              setCompanyData(prev => ({ 
+                ...safeCompanyData, 
+                ...prev, 
+                companyWebsite: websiteWithProtocol,
+                isSetupComplete: true 
+              }));
               onComplete();
             }
           };
@@ -662,7 +672,7 @@
                         className={`w-full p-2 border rounded-md ${errors.companyWebsite ? 'border-red-500' : 'border-gray-300'}`}
                         value={safeCompanyData.companyWebsite}
                         onChange={(e) => setCompanyData(prev => ({ ...safeCompanyData, ...prev, companyWebsite: e.target.value }))}
-                        placeholder="https://example.com"
+                        placeholder="example.com"
                       />
                       {errors.companyWebsite && <p className="text-red-500 text-sm mt-1">{errors.companyWebsite}</p>}
                     </div>
@@ -4009,7 +4019,7 @@
                 <div className="min-h-screen bg-gray-50 py-12 px-4">
                     <div className="max-w-3xl mx-auto">
                         {/* Existing welcome content */}
-                        <h1 className="text-4xl font-bold text-center mb-8 scale-green-text">Welcome to GTM Blueprint</h1>
+                        <h1 className="text-4xl font-bold text-center mb-8 scale-green-text">Welcome to Category Blueprint</h1>
                         
                         {/* Company Context Display */}
                         {appState.companyContext?.isSetupComplete && (
@@ -4071,7 +4081,7 @@
                                         onClick={() => {
                                             if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
                                                 // Clear all progress
-                                                localStorage.removeItem('klarityGTMBlueprintState');
+                                                localStorage.removeItem('klarityCategoryBlueprintState');
                                                 window.location.reload();
                                             }
                                         }}

@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document defines the unified navigation architecture for the Interactive GTM Blueprint application. It establishes a three-component navigation system based on UX best practices for multi-step workflows, ensuring consistency, usability, and scalability across all application parts.
+This document defines the unified navigation architecture for the Interactive Category Blueprint application. It establishes a three-component navigation system based on UX best practices for multi-step workflows, ensuring consistency, usability, and scalability across all application parts.
 
 ## Core Design Philosophy
 

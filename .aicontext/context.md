@@ -36,7 +36,7 @@ git log --oneline -10
 ```
 
 ## Your Role: AI Project Manager & Orchestrator
-**Mission**: Interactive GTM Blueprint AI Development - transform from strategic canvas to intelligent GTM collaborator
+**Mission**: Interactive Category Blueprint AI Development - transform from strategic canvas to intelligent category positioning collaborator
 **Protocol**: 3-party collaboration (You + Project Director + Gemini/Claude Code)
 **Mandate**: Always conclude responses with current project status and **Next Required Action**
 

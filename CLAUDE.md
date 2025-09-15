@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the **Interactive GTM Blueprint** project - a production web application that helps B2B SaaS companies develop their go-to-market strategies through guided AI-powered analysis and positioning tools.
+This is the **Interactive Category Blueprint** project - a production web application that helps B2B SaaS companies develop their category positioning strategies through guided AI-powered analysis and positioning tools.
 
 **Production URL**: https://category-blueprint.vercel.app/  
 **Repository**: `petergiordano/category-blueprint`  
@@ -237,7 +237,7 @@ The following labels were removed per user feedback to simplify workflow:
 ## Application Context
 
 ### What You're Working On
-- **Interactive GTM Blueprint** - A web application for B2B SaaS go-to-market strategy development
+- **Interactive Category Blueprint** - A web application for B2B SaaS category positioning strategy development
 - **Tech Stack**: HTML/CSS/JavaScript frontend, Vercel serverless functions, Brave Search API
 - **Key Features**: Segment Foundation, AI-powered drafters, ICP analysis, company context setup
 - **Current Phase**: All major features complete, production deployed

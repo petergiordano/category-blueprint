@@ -1,7 +1,7 @@
 # Implementation Prompt for Claude Code: Home Navigation Enhancement
 
 ## Project Context
-Adding a home/restart navigation option to the Interactive GTM Blueprint application to allow users to return to the welcome screen and optionally re-run company setup.
+Adding a home/restart navigation option to the Interactive Category Blueprint application to allow users to return to the welcome screen and optionally re-run company setup.
 
 ## Database-Driven Workflow Requirements
 
@@ -90,7 +90,7 @@ const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, sa
                 >
                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                 </svg>
-                <span className="hidden sm:inline">GTM Blueprint</span>
+                <span className="hidden sm:inline">Category Blueprint</span>
                 <span className="sm:hidden">Home</span>
             </button>
 
@@ -118,7 +118,7 @@ In the main App component's home view, add a button to reset company setup:
     <div className="min-h-screen bg-gray-50 py-12 px-4">
         <div className="max-w-3xl mx-auto">
             {/* Existing welcome content */}
-            <h1 className="text-4xl font-bold text-center mb-8">Welcome to GTM Blueprint</h1>
+            <h1 className="text-4xl font-bold text-center mb-8">Welcome to Category Blueprint</h1>
             
             {/* Company Context Display */}
             {appState.companyContext?.isSetupComplete && (

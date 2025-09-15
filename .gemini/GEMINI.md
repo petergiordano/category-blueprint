@@ -6,9 +6,9 @@
 
 ---
 
-## Project Context: Interactive GTM Blueprint
+## Project Context: Interactive Category Blueprint
 
-- **Application**: A production web application for B2B SaaS go-to-market strategy development.
+- **Application**: A production web application for B2B SaaS category positioning strategy development.
 - **Production URL**: https://category-blueprint.vercel.app/
 - **Repository**: `petergiordano/category-blueprint`
 

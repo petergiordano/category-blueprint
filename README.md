@@ -1,6 +1,6 @@
-# Interactive GTM Blueprint
+# Interactive Category Blueprint
 
-**A production web application for B2B SaaS go-to-market strategy development**
+**A production web application for B2B SaaS category positioning strategy development**
 
 [![Production Deployment](https://img.shields.io/badge/Production-Live-success?logo=vercel)](https://category-blueprint.vercel.app/)
 [![GitHub Issues](https://img.shields.io/github/issues/petergiordano/category-blueprint)](https://github.com/petergiordano/category-blueprint/issues)
@@ -12,7 +12,7 @@
 
 ## 🎯 What This Application Does
 
-The Interactive GTM Blueprint transforms B2B SaaS go-to-market strategy development from a complex, time-consuming process into a guided, AI-powered experience. Companies can:
+The Interactive Category Blueprint transforms B2B SaaS category positioning strategy development from a complex, time-consuming process into a guided, AI-powered experience. Companies can:
 
 - **Analyze Market Segments** with structured frameworks
 - **Define Ideal Customer Profiles** using proven methodologies  
@@ -21,7 +21,7 @@ The Interactive GTM Blueprint transforms B2B SaaS go-to-market strategy developm
 - **Export Comprehensive Strategies** for implementation
 
 ### 🏢 Built for Scale Venture Partners Portfolio Companies
-Following Scale VP brand guidelines and focusing on enterprise SaaS go-to-market excellence.
+Following Scale VP brand guidelines and focusing on enterprise SaaS category positioning excellence.
 
 ---
 
@@ -75,7 +75,7 @@ Following Scale VP brand guidelines and focusing on enterprise SaaS go-to-market
 1. **Visit the Live Application**: https://category-blueprint.vercel.app/
 2. **Complete Company Setup**: Provide basic company information
 3. **Run AI Analysis**: Generate initial segment foundation data
-4. **Refine Your Strategy**: Use the guided tools to develop your GTM approach
+4. **Refine Your Strategy**: Use the guided tools to develop your category positioning approach
 5. **Export Results**: Download your completed strategy analysis
 
 ### For Developers
@@ -204,7 +204,7 @@ Track active issues and development progress: https://github.com/users/petergior
 ## 🤝 Contributing
 
 ### **For Scale VP Portfolio Companies**
-1. Use the application for your go-to-market strategy development
+1. Use the application for your category positioning strategy development
 2. Provide feedback through GitHub Issues
 3. Request new features or enhancements
 
@@ -262,16 +262,16 @@ Use the automated scripts for consistent issue management:
 
 **Proprietary** - Scale Venture Partners
 
-This application is built for Scale Venture Partners portfolio companies and follows Scale VP brand guidelines and go-to-market methodologies.
+This application is built for Scale Venture Partners portfolio companies and follows Scale VP brand guidelines and category positioning methodologies.
 
 ---
 
 ## 🏢 About Scale Venture Partners
 
-Scale Venture Partners is a leading venture capital firm focused on B2B software companies. This Interactive GTM Blueprint reflects Scale's proven methodologies for go-to-market excellence, distilled into an AI-powered tool for portfolio companies.
+Scale Venture Partners is a leading venture capital firm focused on B2B software companies. This Interactive Category Blueprint reflects Scale's proven methodologies for category positioning excellence, distilled into an AI-powered tool for portfolio companies.
 
 **Learn more**: [Scale Venture Partners](https://www.scalevp.com/)
 
 ---
 
-**Transform your go-to-market strategy from complex guesswork to data-driven precision.** 🚀
+**Transform your category positioning strategy from complex guesswork to data-driven precision.** 🚀
