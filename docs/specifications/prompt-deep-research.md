@@ -2,12 +2,12 @@
 
 **Prompt Title:** Positioning and Category Deep Research Brief for [Company Name]
 
-**Objective:** To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product/Service Name]**. This brief will serve as a foundational intelligence layer for a strategic workshop, providing the external market view to contrast with the company's internal assumptions. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+**Objective:** To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product or Service Name]**. This brief will serve as a foundational intelligence layer for a strategic workshop, providing the external market view to contrast with the company's internal assumptions. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
 
 **Target Company:** [Company Name]
 **Company Website:** [Company Website]
 **Industry:** [Industry]
-**Product/Service Name:** [Product/Service Name]
+**Product or Service Name:** [Product or Service Name]
 **User-Provided Competitors (Starting Point):** [Competitor 1, Competitor 2, Competitor 3]
 
 **Core Research Mandate:** Your mission is to populate every element in the outline below by synthesizing public information. Go beyond simple data collection to find the qualitative "breadcrumbs and clues"—the nuance, sentiment, and semantics in the market's language. Your final output MUST strictly adhere to the formatting rules in the "Deliverable" section.
@@ -56,7 +56,7 @@
 6.  **Implementation Readiness:** Public signals of their ability to adopt a new product.
 
 **2B. Key Buyer Personas & Stakeholder Roles:**
-* **Task:** For each of the key stakeholder roles listed below, identify the typical job titles, their primary goals, and their common challenges/concerns when evaluating a product like **[Product/Service Name]**.
+* **Task:** For each of the key stakeholder roles listed below, identify the typical job titles, their primary goals, and their common challenges/concerns when evaluating a product like **[Product or Service Name]**.
 1.  **Initiator**
 2.  **Primary Decision Maker**
 3.  **Approver**
@@ -103,7 +103,7 @@ The output MUST be a single markdown document titled "Positioning and Category D
 ### 1A. Jobs To Be Done (JTBD)
 
 **1. Context:**
-The most common context for customers of [Product/Service Name] appears to be mid-sized B2B SaaS companies that have recently completed a Series B or C funding round and are now under pressure from their board to professionalize their financial and operational processes.
+The most common context for customers of [Product or Service Name] appears to be mid-sized B2B SaaS companies that have recently completed a Series B or C funding round and are now under pressure from their board to professionalize their financial and operational processes.
 - Evidence: Analysis of 5 public customers shows that 4 of them announced a Series B/C round within 12 months prior to being listed as a customer. [Source: Crunchbase, 2025-09-15]
 
 **2. Struggling Moments:**

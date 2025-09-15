@@ -70,6 +70,181 @@
             console.error('Could not save state to localStorage', error);
           }
         };
+        
+        // Deep Research Prompt Generation Engine
+        const generateDeepResearchPrompt = (companyData) => {
+          try {
+            // Ensure we have safe defaults for all required fields
+            const safeData = {
+              companyName: companyData?.companyName?.trim() || 'Your Company',
+              companyWebsite: companyData?.companyWebsite?.trim() || 'your-website.com',
+              industry: companyData?.industry?.trim() || 'Technology',
+              productName: companyData?.productName?.trim() || 'Your Product',
+              targetMarket: companyData?.targetMarket || 'B2B',
+              competitorNames: companyData?.competitorNames || ['', '', '']
+            };
+            
+            // Format competitors list
+            const competitors = safeData.competitorNames
+              .filter(comp => comp && comp.trim())
+              .join(', ') || 'Competitor 1, Competitor 2, Competitor 3';
+            
+            // Embedded template from prompt-deep-research.md
+            const promptTemplate = `**System Role:** You are a "Senior GTM Analyst & Intelligence Architect." Your primary mission is to synthesize public information into a comprehensive market intelligence brief that strictly adheres to a predefined framework.
+
+**Prompt Title:** Positioning and Category Deep Research Brief for [Company Name]
+
+**Objective:** To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product or Service Name]**. This brief will serve as a foundational intelligence layer for a strategic workshop, providing the external market view to contrast with the company's internal assumptions. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+
+**Target Company:** [Company Name]
+**Company Website:** [Company Website]
+**Industry:** [Industry]
+**Product or Service Name:** [Product or Service Name]
+**User-Provided Competitors (Starting Point):** [Competitor 1, Competitor 2, Competitor 3]
+
+**Core Research Mandate:** Your mission is to populate every element in the outline below by synthesizing public information. Go beyond simple data collection to find the qualitative "breadcrumbs and clues"—the nuance, sentiment, and semantics in the market's language. Your final output MUST strictly adhere to the formatting rules in the "Deliverable" section.
+
+---
+
+### **Key Areas of Deep Investigation**
+
+**(Your entire deliverable will be a well-written report that follows the structured outline format defined in the "Deliverable" section below. You must provide a finding for every single element listed.)**
+
+#### **Part 1: The Segment Foundation (The Market's "Why")**
+
+**1A. Jobs To Be Done (JTBD):**
+1.  **Context:** The business situation or operating environment.
+2.  **Struggling Moments:** The breakdowns, inefficiencies, or risks that trigger the search.
+3.  **Pushes & Pulls:** Internal and external forces moving them toward or away from change.
+4.  **Anxieties & Habits:** Concerns about adopting something new and inertia with current processes.
+5.  **Desired Outcomes:** The business goals and success metrics they want to achieve.
+6.  **Basic Quality (Table Stakes):** Minimum standards a solution must meet to be considered.
+7.  **Hiring Criteria:** Differentiators that make them select one vendor over another.
+8.  **Firing Criteria:** Triggers that get a vendor rejected or replaced.
+9.  **Key Trade-offs:** Acceptable compromises customers are willing to make.
+
+**1B. Customer Value:**
+1.  **Table Stakes:** Non-negotiables for credibility (compliance, security, integrations).
+2.  **Functional Value:** Tangible, measurable business outcomes (ROI, efficiency gains, cost savings).
+3.  **Ease of Doing Business:** Simplicity of adoption, implementation, and use.
+4.  **Individual Value:** Personal wins for stakeholders (status, workload relief, career wins).
+5.  **Aspirational Value:** Alignment with the customer's vision or higher-order goals.
+
+**1C. Willingness to Pay (WTP):**
+1.  **Ability to Pay:** Evidence of budget and capacity to spend.
+2.  **Economic Justification:** The ROI and payback case that makes financial sense.
+3.  **Relative Value vs. Alternatives:** How the solution's value compares to competitors or the status quo.
+4.  **Risk & Switching Costs:** The perceived risk or friction in making a change.
+5.  **Market Reference Points:** The pricing anchors customers use from competitors or prior spend.
+
+#### **Part 2: The Ideal Customer Profile & Buyer Personas**
+
+**2A. Operational ICP:**
+1.  **Firmographics:** Common industries, company sizes, and revenue stages.
+2.  **Technographics:** The technology stack or specific tools used by ideal customers.
+3.  **Behavioral:** Observable actions that signal a 'change-ready' mindset (e.g., job postings).
+4.  **Quick Decision Making:** Evidence of who the economic buyer is and their purchasing authority.
+5.  **Prioritized Requirements:** What they appear to value most in a solution.
+6.  **Implementation Readiness:** Public signals of their ability to adopt a new product.
+
+**2B. Key Buyer Personas & Stakeholder Roles:**
+* **Task:** For each of the key stakeholder roles listed below, identify the typical job titles, their primary goals, and their common challenges/concerns when evaluating a product like **[Product or Service Name]**.
+1.  **Initiator**
+2.  **Primary Decision Maker**
+3.  **Approver**
+4.  **Economic Buyer**
+5.  **End User**
+6.  **Champion (Influencer)**
+7.  **Blocker**
+8.  **Technical Operational Evaluator**
+9.  **Legal & Compliance**
+10. **Gatekeeper**
+11. **External Consultants**
+
+#### **Part 3: Positioning (The Market's "How")**
+
+1.  **Competitive Alternatives:** Investigate and list the top Direct, Indirect, and Status Quo alternatives. For each, describe why customers choose it and its primary weaknesses.
+2.  **Unique Value and Proof (The Positioning Table):** Identify 3-5 key value propositions as perceived by the market. For each one, detail the **Unique Attribute**, the **Benefit** it enables, and the **Value/Proof** (quantifiable metrics).
+3.  **Relevant Trends:** Identify 2-3 major market trends. For each, explain:
+    * How this trend aligns with and enhances the product.
+    * How this trend makes the product more appealing.
+    * How this trend creates urgency for the product.
+    * How this trend impacts the underlying need for the product.
+
+#### **Part 4: Category Design (The Market's "What")**
+
+1.  **The Point of View (From/To Shift):** Based on market narratives, what is the "From" (old, broken way) and what is the emerging "To" (new, better way)?
+2.  **The New Opportunity:** What becomes possible for businesses that adopt the "To" perspective?
+3.  **Category Name & Definition:** What market category do analysts and customers currently place the company in? Is there evidence of an attempt to create a new one?
+4.  **The Manifesto:** Synthesize the public-facing story and narrative into a concise manifesto draft.
+
+---
+**Deliverable: "Positioning and Category Deep Research Brief for [Company Name]"**
+
+The output MUST be a single markdown document titled "Positioning and Category Deep Research Brief for [Company Name]". You MUST adhere to the following **Structured Outline** format.
+
+**Formatting and Structure Mandates:**
+* Use markdown headings (\`##\`, \`###\`) to structure the report precisely as outlined in the "Key Areas of Deep Investigation."
+* For each element in the outline (e.g., "1. Context", "2. Struggling Moments"), first write a synthesized paragraph that represents your best-analyzed finding for that element.
+* Below your synthesized finding, you MUST provide at least one piece of specific evidence as a sub-bullet.
+* Direct quotes MUST be *italicized and enclosed in quotation marks*.
+* Each piece of evidence MUST be followed by a \`[Source: URL or Document Name, Date]\` tag.
+
+**Example Output Snippet (Follow this "Synthesis then Evidence" structure precisely for ALL elements):**
+\`\`\`markdown
+### 1A. Jobs To Be Done (JTBD)
+
+**1. Context:**
+The most common context for customers of [Product or Service Name] appears to be mid-sized B2B SaaS companies that have recently completed a Series B or C funding round and are now under pressure from their board to professionalize their financial and operational processes.
+- Evidence: Analysis of 5 public customers shows that 4 of them announced a Series B/C round within 12 months prior to being listed as a customer. [Source: Crunchbase, 2025-09-15]
+
+**2. Struggling Moments:**
+The primary trigger is the high rate of manual errors during the financial close process, which creates significant downstream risk and rework, often jeopardizing audit readiness.
+- Evidence: *"We spent the first week of every quarter just finding and fixing spreadsheet errors from the last one. It was a nightmare."* [Source: G2 Review for Competitor X, 2025-08-15]
+\`\`\`
+
+---
+
+**Research Execution Instructions:**
+
+1. **Web Search Protocol:** You MUST perform comprehensive web searches to gather current, specific evidence for each element listed above.
+
+2. **Quality Standards:** Each finding must be supported by specific, recent evidence with proper source attribution.
+
+3. **Market Language Focus:** Pay special attention to the exact language, terms, and phrases that customers and the market use when discussing problems, solutions, and outcomes.
+
+4. **Competitive Intelligence:** Analyze not just the target company, but also how competitors position themselves and what customers say about the competitive landscape.
+
+5. **Trend Validation:** Ensure all identified trends are current (within 12-18 months) and can be substantiated with multiple sources.
+
+**Final Deliverable Requirements:**
+- Complete markdown document following the exact structure outlined above
+- Every element must have a finding with supporting evidence
+- Minimum 8,000 words, maximum 15,000 words
+- Professional, analyst-level writing quality
+- Actionable insights that can inform strategic positioning decisions`;
+
+            // Replace all placeholders with actual data
+            const placeholders = {
+              '[Company Name]': safeData.companyName,
+              '[Company Website]': safeData.companyWebsite,
+              '[Industry]': safeData.industry,
+              '[Product or Service Name]': safeData.productName,
+              '[Competitor 1, Competitor 2, Competitor 3]': competitors
+            };
+            
+            let finalPrompt = promptTemplate;
+            Object.entries(placeholders).forEach(([placeholder, value]) => {
+              finalPrompt = finalPrompt.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+            });
+            
+            return finalPrompt;
+            
+          } catch (error) {
+            console.error('Error generating deep research prompt:', error);
+            return 'Error generating prompt. Please check your company data and try again.';
+          }
+        };
 
         const loadAppState = () => {
           try {
@@ -557,6 +732,108 @@
             );
         };
 
+        // PromptDisplayModal Component
+        const PromptDisplayModal = ({ isOpen, onClose, promptText, title = "Deep Research Prompt" }) => {
+            const [copied, setCopied] = useState(false);
+
+            const handleCopy = async () => {
+                try {
+                    await navigator.clipboard.writeText(promptText);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = promptText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                }
+            };
+
+            const handleDownload = () => {
+                try {
+                    const blob = new Blob([promptText], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${title.toLowerCase().replace(/\s+/g, '-')}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    console.error('Failed to download file: ', err);
+                }
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h2 className="text-2xl font-bold scale-green-text">{title}</h2>
+                            <button 
+                                onClick={onClose} 
+                                className="text-gray-400 hover:text-gray-800 text-3xl font-light transition-colors"
+                                aria-label="Close modal"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        
+                        <div className="p-6 flex-1 overflow-hidden flex flex-col">
+                            <p className="text-sm text-gray-600 mb-4">
+                                Your customized deep research prompt is ready. Copy it to use with your preferred AI assistant or download as a text file.
+                            </p>
+                            
+                            <textarea
+                                className="w-full flex-1 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                value={promptText}
+                                readOnly
+                                placeholder="Generated prompt will appear here..."
+                            />
+                        </div>
+                        
+                        <div className="p-6 border-t bg-gray-50 flex justify-between items-center">
+                            <div className="text-sm text-gray-500">
+                                Prompt length: {promptText ? promptText.length.toLocaleString() : 0} characters
+                            </div>
+                            
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={handleDownload}
+                                    className="border border-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                                    disabled={!promptText}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download as .txt
+                                </button>
+                                
+                                <button 
+                                    onClick={handleCopy}
+                                    className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
+                                    disabled={!promptText}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    {copied ? 'Copied!' : 'Copy to Clipboard'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // CompanySetupModal Component
         const CompanySetupModal = ({ isOpen, onComplete, companyData, setCompanyData }) => {
           console.log('CompanySetupModal rendered, isOpen:', isOpen, 'companyData:', companyData);
@@ -631,6 +908,7 @@
               onComplete();
             }
           };
+
 
           const updateCompetitor = (index, value) => {
             const newCompetitors = [...safeCompanyData.competitorNames];
@@ -1251,7 +1529,7 @@
                                             
                                             {/* Custom SVG Funnel Diagram */}
                                             <div className="flex justify-center">
-                                                <svg width="400" height="450" viewBox="0 0 400 450" className="max-w-full h-auto">
+                                                <svg width="850" height="450" viewBox="0 0 850 450" className="max-w-full h-auto">
                                                     <defs>
                                                         <marker id="arrowhead" markerWidth="10" markerHeight="7" 
                                                                 refX="9" refY="3.5" orient="auto">
@@ -1322,6 +1600,88 @@
                                                     </text>
                                                     <text x="370" y="225" textAnchor="middle" fill="#224f41" fontSize="12" transform="rotate(90, 370, 225)">
                                                         Strategic Focus
+                                                    </text>
+                                                    
+                                                    {/* Divider Line */}
+                                                    <line x1="425" y1="50" x2="425" y2="400" stroke="#e5e7eb" strokeWidth="2" strokeDasharray="5,5"/>
+                                                    
+                                                    {/* Relationship Flow Title */}
+                                                    <text x="625" y="40" textAnchor="middle" fill="#224f41" fontSize="18" fontWeight="600">
+                                                        How the Components Relate
+                                                    </text>
+                                                    
+                                                    {/* Box 1: Jobs to be Done */}
+                                                    <rect x="450" y="120" width="110" height="120" fill="#7da399" stroke="#224f41" strokeWidth="2" rx="4"/>
+                                                    <text x="505" y="145" textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+                                                        (1)
+                                                    </text>
+                                                    <text x="505" y="170" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        Why the
+                                                    </text>
+                                                    <text x="505" y="185" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        customer is
+                                                    </text>
+                                                    <text x="505" y="200" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        motivated
+                                                    </text>
+                                                    <text x="505" y="220" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">
+                                                        (Jobs to be Done)
+                                                    </text>
+                                                    
+                                                    {/* Arrow 1 to 2 */}
+                                                    <line x1="560" y1="180" x2="590" y2="180" stroke="#224f41" strokeWidth="3" markerEnd="url(#arrowhead)"/>
+                                                    
+                                                    {/* Box 2: Customer Value */}
+                                                    <rect x="590" y="120" width="110" height="120" fill="#528577" stroke="#224f41" strokeWidth="2" rx="4"/>
+                                                    <text x="645" y="145" textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+                                                        (2)
+                                                    </text>
+                                                    <text x="645" y="170" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        How they
+                                                    </text>
+                                                    <text x="645" y="185" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        define
+                                                    </text>
+                                                    <text x="645" y="200" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        success
+                                                    </text>
+                                                    <text x="645" y="220" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">
+                                                        (Customer Value)
+                                                    </text>
+                                                    
+                                                    {/* Arrow 2 to 3 */}
+                                                    <line x1="700" y1="180" x2="730" y2="180" stroke="#224f41" strokeWidth="3" markerEnd="url(#arrowhead)"/>
+                                                    
+                                                    {/* Box 3: Willingness to Pay */}
+                                                    <rect x="730" y="120" width="110" height="120" fill="#224f41" stroke="#224f41" strokeWidth="2" rx="4"/>
+                                                    <text x="785" y="145" textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+                                                        (3)
+                                                    </text>
+                                                    <text x="785" y="165" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        How much
+                                                    </text>
+                                                    <text x="785" y="180" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        they will
+                                                    </text>
+                                                    <text x="785" y="195" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">
+                                                        invest &amp; why
+                                                    </text>
+                                                    <text x="785" y="215" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">
+                                                        (Willingness
+                                                    </text>
+                                                    <text x="785" y="228" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">
+                                                        to Pay)
+                                                    </text>
+                                                    
+                                                    {/* Bottom explanation text */}
+                                                    <text x="645" y="290" textAnchor="middle" fill="#224f41" fontSize="14" fontWeight="500">
+                                                        Understanding Progression
+                                                    </text>
+                                                    <text x="645" y="310" textAnchor="middle" fill="#6b7280" fontSize="12">
+                                                        Customer motivation drives what they value,
+                                                    </text>
+                                                    <text x="645" y="325" textAnchor="middle" fill="#6b7280" fontSize="12">
+                                                        which determines their investment threshold
                                                     </text>
                                                 </svg>
                                             </div>
@@ -4007,6 +4367,14 @@
                 // Initialize modal state based on setup completion
                 return !appState.companyContext?.isSetupComplete;
             });
+            
+            // State for the prompt display modal
+            const [promptModalData, setPromptModalData] = useState({
+                isOpen: false,
+                title: '',
+                promptText: ''
+            });
+            
 
             // Separate useEffect for debugging
             useEffect(() => {
@@ -4068,6 +4436,30 @@
                                 <>
                                     <button
                                         onClick={() => {
+                                            try {
+                                                const promptText = generateDeepResearchPrompt(appState.companyContext);
+                                                
+                                                if (promptText && promptText.startsWith('Error generating prompt')) {
+                                                    alert(promptText);
+                                                    return;
+                                                }
+                                                
+                                                setPromptModalData({
+                                                    isOpen: true,
+                                                    title: `Deep Research Prompt for ${appState.companyContext?.companyName || 'Your Company'}`,
+                                                    promptText: promptText
+                                                });
+                                            } catch (error) {
+                                                console.error('Failed to generate prompt:', error);
+                                                alert('Failed to generate research prompt. Please try again.');
+                                            }
+                                        }}
+                                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                                    >
+                                        Generate Research Prompt
+                                    </button>
+                                    <button
+                                        onClick={() => {
                                             // Find the last incomplete part
                                             const parts = ['segment', 'icp', 'positioning', 'category'];
                                             const nextPart = parts.find(p => !appState.navigationProgress.completedParts.includes(p));
@@ -4091,12 +4483,38 @@
                                     </button>
                                 </>
                             ) : (
-                                <button
-                                    onClick={() => onNavigate('segment')}
-                                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-xl"
-                                >
-                                    Start Blueprint Process
-                                </button>
+                                <>
+                                    <button
+                                        onClick={() => {
+                                            try {
+                                                const promptText = generateDeepResearchPrompt(appState.companyContext);
+                                                
+                                                if (promptText && promptText.startsWith('Error generating prompt')) {
+                                                    alert(promptText);
+                                                    return;
+                                                }
+                                                
+                                                setPromptModalData({
+                                                    isOpen: true,
+                                                    title: `Deep Research Prompt for ${appState.companyContext?.companyName || 'Your Company'}`,
+                                                    promptText: promptText
+                                                });
+                                            } catch (error) {
+                                                console.error('Failed to generate prompt:', error);
+                                                alert('Failed to generate research prompt. Please try again.');
+                                            }
+                                        }}
+                                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                                    >
+                                        Generate Research Prompt
+                                    </button>
+                                    <button
+                                        onClick={() => onNavigate('segment')}
+                                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-xl"
+                                    >
+                                        Start Blueprint Process
+                                    </button>
+                                </>
                             )}
                         </div>
 
@@ -4141,6 +4559,13 @@
                                 return newState;
                             });
                         }}
+                    />
+                    
+                    <PromptDisplayModal
+                        isOpen={promptModalData.isOpen}
+                        onClose={() => setPromptModalData(prev => ({ ...prev, isOpen: false }))}
+                        promptText={promptModalData.promptText}
+                        title={promptModalData.title}
                     />
                 </div>
             );
