@@ -775,7 +775,7 @@ The primary trigger is the high rate of manual errors during the financial close
 
             return (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-[95vh] flex flex-col">
                         <div className="flex justify-between items-center p-6 border-b">
                             <h2 className="text-2xl font-bold scale-green-text">{title}</h2>
                             <button 
@@ -787,16 +787,17 @@ The primary trigger is the high rate of manual errors during the financial close
                             </button>
                         </div>
                         
-                        <div className="p-6 flex-1 overflow-hidden flex flex-col">
-                            <p className="text-sm text-gray-600 mb-4">
+                        <div className="p-8 flex-1 overflow-hidden flex flex-col">
+                            <p className="text-base text-gray-600 mb-6">
                                 Your customized deep research prompt is ready. Copy it to use with your preferred AI assistant or download as a text file.
                             </p>
                             
                             <textarea
-                                className="w-full flex-1 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="w-full flex-1 p-6 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 value={promptText}
                                 readOnly
                                 placeholder="Generated prompt will appear here..."
+                                style={{ minHeight: '400px' }}
                             />
                         </div>
                         
