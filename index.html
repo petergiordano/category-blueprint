@@ -3653,21 +3653,122 @@
                                 <div className="space-y-8">
                         <div id="positioning-foundation" className="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg shadow-sm scroll-mt-32">
                             <h3 className="text-xl font-bold text-green-800 mb-3">Positioning Foundation</h3>
-                            <p className="text-green-700 mb-4">This category design exercise builds upon the positioning work from Part 1. Here is a summary of your key inputs:</p>
-                            <div className="bg-white p-4 rounded-md border border-green-200">
-                                <h4 className="font-bold text-gray-800">Ideal Customer Profile (Summary)</h4>
-                                <p className="text-sm text-gray-600 mt-1 italic">{appState.positioningData.icp_summary || 'Complete Part 1 first'}</p>
-                                <h4 className="font-bold text-gray-800 mt-3">Unique Value</h4>
-                                <div className="text-sm text-gray-600 mt-1">
-                                    {(appState.positioningData.values && appState.positioningData.values[0]?.val1) ? (
-                                        <ul className="list-disc pl-5 space-y-2">
-                                            {appState.positioningData.values.map((item, index) => (
-                                                item.val1 && <li key={index}><strong>{item.val1}:</strong> <span className="italic">{item.val3}</span></li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <span className="italic">Complete Part 1 first</span>
-                                    )}
+                            <p className="text-green-700 mb-4">This category design exercise builds upon the positioning work from Part 3. Here is a comprehensive summary of your positioning inputs:</p>
+                            <div className="bg-white p-4 rounded-md border border-green-200 space-y-4">
+                                
+                                {/* 1. Competitive Alternatives */}
+                                <div>
+                                    <h4 className="font-bold text-gray-800 mb-2">1. Competitive Alternatives</h4>
+                                    <div className="text-sm text-gray-600">
+                                        {(appState.positioningData.alternatives && appState.positioningData.alternatives.some(alt => alt.val1)) ? (
+                                            <ul className="list-disc pl-5 space-y-1">
+                                                {appState.positioningData.alternatives.map((alt, index) => (
+                                                    alt.val1 && <li key={index}>
+                                                        <strong>{alt.val1}:</strong> {alt.val2 && <span className="italic">{alt.val2}</span>}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="italic">Complete Part 3 first</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 2. Unique Value & Proof */}
+                                <div>
+                                    <h4 className="font-bold text-gray-800 mb-2">2. Unique Value & Proof</h4>
+                                    <div className="text-sm text-gray-600">
+                                        {(appState.positioningData.values && appState.positioningData.values.some(v => v.val1)) ? (
+                                            <ul className="list-disc pl-5 space-y-1">
+                                                {appState.positioningData.values.map((item, index) => (
+                                                    item.val1 && <li key={index}>
+                                                        <strong>{item.val1}:</strong> {item.val2 && <span>{item.val2}</span>}
+                                                        {item.val3 && <span className="italic"> - {item.val3}</span>}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="italic">Complete Part 3 first</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 3. Market Category */}
+                                <div>
+                                    <h4 className="font-bold text-gray-800 mb-2">3. Market Category</h4>
+                                    <div className="text-sm text-gray-600">
+                                        {appState.positioningData['market-context'] ? (
+                                            <p>
+                                                {appState.positioningData['market-context'] === 'Other' 
+                                                    ? appState.positioningData['market-context-other'] 
+                                                    : appState.positioningData['market-context']}
+                                            </p>
+                                        ) : (
+                                            <span className="italic">Complete Part 3 first</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 4. Target Market Characteristics */}
+                                <div>
+                                    <h4 className="font-bold text-gray-800 mb-2">4. Target Market Characteristics</h4>
+                                    <div className="text-sm text-gray-600">
+                                        {appState.positioningData.icp_summary ? (
+                                            <div className="space-y-2">
+                                                <p className="mb-2"><strong>Summary:</strong> <span className="italic">{appState.positioningData.icp_summary}</span></p>
+                                                
+                                                {(appState.positioningData.icp_firmographic || 
+                                                  appState.positioningData.icp_technographic || 
+                                                  appState.positioningData.icp_behavioral || 
+                                                  appState.positioningData.icp_implementation_readiness) && (
+                                                    <div className="ml-4 space-y-1">
+                                                        {appState.positioningData.icp_firmographic && (
+                                                            <div><strong>Firmographic:</strong> {appState.positioningData.icp_firmographic}</div>
+                                                        )}
+                                                        {appState.positioningData.icp_technographic && (
+                                                            <div><strong>Technographic:</strong> {appState.positioningData.icp_technographic}</div>
+                                                        )}
+                                                        {appState.positioningData.icp_behavioral && (
+                                                            <div><strong>Behavioral:</strong> {appState.positioningData.icp_behavioral}</div>
+                                                        )}
+                                                        {appState.positioningData.icp_implementation_readiness && (
+                                                            <div><strong>Implementation Readiness:</strong> {appState.positioningData.icp_implementation_readiness}</div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span className="italic">Complete Part 3 first</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 5. Relevant Trends */}
+                                <div>
+                                    <h4 className="font-bold text-gray-800 mb-2">5. Relevant Trends</h4>
+                                    <div className="text-sm text-gray-600">
+                                        {(appState.positioningData.trend1_desc || 
+                                          appState.positioningData.trend2_desc || 
+                                          appState.positioningData.trend3_desc || 
+                                          appState.positioningData.trend4_desc) ? (
+                                            <ul className="list-disc pl-5 space-y-1">
+                                                {appState.positioningData.trend1_desc && (
+                                                    <li>{appState.positioningData.trend1_desc}</li>
+                                                )}
+                                                {appState.positioningData.trend2_desc && (
+                                                    <li>{appState.positioningData.trend2_desc}</li>
+                                                )}
+                                                {appState.positioningData.trend3_desc && (
+                                                    <li>{appState.positioningData.trend3_desc}</li>
+                                                )}
+                                                {appState.positioningData.trend4_desc && (
+                                                    <li>{appState.positioningData.trend4_desc}</li>
+                                                )}
+                                            </ul>
+                                        ) : (
+                                            <span className="italic">Complete Part 3 first</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
