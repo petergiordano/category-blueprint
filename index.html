@@ -2741,138 +2741,94 @@ The primary trigger is the high rate of manual errors during the financial close
                 }
             };
 
-            // Generate Part 2 specific structured data for dual-format export
+            // --- START OF REPLACEMENT CODE for generatePart2SpecificData ---
             const generatePart2SpecificData = () => {
-                // Utility to format field values (arrays, objects, strings) with future-proofing
                 const formatFieldValue = (fieldValue) => {
-                    if (Array.isArray(fieldValue)) {
-                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
-                    }
-                    if (fieldValue && typeof fieldValue === 'object' && fieldValue.val1 && fieldValue.val2) {
-                        return `${fieldValue.val1}: ${fieldValue.val2}`;
-                    }
-                    return fieldValue && fieldValue.toString().trim() || null;
+                    if (!fieldValue) return null;
+                    return fieldValue.toString().trim() || null;
                 };
 
-                // Include Segment Foundation summary as requested by user
-                const segmentFoundationSummary = {
-                    jobsToBeDone: {},
-                    customerValue: {},
-                    willingnessToPay: {}
+                const segmentSummary = {
+                    desiredOutcomes: formatFieldValue(appState.segmentData?.['Desired Outcomes']),
+                    functionalValue: formatFieldValue(appState.segmentData?.['Functional Value']),
+                    economicJustification: formatFieldValue(appState.segmentData?.['Economic Justification']),
+                    tableStakes: formatFieldValue(appState.segmentData?.['Table Stakes']),
+                    easeOfDoingBusiness: formatFieldValue(appState.segmentData?.['Ease of Doing Business']),
+                    businessContext: `Context: ${formatFieldValue(appState.segmentData?.['Context']) || 'N/A'}\nStruggling Moments: ${formatFieldValue(appState.segmentData?.['Struggling Moments']) || 'N/A'}`
                 };
 
-                // Extract Jobs to be Done data from segmentData
-                if (appState.segmentData) {
-                    const jtbdFields = [
-                        'jtbd_functional_job', 'jtbd_emotional_job', 'jtbd_social_job',
-                        'jtbd_main_thing', 'jtbd_other_solutions', 'jtbd_success_metrics',
-                        'jtbd_anxieties_habits', 'jtbd_context_triggers', 'jtbd_current_alternatives'
-                    ];
-                    jtbdFields.forEach(field => {
-                        segmentFoundationSummary.jobsToBeDone[field] = formatFieldValue(appState.segmentData[field]);
-                    });
-
-                    const customerValueFields = [
-                        'customer_value_table_stakes', 'customer_value_functional', 'customer_value_ease_of_business',
-                        'customer_value_individual', 'customer_value_aspirational'
-                    ];
-                    customerValueFields.forEach(field => {
-                        segmentFoundationSummary.customerValue[field] = formatFieldValue(appState.segmentData[field]);
-                    });
-
-                    const willingnessToPayFields = [
-                        'willingness_ability_to_pay', 'willingness_economic_justification', 'willingness_relative_value',
-                        'willingness_risk_switching_costs', 'willingness_market_reference_points'
-                    ];
-                    willingnessToPayFields.forEach(field => {
-                        segmentFoundationSummary.willingnessToPay[field] = formatFieldValue(appState.segmentData[field]);
-                    });
-                }
+                const icpData = {
+                    quickDecisionMaking: formatFieldValue(appState.positioningData?.icp_quick_decision_making),
+                    prioritizedRequirements: formatFieldValue(appState.positioningData?.icp_prioritized_requirements),
+                    implementationReadiness: formatFieldValue(appState.positioningData?.icp_implementation_readiness),
+                    firmographic: formatFieldValue(appState.positioningData?.icp_firmographic),
+                    technographic: formatFieldValue(appState.positioningData?.icp_technographic),
+                    behavioral: formatFieldValue(appState.positioningData?.icp_behavioral)
+                };
 
                 return {
                     metadata: {
                         exportDate: new Date().toISOString(),
                         partName: "ICP Definition",
                         company: {
-                            name: appState.companyData?.companyName || null,
-                            url: appState.companyData?.companyURL || null,
-                            industry: appState.companyData?.industry || null
+                            name: appState.companyContext?.companyName || null,
+                            url: appState.companyContext?.companyWebsite || null,
+                            industry: appState.companyContext?.industry || null
                         }
                     },
-                    segmentFoundationSummary: segmentFoundationSummary,
                     content: {
-                        icpDefinition: {
-                            quickDecisionMaking: formatFieldValue(appState.positioningData?.icp_quick_decision_making),
-                            prioritizedRequirements: formatFieldValue(appState.positioningData?.icp_prioritized_requirements),
-                            implementationReadiness: formatFieldValue(appState.positioningData?.icp_implementation_readiness),
-                            firmographic: formatFieldValue(appState.positioningData?.icp_firmographic),
-                            technographic: formatFieldValue(appState.positioningData?.icp_technographic),
-                            behavioral: formatFieldValue(appState.positioningData?.icp_behavioral)
-                        }
+                        segmentFoundationSummary: segmentSummary,
+                        icpDefinition: icpData
                     }
                 };
             };
+            // --- END OF REPLACEMENT CODE ---
 
-            // Generate markdown content from structured data
+            // --- START OF REPLACEMENT CODE for generatePart2Markdown ---
             const generatePart2Markdown = (partData) => {
-                let markdown = `# ICP Definition\n\n`;
-                
+                let markdown = `# ICP Definition Summary\n\n`;
+
                 // Company context
                 if (partData.metadata.company.name) {
                     markdown += `**Company:** ${partData.metadata.company.name}\n`;
                     if (partData.metadata.company.url) {
                         markdown += `**URL:** ${partData.metadata.company.url}\n`;
                     }
-                    if (partData.metadata.company.industry) {
-                        markdown += `**Industry:** ${partData.metadata.company.industry}\n`;
-                    }
                     markdown += `\n`;
                 }
 
-                // Segment Foundation Summary (as requested by user)
+                markdown += `---\n\n`;
+
+                // Segment Foundation Summary
                 markdown += `## Segment Foundation Summary\n\n`;
-                
-                markdown += `### Jobs to be Done\n`;
-                Object.entries(partData.segmentFoundationSummary.jobsToBeDone).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace('jtbd_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n`;
+                const summary = partData.content.segmentFoundationSummary;
+                if (summary) {
+                    markdown += `**Desired Outcomes:** ${summary.desiredOutcomes || 'Not provided'}\n\n`;
+                    markdown += `**Functional Value:** ${summary.functionalValue || 'Not provided'}\n\n`;
+                    markdown += `**Economic Justification:** ${summary.economicJustification || 'Not provided'}\n\n`;
+                    markdown += `**Table Stakes:** ${summary.tableStakes || 'Not provided'}\n\n`;
+                    markdown += `**Ease of Doing Business:** ${summary.easeOfDoingBusiness || 'Not provided'}\n\n`;
+                    markdown += `**Business Context:**\n${summary.businessContext || 'Not provided'}\n\n`;
+                }
 
-                markdown += `### Customer Value\n`;
-                Object.entries(partData.segmentFoundationSummary.customerValue).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace('customer_value_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n`;
-
-                markdown += `### Willingness to Pay\n`;
-                Object.entries(partData.segmentFoundationSummary.willingnessToPay).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace('willingness_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n---\n\n`;
+                markdown += `---\n\n`;
 
                 // ICP Definition fields
                 markdown += `## ICP Definition\n\n`;
-                Object.entries(partData.content.icpDefinition).forEach(([key, value]) => {
-                    if (value) {
-                        const fieldName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                        markdown += `- **${fieldName}:** ${value}\n`;
-                    }
-                });
-                markdown += `\n`;
+                const icp = partData.content.icpDefinition;
+                if (icp) {
+                    markdown += `**Quick Decision Making:** ${icp.quickDecisionMaking || 'Not provided'}\n\n`;
+                    markdown += `**Prioritized Requirements:** ${icp.prioritizedRequirements || 'Not provided'}\n\n`;
+                    markdown += `**Implementation Readiness:** ${icp.implementationReadiness || 'Not provided'}\n\n`;
+                    markdown += `**Firmographic:** ${icp.firmographic || 'Not provided'}\n\n`;
+                    markdown += `**Technographic:** ${icp.technographic || 'Not provided'}\n\n`;
+                    markdown += `**Behavioral:** ${icp.behavioral || 'Not provided'}\n\n`;
+                }
 
-
-                markdown += `\n---\n*Export generated on ${new Date().toLocaleString()}*`;
+                markdown += `*Export generated on ${new Date(partData.metadata.exportDate).toLocaleString()}*`;
                 return markdown;
             };
+            // --- END OF REPLACEMENT CODE ---
 
             const handleExport = () => {
                 // Generate structured data for both formats
