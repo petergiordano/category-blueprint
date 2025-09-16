@@ -1489,7 +1489,7 @@ The primary trigger is the high rate of manual errors during the financial close
                         <div className="flex justify-between items-center">
                             <div className="flex-1">
                                 <h1 
-                                    className={`text-xl sm:text-2xl font-bold ${devMode ? 'text-orange-600' : 'scale-green-text'} cursor-pointer select-none`}
+                                    className={'text-xl sm:text-2xl font-bold ' + (devMode ? 'text-orange-600' : 'scale-green-text') + ' cursor-pointer select-none'}
                                     onDoubleClick={toggleDevMode}
                                     title="Double-click to toggle dev mode"
                                 >
