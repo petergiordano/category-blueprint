@@ -1093,7 +1093,7 @@ The primary trigger is the high rate of manual errors during the financial close
                 setDevFillLoading(true);
                 console.log('Attempting to load dev data...');
                 try {
-                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    const testData = JSON.parse(document.getElementById('segmentTestData').textContent);
                     setAppState(prev => {
                         const newState = { ...prev };
                         if (testData.segmentData) {
@@ -1984,7 +1984,7 @@ The primary trigger is the high rate of manual errors during the financial close
                         partData={exportData}
                     />
                     
-                    <script type="application/json" id="testData">
+                    <script type="application/json" id="segmentTestData">
                     {
                         "segmentData": {
                             "Context": "The target customer operates within a high-stakes, high-growth corporate environment, typically a public or late-stage private SaaS company, where intense pressure to scale operations efficiently is compounded by complex, document-centric financial processes and stringent compliance requirements. This context creates a low tolerance for error and a high demand for operational leverage, as manual systems begin to fail under the weight of increasing business complexity.",
