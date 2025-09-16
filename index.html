@@ -2020,7 +2020,7 @@ The primary trigger is the high rate of manual errors during the financial close
             
             // Check completion status for progressive states
             const isSegmentComplete = appState.segmentData && 
-                Object.values(appState.segmentData).some(value => value && value.trim().length > 0);
+                Object.values(appState.segmentData).some(value => value && value.toString().trim().length > 0);
             
             const isICPStarted = appState.positioningData && (
                 appState.positioningData.icp_summary ||
@@ -2120,8 +2120,8 @@ The primary trigger is the high rate of manual errors during the financial close
                                     width="150"
                                     height="100"
                                     rx="8"
-                                    fill={isSegmentComplete ? "#059669" : "#9CA3AF"}
-                                    opacity={hoveredSection === 'segment' ? "0.8" : (isSegmentComplete ? "1" : "0.5")}
+                                    fill={(isSegmentComplete ? "#059669" : "#9CA3AF") || "#9CA3AF"}
+                                    opacity={hoveredSection === 'segment' ? 0.8 : (isSegmentComplete ? 1 : 0.5)}
                                     stroke={hoveredSection === 'segment' ? "#047857" : "transparent"}
                                     strokeWidth="2"
                                 />
@@ -2156,7 +2156,7 @@ The primary trigger is the high rate of manual errors during the financial close
                                     width="180" 
                                     height="80" 
                                     rx="6" 
-                                    fill={hoveredSection === 'bridge' ? "#E5E7EB" : "#F3F4F6"} 
+                                    fill={(hoveredSection === 'bridge' ? "#E5E7EB" : "#F3F4F6") || "#F3F4F6"} 
                                     stroke={hoveredSection === 'bridge' ? "#374151" : "#6B7280"} 
                                     strokeWidth="1" 
                                 />
@@ -2185,7 +2185,7 @@ The primary trigger is the high rate of manual errors during the financial close
                                     width="155" 
                                     height="140" 
                                     rx="6" 
-                                    fill={hoveredSection === 'strategic' ? "#BBF7D0" : "#DCFCE7"}
+                                    fill={(hoveredSection === 'strategic' ? "#BBF7D0" : "#DCFCE7") || "#DCFCE7"}
                                     stroke={hoveredSection === 'strategic' ? "#059669" : "#16A34A"} 
                                     strokeWidth={hoveredSection === 'strategic' ? "2" : "1"}
                                 />
@@ -2213,7 +2213,7 @@ The primary trigger is the high rate of manual errors during the financial close
                                     width="155" 
                                     height="140" 
                                     rx="6" 
-                                    fill={hoveredSection === 'operational' ? "#FDE68A" : "#FEF3C7"}
+                                    fill={(hoveredSection === 'operational' ? "#FDE68A" : "#FEF3C7") || "#FEF3C7"}
                                     stroke={hoveredSection === 'operational' ? "#D97706" : "#F59E0B"} 
                                     strokeWidth={hoveredSection === 'operational' ? "2" : "1"}
                                 />
