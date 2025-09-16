@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-01T00:00:00.000Z",
+    "partName": "ICP Definition",
+    "company": {}
+  },
+  "content": {
+    "icpDefinition": {
+      "quickDecisionMaking": "C-level executives who can make purchasing decisions within 30 days",
+      "prioritizedRequirements": "Real-time observability, cost optimization, and developer productivity",
+      "implementationReadiness": "DevOps teams with existing microservices architecture",
+      "firmographic": "SaaS companies with 50-500 employees and $10M-$100M ARR",
+      "technographic": "Using Kubernetes, AWS/GCP, and modern application stacks",
+      "behavioral": "Proactive about system reliability and willing to invest in monitoring tools"
+    }
+  }
+}

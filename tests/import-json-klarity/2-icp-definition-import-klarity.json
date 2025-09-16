@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "exportDate": "2025-09-16T12:22:49.000Z",
+    "partName": "ICP Definition",
+    "company": {}
+  },
+  "content": {
+    "icpDefinition": {
+      "quickDecisionMaking": "The economic buyer is a senior executive within the finance or operations hierarchy, most commonly the Chief Financial Officer (CFO) or Chief Accounting Officer (CAO). The decision-making authority resides at this level because the problem being solved—enterprise risk, operational scalability, and strategic transformation—is a C-suite responsibility with a corresponding budget.",
+      "prioritizedRequirements": "Ideal customers prioritize demonstrable accuracy and auditability above all else, as these are non-negotiable for their compliance-driven roles. They also highly value a vendor that acts as a true partner, investing the time to understand their unique processes and delivering value quickly without overburdening their internal teams.",
+      "implementationReadiness": "A company's implementation readiness is signaled by a mature and sophisticated IT and business systems organization that has experience integrating best-of-breed SaaS applications via APIs. They have likely moved beyond a monolithic ERP strategy and have dedicated teams responsible for managing their core cloud application stack.",
+      "firmographic": "The ideal customer is a large, high-growth enterprise, typically in the technology or SaaS sector, with significant revenue and operational complexity that has outstripped the capacity of its manual back-office processes. This profile points to companies that are either publicly traded or on a clear path to an IPO or acquisition, where financial scrutiny is at its peak.",
+      "technographic": "The ideal customer operates a sophisticated, best-of-breed enterprise technology stack centered around a major CRM like Salesforce and an enterprise-class ERP such as NetSuite, Oracle, or SAP. Their use of these powerful but often disconnected systems creates the exact data reconciliation and process fragmentation challenges that Klarity is designed to solve.",
+      "behavioral": "\"Change-ready\" companies are identifiable by recent, significant business events—such as a major funding round, an IPO, or M&A activity—that act as catalysts, creating acute pressure on their financial and operational processes. Public statements from executives about scaling challenges or digital transformation are also strong indicators of a company actively seeking solutions."
+    }
+  }
+}
