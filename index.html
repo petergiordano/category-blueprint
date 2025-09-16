@@ -3657,9 +3657,11 @@ The primary trigger is the high rate of manual errors during the financial close
                             if (typeof val !== 'object' || val === null) {
                                 errors.push(`uniqueValueAndProof[${index}] must be an object`);
                             } else {
-                                if (!val.hasOwnProperty('attribute') || !val.hasOwnProperty('benefit') || !val.hasOwnProperty('value')) {
-                                    errors.push(`uniqueValueAndProof[${index}] must have 'attribute', 'benefit', and 'value' fields`);
+                                // --- START of replacement for the 'if' condition in the uniqueValueAndProof validation loop ---
+                                if (!val.hasOwnProperty('attributeName') || !val.hasOwnProperty('attributeDescription') || !val.hasOwnProperty('benefit') || !val.hasOwnProperty('value')) {
+                                    errors.push(`uniqueValueAndProof[${index}] must have 'attributeName', 'attributeDescription', 'benefit', and 'value' fields`);
                                 }
+                                // --- END of replacement ---
                             }
                         });
                     }
@@ -3741,15 +3743,16 @@ The primary trigger is the high rate of manual errors during the financial close
                                 }));
                             }
                             
-                            // Transform unique value: {attribute, benefit, value} → {val1, val2, val3, val4}
+                            // --- START of replacement for the uniqueValueAndProof transformation ---
                             if (content.uniqueValueAndProof && Array.isArray(content.uniqueValueAndProof)) {
                                 updates.values = content.uniqueValueAndProof.map(val => ({
-                                    val1: val.attribute || '',
-                                    val2: val.benefit || '',
-                                    val3: val.value || '',
-                                    val4: '' // Fourth field not used in export
+                                    val1: val.attributeName || '',
+                                    val2: val.attributeDescription || '',
+                                    val3: val.benefit || '',
+                                    val4: val.value || ''
                                 }));
                             }
+                            // --- END of replacement ---
                             
                             // Map market category
                             if (content.marketCategory && content.marketCategory.trim()) {
@@ -3853,11 +3856,14 @@ The primary trigger is the high rate of manual errors during the financial close
                         return [{ attribute: null, benefit: null, value: null }];
                     }
                     
+                    // --- START of replacement for formatUniqueValueAndProof return statement ---
                     return appState.positioningData.values.map(val => ({
-                        attribute: formatFieldValue(val.val1),
-                        benefit: formatFieldValue(val.val2),
-                        value: formatFieldValue(val.val3)
+                        attributeName: formatFieldValue(val.val1),
+                        attributeDescription: formatFieldValue(val.val2),
+                        benefit: formatFieldValue(val.val3),
+                        value: formatFieldValue(val.val4)
                     }));
+                    // --- END of replacement ---
                 };
 
                 // Get market category
