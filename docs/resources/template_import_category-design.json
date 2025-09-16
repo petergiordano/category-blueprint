@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-01T00:00:00.000Z",
+    "partName": "Category Design",
+    "company": {}
+  },
+  "content": {
+    "positioningFoundation": {
+      "competitiveAlternatives": [
+        {
+          "name": "",
+          "description": ""
+        },
+        {
+          "name": "",
+          "description": ""
+        },
+        {
+          "name": "",
+          "description": ""
+        }
+      ],
+      "uniqueValueAndProof": [
+        {
+          "attribute": "",
+          "benefit": "",
+          "proof": ""
+        },
+        {
+          "attribute": "",
+          "benefit": "",
+          "proof": ""
+        },
+        {
+          "attribute": "",
+          "benefit": "",
+          "proof": ""
+        }
+      ],
+      "marketCategory": "",
+      "targetMarketCharacteristics": {
+        "summary": "",
+        "firmographic": "",
+        "technographic": "",
+        "behavioral": "",
+        "implementationReadiness": ""
+      },
+      "relevantTrends": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "pointOfView": {
+      "fromStatement": "",
+      "toStatement": ""
+    },
+    "newOpportunity": "",
+    "categoryNameAndDefinition": {
+      "name": "",
+      "definition": ""
+    },
+    "manifesto": ""
+  }
+}

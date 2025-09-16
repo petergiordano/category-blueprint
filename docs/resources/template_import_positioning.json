@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-01T00:00:00.000Z",
+    "partName": "Positioning",
+    "company": {}
+  },
+  "content": {
+    "competitiveAlternatives": [
+      {
+        "alternative": "",
+        "description": ""
+      },
+      {
+        "alternative": "",
+        "description": ""
+      },
+      {
+        "alternative": "",
+        "description": ""
+      }
+    ],
+    "uniqueValueAndProof": [
+      {
+        "attribute": "",
+        "benefit": "",
+        "value": ""
+      },
+      {
+        "attribute": "",
+        "benefit": "",
+        "value": ""
+      },
+      {
+        "attribute": "",
+        "benefit": "",
+        "value": ""
+      }
+    ],
+    "marketCategory": "",
+    "categoryName": "",
+    "targetMarketCharacteristics": {
+      "firmographic": "",
+      "technographic": "",
+      "behavioral": "",
+      "decisionMaking": "",
+      "keyRequirements": ""
+    },
+    "relevantTrends": {
+      "trend1": "",
+      "trend2": "",
+      "trend3": "",
+      "trend4": ""
+    }
+  }
+}
