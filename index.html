@@ -1086,7 +1086,7 @@ The primary trigger is the high rate of manual errors during the financial close
             // Dev Mode Functions
             const toggleDevMode = () => {
                 setDevMode(prev => !prev);
-                console.log(!devMode ? '🔓 Dev mode enabled' : '🔒 Dev mode disabled');
+                console.log(!devMode ? 'Dev mode enabled' : 'Dev mode disabled');
             };
 
             const devFillData = () => {
@@ -1101,9 +1101,9 @@ The primary trigger is the high rate of manual errors during the financial close
                         }
                         return newState;
                     });
-                    console.log('✅ Dev data loaded successfully');
+                    console.log('Dev data loaded successfully');
                 } catch (error) {
-                    console.error('❌ Failed to load dev data:', error);
+                    console.error('Failed to load dev data:', error);
                 } finally {
                     setDevFillLoading(false);
                 }
@@ -1493,18 +1493,18 @@ The primary trigger is the high rate of manual errors during the financial close
                                     onDoubleClick={toggleDevMode}
                                     title="Double-click to toggle dev mode"
                                 >
-                                    Part 1: Segment Foundation {devMode && '🔧'}
+                                    Part 1: Segment Foundation {devMode && <span style={{marginLeft: '8px'}}>[DEV MODE]</span>}
                                 </h1>
                                 {devMode && (
                                     <div className="mt-3 pt-3 border-t border-orange-200">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                            <span className="text-xs text-orange-600 font-medium">Dev Mode Active</span>
                                             <button
                                                 onClick={devFillData}
                                                 disabled={devFillLoading}
                                                 className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50"
                                             >
-                                                {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                                {devFillLoading ? 'Loading...' : 'Fill Test Data'}
                                             </button>
                                         </div>
                                     </div>
