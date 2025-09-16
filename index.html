@@ -1197,18 +1197,26 @@ The primary trigger is the high rate of manual errors during the financial close
                     return fieldValue && fieldValue.toString().trim() || null;
                 };
 
+                // Build company object excluding null values
+                const companyData = {};
+                const companyName = formatFieldValue(appState.companyData?.companyName);
+                const companyWebsite = formatFieldValue(appState.companyData?.companyWebsite);
+                const industry = formatFieldValue(appState.companyData?.industry);
+                const productName = formatFieldValue(appState.companyData?.productName);
+                const targetMarket = formatFieldValue(appState.companyData?.targetMarket);
+                
+                if (companyName) companyData.name = companyName;
+                if (companyWebsite) companyData.website = companyWebsite;
+                if (industry) companyData.industry = industry;
+                if (productName) companyData.productName = productName;
+                if (targetMarket) companyData.targetMarket = targetMarket;
+
                 return {
                     metadata: {
                         exportDate: new Date().toISOString(),
                         partName: "Segment Foundation",
                         partNumber: 1,
-                        company: {
-                            name: formatFieldValue(appState.companyData?.companyName),
-                            website: formatFieldValue(appState.companyData?.companyWebsite),
-                            industry: formatFieldValue(appState.companyData?.industry),
-                            productName: formatFieldValue(appState.companyData?.productName),
-                            targetMarket: formatFieldValue(appState.companyData?.targetMarket)
-                        }
+                        company: companyData
                     },
                     content: {
                         jobsToBeDone: {
@@ -4361,7 +4369,7 @@ The primary trigger is the high rate of manual errors during the financial close
         };
 
         // Home Component
-        const Home = ({ appState, setAppState, onNavigate }) => {
+        const Home = ({ appState, setAppState, onNavigate, onExport }) => {
             console.log('HomeView props:', { appState, setAppState, onNavigate });
             
             const [showCompanySetupModal, setShowCompanySetupModal] = useState(() => {
@@ -4410,24 +4418,38 @@ The primary trigger is the high rate of manual errors during the financial close
                                 </div>
                                 
                                 {/* Reset Company Setup Button */}
-                                <button
-                                    onClick={() => {
-                                        if (window.confirm('This will reset your company setup and clear all form data. Are you sure?')) {
-                                            // Reset company context
-                                            setAppState(prev => ({
-                                                ...prev,
-                                                companyContext: {
-                                                    ...prev.companyContext,
-                                                    isSetupComplete: false
-                                                }
-                                            }));
-                                            // This will trigger the CompanySetupModal to show again
-                                        }
-                                    }}
-                                    className="mt-4 text-sm text-gray-600 hover:text-blue-600 underline"
-                                >
-                                    Change Company Setup
-                                </button>
+                                <div className="mt-4 flex flex-col sm:flex-row gap-2 items-start">
+                                    <button
+                                        onClick={() => {
+                                            if (window.confirm('This will reset your company setup and clear all form data. Are you sure?')) {
+                                                // Reset company context
+                                                setAppState(prev => ({
+                                                    ...prev,
+                                                    companyContext: {
+                                                        ...prev.companyContext,
+                                                        isSetupComplete: false
+                                                    }
+                                                }));
+                                                // This will trigger the CompanySetupModal to show again
+                                            }
+                                        }}
+                                        className="text-sm text-gray-600 hover:text-blue-600 underline"
+                                    >
+                                        Change Company Setup
+                                    </button>
+                                    
+                                    {/* Export Buttons - Only show if there's data to export */}
+                                    {(appState.segmentData || appState.positioningData || appState.categoryData) && (
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={onExport}
+                                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                            >
+                                                Export All Data
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                         
@@ -4584,6 +4606,121 @@ The primary trigger is the high rate of manual errors during the financial close
                 saveAppState(appState);
             }, [appState]);
 
+            // Generate complete application data for home page export
+            const generateFullApplicationData = () => {
+                const formatFieldValue = (fieldValue) => {
+                    if (Array.isArray(fieldValue)) {
+                        return fieldValue.filter(item => item && item.toString().trim()).join('; ');
+                    }
+                    if (typeof fieldValue === 'object' && fieldValue !== null) {
+                        return Object.entries(fieldValue)
+                            .filter(([k, v]) => v && v.toString().trim())
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join('; ');
+                    }
+                    return fieldValue && fieldValue.toString().trim() || null;
+                };
+
+                // Build company object excluding null values
+                const companyData = {};
+                const companyName = formatFieldValue(appState.companyData?.companyName);
+                const companyWebsite = formatFieldValue(appState.companyData?.companyWebsite);
+                const industry = formatFieldValue(appState.companyData?.industry);
+                const productName = formatFieldValue(appState.companyData?.productName);
+                
+                if (companyName) companyData.name = companyName;
+                if (companyWebsite) companyData.website = companyWebsite;
+                if (industry) companyData.industry = industry;
+                if (productName) companyData.productName = productName;
+
+                return {
+                    metadata: {
+                        exportDate: new Date().toISOString(),
+                        exportType: "Complete Application Data",
+                        company: companyData
+                    },
+                    parts: {
+                        segmentFoundation: {
+                            partName: "Segment Foundation",
+                            partNumber: 1,
+                            jobsToBeDone: {
+                                "Context": formatFieldValue(appState.segmentData?.['Context']),
+                                "Struggling Moments": formatFieldValue(appState.segmentData?.['Struggling Moments']),
+                                "Pushes & Pulls": formatFieldValue(appState.segmentData?.['Pushes & Pulls']),
+                                "Anxieties & Habits": formatFieldValue(appState.segmentData?.['Anxieties & Habits']),
+                                "Desired Outcomes": formatFieldValue(appState.segmentData?.['Desired Outcomes']),
+                                "Basic Quality (Table Stakes)": formatFieldValue(appState.segmentData?.['Basic Quality (Table Stakes)']),
+                                "Hiring Criteria": formatFieldValue(appState.segmentData?.['Hiring Criteria']),
+                                "Firing Criteria": formatFieldValue(appState.segmentData?.['Firing Criteria']),
+                                "Key Trade-offs": formatFieldValue(appState.segmentData?.['Key Trade-offs'])
+                            },
+                            customerValue: {
+                                "Table Stakes": formatFieldValue(appState.segmentData?.['Table Stakes']),
+                                "Functional Value": formatFieldValue(appState.segmentData?.['Functional Value']),
+                                "Ease of Doing Business": formatFieldValue(appState.segmentData?.['Ease of Doing Business']),
+                                "Individual Value": formatFieldValue(appState.segmentData?.['Individual Value']),
+                                "Aspirational Value": formatFieldValue(appState.segmentData?.['Aspirational Value'])
+                            },
+                            willingnessToPay: {
+                                "Ability to Pay": formatFieldValue(appState.segmentData?.['Ability to Pay']),
+                                "Economic Justification": formatFieldValue(appState.segmentData?.['Economic Justification']),
+                                "Relative Value vs. Alternatives": formatFieldValue(appState.segmentData?.['Relative Value vs. Alternatives']),
+                                "Risk & Switching Costs": formatFieldValue(appState.segmentData?.['Risk & Switching Costs']),
+                                "Market Reference Points": formatFieldValue(appState.segmentData?.['Market Reference Points'])
+                            }
+                        },
+                        icpDefinition: {
+                            partName: "ICP Definition",
+                            partNumber: 2,
+                            data: appState.positioningData ? Object.keys(appState.positioningData)
+                                .filter(key => key.startsWith('icp_'))
+                                .reduce((obj, key) => {
+                                    const formattedValue = formatFieldValue(appState.positioningData[key]);
+                                    if (formattedValue) obj[key] = formattedValue;
+                                    return obj;
+                                }, {}) : {}
+                        },
+                        positioning: {
+                            partName: "Positioning",
+                            partNumber: 3,
+                            data: appState.positioningData ? Object.keys(appState.positioningData)
+                                .filter(key => !key.startsWith('icp_'))
+                                .reduce((obj, key) => {
+                                    const formattedValue = formatFieldValue(appState.positioningData[key]);
+                                    if (formattedValue) obj[key] = formattedValue;
+                                    return obj;
+                                }, {}) : {}
+                        },
+                        categoryDesign: {
+                            partName: "Category Design",
+                            partNumber: 4,
+                            data: appState.categoryData ? Object.keys(appState.categoryData)
+                                .reduce((obj, key) => {
+                                    const formattedValue = formatFieldValue(appState.categoryData[key]);
+                                    if (formattedValue) obj[key] = formattedValue;
+                                    return obj;
+                                }, {}) : {}
+                        }
+                    }
+                };
+            };
+
+            // Home Page Export Handler - Complete Application Data
+            const handleHomePageExport = () => {
+                const fullAppData = generateFullApplicationData();
+                
+                const jsonData = JSON.stringify(fullAppData, null, 2);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'category-blueprint-complete-export.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+
             // Helper function to mark a part as completed
             const markPartAsCompleted = (partId) => {
                 setAppState(prev => {
@@ -4637,7 +4774,7 @@ The primary trigger is the high rate of manual errors during the financial close
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
-                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} onExport={handleHomePageExport} />;
                 }
             };
 
