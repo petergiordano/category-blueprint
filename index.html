@@ -642,7 +642,7 @@ The primary trigger is the high rate of manual errors during the financial close
                             Reset
                         </button>
                     )}
-                    {onImport && (currentPart === 'segment' || currentPart === 'icp') && (
+                    {onImport && (currentPart === 'segment' || currentPart === 'icp' || currentPart === 'positioning') && (
                         <button 
                             onClick={onImport}
                             style={{
@@ -3448,6 +3448,8 @@ The primary trigger is the high rate of manual errors during the financial close
                 refinementInputs: {}
             });
             const [pillarGenModalOpen, setPillarGenModalOpen] = useState(false);
+            const [importMessage, setImportMessage] = useState(null);
+            const [importMessageType, setImportMessageType] = useState('');
 
             // Helper functions for nested data management
             const updateNestedValue = (section, index, key, value) => {
@@ -3599,7 +3601,201 @@ The primary trigger is the high rate of manual errors during the financial close
                 }
             };
 
+            // Validate imported Part 3 positioning data
+            const validatePositioningImportData = (data) => {
+                const errors = [];
 
+                // Validate basic structure
+                if (!data || typeof data !== 'object') {
+                    errors.push('Invalid file structure - expected JSON object');
+                    return { isValid: false, errors };
+                }
+
+                // Validate metadata
+                if (!data.metadata || typeof data.metadata !== 'object') {
+                    errors.push('Missing or invalid metadata section');
+                } else {
+                    if (!data.metadata.partName || data.metadata.partName !== 'Positioning') {
+                        errors.push('Invalid part name - expected "Positioning"');
+                    }
+                    if (!data.metadata.exportDate) {
+                        errors.push('Missing export date in metadata');
+                    }
+                }
+
+                // Validate content structure
+                if (!data.content || typeof data.content !== 'object') {
+                    errors.push('Missing or invalid content section');
+                    return { isValid: false, errors };
+                }
+
+                const { content } = data;
+
+                // Validate competitiveAlternatives
+                if (content.competitiveAlternatives !== undefined) {
+                    if (!Array.isArray(content.competitiveAlternatives)) {
+                        errors.push('competitiveAlternatives must be an array');
+                    } else {
+                        content.competitiveAlternatives.forEach((alt, index) => {
+                            if (typeof alt !== 'object' || alt === null) {
+                                errors.push(`competitiveAlternatives[${index}] must be an object`);
+                            } else {
+                                if (!alt.hasOwnProperty('alternative') || !alt.hasOwnProperty('description')) {
+                                    errors.push(`competitiveAlternatives[${index}] must have 'alternative' and 'description' fields`);
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Validate uniqueValueAndProof
+                if (content.uniqueValueAndProof !== undefined) {
+                    if (!Array.isArray(content.uniqueValueAndProof)) {
+                        errors.push('uniqueValueAndProof must be an array');
+                    } else {
+                        content.uniqueValueAndProof.forEach((val, index) => {
+                            if (typeof val !== 'object' || val === null) {
+                                errors.push(`uniqueValueAndProof[${index}] must be an object`);
+                            } else {
+                                if (!val.hasOwnProperty('attribute') || !val.hasOwnProperty('benefit') || !val.hasOwnProperty('value')) {
+                                    errors.push(`uniqueValueAndProof[${index}] must have 'attribute', 'benefit', and 'value' fields`);
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Validate marketCategory (optional string)
+                if (content.marketCategory !== undefined && typeof content.marketCategory !== 'string') {
+                    errors.push('marketCategory must be a string');
+                }
+
+                // Validate categoryName (optional string)
+                if (content.categoryName !== undefined && typeof content.categoryName !== 'string') {
+                    errors.push('categoryName must be a string');
+                }
+
+                // Validate relevantTrends
+                if (content.relevantTrends !== undefined) {
+                    if (typeof content.relevantTrends !== 'object' || content.relevantTrends === null || Array.isArray(content.relevantTrends)) {
+                        errors.push('relevantTrends must be an object');
+                    } else {
+                        // Validate trend fields
+                        const validTrendKeys = ['trend1', 'trend2', 'trend3', 'trend4'];
+                        Object.keys(content.relevantTrends).forEach(key => {
+                            if (!validTrendKeys.includes(key)) {
+                                errors.push(`Invalid trend key: ${key}. Valid keys are: ${validTrendKeys.join(', ')}`);
+                            }
+                            if (typeof content.relevantTrends[key] !== 'string') {
+                                errors.push(`${key} must be a string`);
+                            }
+                        });
+                    }
+                }
+
+                return {
+                    isValid: errors.length === 0,
+                    errors
+                };
+            };
+
+            // Handle import of Part 3 positioning data
+            const handleImportPositioning = () => {
+                // Create a hidden file input element
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = '.json';
+                fileInput.style.display = 'none';
+                
+                fileInput.onchange = (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    // Clear any previous messages
+                    setImportMessage(null);
+                    setImportMessageType('');
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            
+                            // Validate the imported data
+                            const validation = validatePositioningImportData(importedData);
+                            
+                            if (!validation.isValid) {
+                                setImportMessage(`Import failed: ${validation.errors.join('; ')}`);
+                                setImportMessageType('error');
+                                return;
+                            }
+                            
+                            // Process the import - perform reverse transformation
+                            const { content } = importedData;
+                            const updates = {};
+                            
+                            // Transform competitive alternatives: {alternative, description} → {val1, val2}
+                            if (content.competitiveAlternatives && Array.isArray(content.competitiveAlternatives)) {
+                                updates.alternatives = content.competitiveAlternatives.map(alt => ({
+                                    val1: alt.alternative || '',
+                                    val2: alt.description || ''
+                                }));
+                            }
+                            
+                            // Transform unique value: {attribute, benefit, value} → {val1, val2, val3, val4}
+                            if (content.uniqueValueAndProof && Array.isArray(content.uniqueValueAndProof)) {
+                                updates.values = content.uniqueValueAndProof.map(val => ({
+                                    val1: val.attribute || '',
+                                    val2: val.benefit || '',
+                                    val3: val.value || '',
+                                    val4: '' // Fourth field not used in export
+                                }));
+                            }
+                            
+                            // Map market category
+                            if (content.marketCategory && content.marketCategory.trim()) {
+                                updates['market-context'] = content.marketCategory;
+                            }
+                            
+                            // Map category name
+                            if (content.categoryName && content.categoryName.trim()) {
+                                updates['category-name'] = content.categoryName;
+                            }
+                            
+                            // Transform trends: {trend1, trend2, ...} → trend1_desc, trend2_desc, ...
+                            if (content.relevantTrends && typeof content.relevantTrends === 'object') {
+                                Object.entries(content.relevantTrends).forEach(([key, value]) => {
+                                    if (value && value.trim()) {
+                                        updates[`${key}_desc`] = value;
+                                    }
+                                });
+                            }
+                            
+                            // Apply updates using immutable pattern, preserving existing ICP fields
+                            setAppState(prev => ({
+                                ...prev,
+                                positioningData: {
+                                    ...prev.positioningData,
+                                    ...updates
+                                }
+                            }));
+                            
+                            setImportMessage('Part 3 positioning data imported successfully!');
+                            setImportMessageType('success');
+                            
+                        } catch (error) {
+                            setImportMessage(`Import failed: Invalid JSON file format - ${error.message}`);
+                            setImportMessageType('error');
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                };
+                
+                // Trigger file selection
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                document.body.removeChild(fileInput);
+            };
 
             // Generate Part 3 specific data for dual-format export
             const generatePart3SpecificData = () => {
@@ -3871,6 +4067,7 @@ The primary trigger is the high rate of manual errors during the financial close
                                     }
                                 },
                                 onExport: exportData,
+                                onImport: handleImportPositioning,
                                 onContinue: () => { 
                                     markPartAsCompleted('positioning'); 
                                     onNavigate('category'); 
@@ -3880,6 +4077,30 @@ The primary trigger is the high rate of manual errors during the financial close
                             </div>
                         </div>
                     </header>
+
+                    {/* Import Message */}
+                    {importMessage && (
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                            <div className={`p-4 rounded-md ${importMessageType === 'error' ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
+                                <div className="flex">
+                                    <div className={`${importMessageType === 'error' ? 'text-red-800' : 'text-green-800'}`}>
+                                        <p className="text-sm font-medium">{importMessage}</p>
+                                    </div>
+                                    <div className="ml-auto pl-3">
+                                        <button
+                                            onClick={() => setImportMessage(null)}
+                                            className={`${importMessageType === 'error' ? 'text-red-400 hover:text-red-600' : 'text-green-400 hover:text-green-600'} transition-colors`}
+                                        >
+                                            <span className="sr-only">Dismiss</span>
+                                            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Layout with Sidebar Navigation */}
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
