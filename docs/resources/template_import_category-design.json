@@ -10,36 +10,6 @@
     }
   },
   "content": {
-    "positioningFoundation": {
-      "competitiveAlternatives": [
-        {
-          "name": "",
-          "description": ""
-        }
-      ],
-      "uniqueValueAndProof": [
-        {
-          "attributeName": "",
-          "attributeDescription": "",
-          "benefit": "",
-          "value": ""
-        }
-      ],
-      "marketCategory": "",
-      "targetMarketCharacteristics": {
-        "summary": "",
-        "firmographic": "",
-        "technographic": "",
-        "behavioral": "",
-        "implementationReadiness": ""
-      },
-      "relevantTrends": [
-        "",
-        "",
-        "",
-        ""
-      ]
-    },
     "pointOfView": {
       "fromStatement": "",
       "toStatement": ""
