@@ -4572,9 +4572,10 @@ The primary trigger is the high rate of manual errors during the financial close
                         const values = appState.positioningData.values
                             .filter(v => v && v.val1)
                             .map(v => ({
-                                attribute: formatFieldValue(v.val1),
-                                benefit: formatFieldValue(v.val2),
-                                proof: formatFieldValue(v.val3)
+                                attributeName: formatFieldValue(v.val1),
+                                attributeDescription: formatFieldValue(v.val2),
+                                benefit: formatFieldValue(v.val3),
+                                value: formatFieldValue(v.val4)
                             }));
                         if (values.length > 0) {
                             foundation.uniqueValueAndProof = values;
