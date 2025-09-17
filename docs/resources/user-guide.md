@@ -1,0 +1,64 @@
+Interactive Category Blueprint - User Guide
+
+  Getting Started
+
+  Access the app:
+  https://category-blueprint.vercel.app/
+
+  Step 1: Company Setup
+
+  1. Enter your company information in the welcome
+  screen:
+    - Company name
+    - Website URL
+    - Product/service name
+    - Industry
+  2. Click "Continue" to proceed to the main
+  application
+
+  Step 2: Using the Import Feature (Optional 
+  Fast-Track)
+
+  If you want to skip manual data entry for Parts
+  1-3, you can import pre-filled templates:
+
+  For each part you want to import:
+
+  1. Navigate to the specific part (Part 1: Segment
+  Foundation, Part 2: ICP Definition, or Part 3:
+  Positioning)
+  2. Click the "Import Data" button (located in the
+  top-right of each section)
+  3. Select the corresponding file from the attached
+  files:
+    - Part 1: Use
+  1-segment-foundation-import-klarity.json
+    - Part 2: Use
+  2-icp-definition-import-klarity.json
+    - Part 3: Use 3-positioning-import-klarity.json
+  4. Verify the import - You'll see a success message
+   and the form will populate with the imported data
+  5. Review and customize the imported data as needed
+   for your specific situation
+
+  Step 3: Manual Entry (Alternative)
+
+  If you prefer to fill out the forms manually or
+  want to customize beyond the imported templates:
+
+  - Part 1: Define your market segments and target
+  characteristics
+  - Part 2: Create your Ideal Customer Profile (ICP)
+  - Part 3: Develop your positioning strategy
+
+  Step 4: Part 4 - Category Design
+
+  Part 4 will be completed together during our
+  workshop session on Thursday. No import file is
+  provided for this section as we'll work through it
+  collaboratively.
+
+  ---
+  Questions? Feel free to explore the app and we'll
+  address any questions during our Thursday workshop
+  session.
