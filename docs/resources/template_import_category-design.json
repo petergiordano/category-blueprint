@@ -2,7 +2,12 @@
   "metadata": {
     "exportDate": "2025-01-01T00:00:00.000Z",
     "partName": "Category Design",
-    "company": {}
+    "company": {
+      "name": "",
+      "url": "",
+      "productName": "",
+      "industry": ""
+    }
   },
   "content": {
     "positioningFoundation": {
@@ -10,27 +15,9 @@
         {
           "name": "",
           "description": ""
-        },
-        {
-          "name": "",
-          "description": ""
-        },
-        {
-          "name": "",
-          "description": ""
         }
       ],
       "uniqueValueAndProof": [
-        {
-          "attribute": "",
-          "benefit": "",
-          "proof": ""
-        },
-        {
-          "attribute": "",
-          "benefit": "",
-          "proof": ""
-        },
         {
           "attribute": "",
           "benefit": "",
@@ -61,6 +48,14 @@
       "name": "",
       "definition": ""
     },
-    "manifesto": ""
+    "manifesto": "",
+    "marketCategory": "",
+    "targetMarketCharacteristics": {
+      "summary": "",
+      "firmographic": "",
+      "technographic": "",
+      "behavioral": "",
+      "implementationReadiness": ""
+    }
   }
 }
