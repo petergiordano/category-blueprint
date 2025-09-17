@@ -642,7 +642,7 @@ The primary trigger is the high rate of manual errors during the financial close
                             Reset
                         </button>
                     )}
-                    {onImport && (currentPart === 'segment' || currentPart === 'icp' || currentPart === 'positioning') && (
+                    {onImport && (currentPart === 'segment' || currentPart === 'icp' || currentPart === 'positioning' || currentPart === 'category') && (
                         <button 
                             onClick={onImport}
                             style={{
@@ -4425,6 +4425,108 @@ The primary trigger is the high rate of manual errors during the financial close
         // CategoryDesignTool Component
         const CategoryDesignTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
+            const [importMessage, setImportMessage] = useState(null);
+            const [importMessageType, setImportMessageType] = useState('');
+
+            // Validation function for category import data
+            const validateCategoryImportData = (data) => {
+                const errors = [];
+                
+                if (!data || typeof data !== 'object') {
+                    errors.push('Invalid JSON format');
+                    return { isValid: false, errors };
+                }
+                
+                if (!data.metadata || data.metadata.partName !== 'Category Design') {
+                    errors.push('Invalid part type - expected Category Design data');
+                }
+                
+                if (!data.content || typeof data.content !== 'object') {
+                    errors.push('Missing or invalid content section');
+                }
+                
+                return { isValid: errors.length === 0, errors };
+            };
+
+            // Handle import for Category Design
+            const handleImportCategory = () => {
+                // Create a hidden file input element
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = '.json';
+                fileInput.style.display = 'none';
+                
+                fileInput.onchange = (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    // Clear any previous messages
+                    setImportMessage(null);
+                    setImportMessageType('');
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            
+                            // Validate the imported data
+                            const validation = validateCategoryImportData(importedData);
+                            
+                            if (!validation.isValid) {
+                                setImportMessage(`Import failed: ${validation.errors.join('; ')}`);
+                                setImportMessageType('error');
+                                return;
+                            }
+                            
+                            // Process the import
+                            const { content } = importedData;
+                            const updates = {};
+                            
+                            // Map all the category fields from import format to internal state
+                            if (content.pointOfView) updates['point-of-view'] = content.pointOfView;
+                            if (content.newOpportunity) updates['new-opportunity'] = content.newOpportunity;
+                            if (content.categoryName && content.categoryName.name) updates['category-name'] = content.categoryName.name;
+                            if (content.categoryName && content.categoryName.definition) updates['category-definition'] = content.categoryName.definition;
+                            if (content.manifesto) updates['manifesto'] = content.manifesto;
+                            if (content.marketCategory) updates['market-category'] = content.marketCategory;
+                            
+                            // Target market characteristics
+                            if (content.targetMarketCharacteristics) {
+                                const tm = content.targetMarketCharacteristics;
+                                if (tm.summary) updates['target-market-summary'] = tm.summary;
+                                if (tm.firmographic) updates['target-market-firmographic'] = tm.firmographic;
+                                if (tm.technographic) updates['target-market-technographic'] = tm.technographic;
+                                if (tm.behavioral) updates['target-market-behavioral'] = tm.behavioral;
+                                if (tm.implementationReadiness) updates['target-market-readiness'] = tm.implementationReadiness;
+                            }
+                            
+                            // Update the state
+                            setAppState(prev => ({
+                                ...prev,
+                                categoryData: {
+                                    ...prev.categoryData,
+                                    ...updates
+                                }
+                            }));
+                            
+                            setImportMessage(`Successfully imported ${Object.keys(updates).length} fields from Category Design data`);
+                            setImportMessageType('success');
+                            
+                        } catch (error) {
+                            console.error('Import error:', error);
+                            setImportMessage(`Import failed: ${error.message}`);
+                            setImportMessageType('error');
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                };
+                
+                // Trigger file dialog
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                document.body.removeChild(fileInput);
+            };
             
 
             // Generate Part 4 specific data for dual-format export
@@ -4754,6 +4856,7 @@ The primary trigger is the high rate of manual errors during the financial close
                             <h1 className="text-xl sm:text-2xl font-bold scale-green-text">Part 4: Category Design</h1>
                             {React.createElement(PrimaryActions, {
                                 currentPart: 'category',
+                                onImport: handleImportCategory,
                                 onReset: () => {
                                     if (window.confirm("Are you sure you want to reset all data for Part 4? This will clear all Category Design fields.")) {
                                         setAppState(prev => ({
@@ -4771,6 +4874,28 @@ The primary trigger is the high rate of manual errors during the financial close
                             })}
                         </div>
                     </header>
+
+                    {/* Import Message Display */}
+                    {importMessage && (
+                        <div className={`mt-4 p-4 rounded-md ${
+                            importMessageType === 'success' 
+                                ? 'bg-green-50 border border-green-200 text-green-800' 
+                                : 'bg-red-50 border border-red-200 text-red-800'
+                        }`}>
+                            <div className="flex items-center">
+                                <span className="font-medium">
+                                    {importMessageType === 'success' ? '✅ ' : '❌ '}
+                                    {importMessage}
+                                </span>
+                                <button 
+                                    onClick={() => setImportMessage(null)}
+                                    className="ml-auto text-sm opacity-70 hover:opacity-100"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mt-8">
                         <div className="lg:flex lg:space-x-8">
