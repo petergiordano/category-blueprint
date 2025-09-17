@@ -3605,20 +3605,25 @@ The primary trigger is the high rate of manual errors during the financial close
 
             // Validate imported Part 3 positioning data
             const validatePositioningImportData = (data) => {
+                console.log('DEBUG: validatePositioningImportData called with data:', data);
                 const errors = [];
 
                 // Validate basic structure
                 if (!data || typeof data !== 'object') {
                     errors.push('Invalid file structure - expected JSON object');
+                    console.log('DEBUG: Positioning validation - Invalid JSON structure');
                     return { isValid: false, errors };
                 }
 
                 // Validate metadata
                 if (!data.metadata || typeof data.metadata !== 'object') {
                     errors.push('Missing or invalid metadata section');
+                    console.log('DEBUG: Positioning validation - Missing metadata');
                 } else {
+                    console.log('DEBUG: Positioning validation - Checking partName:', data.metadata.partName);
                     if (!data.metadata.partName || data.metadata.partName !== 'Positioning') {
                         const detectedType = data.metadata?.partName || 'Unknown';
+                        console.log('DEBUG: Positioning validation - Wrong partName. Expected: Positioning, Got:', detectedType);
                         errors.push(`Wrong data type: Found "${detectedType}" data, but expected "Positioning" data. Please select a Positioning export file.`);
                     }
                     if (!data.metadata.exportDate) {
@@ -3706,6 +3711,7 @@ The primary trigger is the high rate of manual errors during the financial close
 
             // Handle import of Part 3 positioning data
             const handleImportPositioning = () => {
+                console.log('DEBUG: handleImportPositioning called for Part 3');
                 // Create a hidden file input element
                 const fileInput = document.createElement('input');
                 fileInput.type = 'file';
@@ -3716,6 +3722,8 @@ The primary trigger is the high rate of manual errors during the financial close
                     const file = event.target.files[0];
                     if (!file) return;
                     
+                    console.log('DEBUG: File selected for Part 3 import:', file.name);
+                    
                     // Clear any previous messages
                     setImportMessage(null);
                     setImportMessageType('');
@@ -3724,8 +3732,11 @@ The primary trigger is the high rate of manual errors during the financial close
                     reader.onload = (e) => {
                         try {
                             const importedData = JSON.parse(e.target.result);
+                            console.log('DEBUG: Part 3 - Parsed JSON data:', importedData);
+                            console.log('DEBUG: Part 3 - Detected partName:', importedData?.metadata?.partName);
                             
                             // Validate the imported data
+                            console.log('DEBUG: Part 3 - Calling validatePositioningImportData');
                             const validation = validatePositioningImportData(importedData);
                             
                             if (!validation.isValid) {
