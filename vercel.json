@@ -1,4 +1,7 @@
 {
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" }
+  ],
   "functions": {
     "api/search.js": {
       "maxDuration": 30
