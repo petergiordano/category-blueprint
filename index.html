@@ -4535,7 +4535,15 @@ The primary trigger is the high rate of manual errors during the financial close
                             name: formatFieldValue(appState.categoryData?.['category-name']),
                             definition: formatFieldValue(appState.categoryData?.['category-definition'])
                         },
-                        manifesto: formatFieldValue(appState.categoryData?.['manifesto'])
+                        manifesto: formatFieldValue(appState.categoryData?.['manifesto']),
+                        marketCategory: formatFieldValue(appState.categoryData?.['market-category']),
+                        targetMarketCharacteristics: {
+                            summary: formatFieldValue(appState.categoryData?.['target-market-summary']),
+                            firmographic: formatFieldValue(appState.categoryData?.['target-market-firmographic']),
+                            technographic: formatFieldValue(appState.categoryData?.['target-market-technographic']),
+                            behavioral: formatFieldValue(appState.categoryData?.['target-market-behavioral']),
+                            implementationReadiness: formatFieldValue(appState.categoryData?.['target-market-readiness'])
+                        }
                     }
                 };
             };
@@ -4670,6 +4678,42 @@ The primary trigger is the high rate of manual errors during the financial close
                     markdown += `*No manifesto defined*\n\n`;
                 }
 
+                // Market Category (Part 4 specific)
+                markdown += `## Market Category\n\n`;
+                if (data.content.marketCategory) {
+                    markdown += `${data.content.marketCategory}\n\n`;
+                } else {
+                    markdown += `*No market category defined*\n\n`;
+                }
+
+                // Target Market Characteristics (Part 4 specific)
+                markdown += `## Target Market Characteristics\n\n`;
+                if (data.content.targetMarketCharacteristics && 
+                    (data.content.targetMarketCharacteristics.summary ||
+                     data.content.targetMarketCharacteristics.firmographic ||
+                     data.content.targetMarketCharacteristics.technographic ||
+                     data.content.targetMarketCharacteristics.behavioral ||
+                     data.content.targetMarketCharacteristics.implementationReadiness)) {
+                    const tm = data.content.targetMarketCharacteristics;
+                    if (tm.summary) {
+                        markdown += `**Summary:** ${tm.summary}\n\n`;
+                    }
+                    if (tm.firmographic) {
+                        markdown += `**Firmographic:** ${tm.firmographic}\n\n`;
+                    }
+                    if (tm.technographic) {
+                        markdown += `**Technographic:** ${tm.technographic}\n\n`;
+                    }
+                    if (tm.behavioral) {
+                        markdown += `**Behavioral:** ${tm.behavioral}\n\n`;
+                    }
+                    if (tm.implementationReadiness) {
+                        markdown += `**Implementation Readiness:** ${tm.implementationReadiness}\n\n`;
+                    }
+                } else {
+                    markdown += `*No target market characteristics defined*\n\n`;
+                }
+
                 return markdown;
             };
 
@@ -4711,7 +4755,7 @@ The primary trigger is the high rate of manual errors during the financial close
                             {React.createElement(PrimaryActions, {
                                 currentPart: 'category',
                                 onReset: () => {
-                                    if (window.confirm("Are you sure you want to reset all data for Part 2? This will clear all Category Design fields.")) {
+                                    if (window.confirm("Are you sure you want to reset all data for Part 4? This will clear all Category Design fields.")) {
                                         setAppState(prev => ({
                                             ...prev,
                                             categoryData: getInitialState().categoryData
@@ -4795,6 +4839,30 @@ The primary trigger is the high rate of manual errors during the financial close
                                                 The Manifesto
                                             </a>
                                         </li>
+                                        <li>
+                                            <a 
+                                                href="#section-5" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-5').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Market Category
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a 
+                                                href="#section-6" 
+                                                className="block px-3 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    document.getElementById('section-6').scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                            >
+                                                Target Market Characteristics
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </nav>
@@ -4843,48 +4911,42 @@ The primary trigger is the high rate of manual errors during the financial close
                                     </div>
                                 </div>
 
-                                {/* 3. Market Category */}
+                                {/* --- START of Market Category replacement --- */}
                                 <div>
                                     <h4 className="font-bold text-gray-800 mb-2">3. Market Category</h4>
                                     <div className="text-sm text-gray-600">
                                         {appState.positioningData['market-context'] ? (
                                             <p>
-                                                {appState.positioningData['market-context'] === 'Other' 
-                                                    ? appState.positioningData['market-context-other'] 
+                                                <strong>Context:</strong> {appState.positioningData['market-context'] === 'Other'
+                                                    ? appState.positioningData['market-context-other']
                                                     : appState.positioningData['market-context']}
+                                                <br />
+                                                <strong>Name:</strong> {appState.positioningData['category-name'] || <span className="italic">Not provided</span>}
                                             </p>
                                         ) : (
                                             <span className="italic">Complete Part 3 first</span>
                                         )}
                                     </div>
                                 </div>
+                                {/* --- END of Market Category replacement --- */}
 
-                                {/* 4. Target Market Characteristics */}
+                                {/* --- START of Target Market Characteristics replacement --- */}
                                 <div>
                                     <h4 className="font-bold text-gray-800 mb-2">4. Target Market Characteristics</h4>
                                     <div className="text-sm text-gray-600">
-                                        {appState.positioningData.icp_summary ? (
-                                            <div className="space-y-2">
-                                                <p className="mb-2"><strong>Summary:</strong> <span className="italic">{appState.positioningData.icp_summary}</span></p>
-                                                
-                                                {(appState.positioningData.icp_firmographic || 
-                                                  appState.positioningData.icp_technographic || 
-                                                  appState.positioningData.icp_behavioral || 
-                                                  appState.positioningData.icp_implementation_readiness) && (
-                                                    <div className="ml-4 space-y-1">
-                                                        {appState.positioningData.icp_firmographic && (
-                                                            <div><strong>Firmographic:</strong> {appState.positioningData.icp_firmographic}</div>
-                                                        )}
-                                                        {appState.positioningData.icp_technographic && (
-                                                            <div><strong>Technographic:</strong> {appState.positioningData.icp_technographic}</div>
-                                                        )}
-                                                        {appState.positioningData.icp_behavioral && (
-                                                            <div><strong>Behavioral:</strong> {appState.positioningData.icp_behavioral}</div>
-                                                        )}
-                                                        {appState.positioningData.icp_implementation_readiness && (
-                                                            <div><strong>Implementation Readiness:</strong> {appState.positioningData.icp_implementation_readiness}</div>
-                                                        )}
-                                                    </div>
+                                        {(appState.positioningData.icp_firmographic || appState.positioningData.icp_technographic || appState.positioningData.icp_behavioral) ? (
+                                            <div className="space-y-2 ml-4">
+                                                {appState.positioningData.icp_firmographic && (
+                                                    <div><strong>Firmographic:</strong> {appState.positioningData.icp_firmographic}</div>
+                                                )}
+                                                {appState.positioningData.icp_technographic && (
+                                                    <div><strong>Technographic:</strong> {appState.positioningData.icp_technographic}</div>
+                                                )}
+                                                {appState.positioningData.icp_behavioral && (
+                                                    <div><strong>Behavioral:</strong> {appState.positioningData.icp_behavioral}</div>
+                                                )}
+                                                {appState.positioningData.icp_implementation_readiness && (
+                                                    <div><strong>Implementation Readiness:</strong> {appState.positioningData.icp_implementation_readiness}</div>
                                                 )}
                                             </div>
                                         ) : (
@@ -4892,6 +4954,7 @@ The primary trigger is the high rate of manual errors during the financial close
                                         )}
                                     </div>
                                 </div>
+                                {/* --- END of Target Market Characteristics replacement --- */}
 
                                 {/* 5. Relevant Trends */}
                                 <div>
@@ -5000,6 +5063,75 @@ The primary trigger is the high rate of manual errors during the financial close
                                 value={appState.categoryData['manifesto'] || ''}
                                 onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'manifesto': e.target.value } }))}
                             />
+                        </div>
+
+                        <div id="section-5" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">Market Category</h2>
+                            <p className="font-semibold text-gray-600 mb-2">Question: What market category does your solution belong to?</p>
+                            <textarea 
+                                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                rows="3" 
+                                placeholder="Example: Customer Success Platform, Marketing Automation, etc."
+                                value={appState.categoryData['market-category'] || ''}
+                                onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'market-category': e.target.value } }))}
+                            />
+                        </div>
+
+                        <div id="section-6" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                            <h2 className="text-2xl font-bold scale-green-text mb-2">Target Market Characteristics</h2>
+                            <p className="font-semibold text-gray-600 mb-2">Question: Who is the ideal customer for this category?</p>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block font-bold text-gray-700">Summary</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                        rows="3" 
+                                        placeholder="Brief overview of your target market..."
+                                        value={appState.categoryData['target-market-summary'] || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'target-market-summary': e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Firmographic</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                        rows="2" 
+                                        placeholder="Company size, industry, revenue..."
+                                        value={appState.categoryData['target-market-firmographic'] || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'target-market-firmographic': e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Technographic</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                        rows="2" 
+                                        placeholder="Technology stack, tools used..."
+                                        value={appState.categoryData['target-market-technographic'] || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'target-market-technographic': e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Behavioral</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                        rows="2" 
+                                        placeholder="Buying patterns, preferences..."
+                                        value={appState.categoryData['target-market-behavioral'] || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'target-market-behavioral': e.target.value } }))}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-gray-700">Implementation Readiness</label>
+                                    <textarea 
+                                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                        rows="2" 
+                                        placeholder="Readiness to adopt new solutions..."
+                                        value={appState.categoryData['target-market-readiness'] || ''}
+                                        onChange={(e) => setAppState(prev => ({ ...prev, categoryData: { ...prev.categoryData, 'target-market-readiness': e.target.value } }))}
+                                    />
+                                </div>
+                            </div>
                         </div>
                         
                         {/* Clear All Fields Button */}
