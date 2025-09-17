@@ -1470,7 +1470,8 @@ The primary trigger is the high rate of manual errors during the financial close
                 // Validate metadata structure
                 const { metadata } = data;
                 if (!metadata.partName || metadata.partName !== 'Segment Foundation') {
-                    warnings.push('File may not be a Part 1: Segment Foundation export.');
+                    const detectedType = metadata?.partName || 'Unknown';
+                    errors.push(`Wrong data type: Found "${detectedType}" data, but expected "Segment Foundation" data. Please select a Segment Foundation export file.`);
                 }
 
                 if (!metadata.company || typeof metadata.company !== 'object') {
@@ -2874,7 +2875,8 @@ The primary trigger is the high rate of manual errors during the financial close
                 // Validate metadata structure
                 const { metadata } = data;
                 if (!metadata.partName || metadata.partName !== 'ICP Definition') {
-                    warnings.push('File may not be a Part 2: ICP Definition export.');
+                    const detectedType = metadata?.partName || 'Unknown';
+                    errors.push(`Wrong data type: Found "${detectedType}" data, but expected "ICP Definition" data. Please select an ICP Definition export file.`);
                 }
 
                 if (!metadata.company || typeof metadata.company !== 'object') {
@@ -3616,7 +3618,8 @@ The primary trigger is the high rate of manual errors during the financial close
                     errors.push('Missing or invalid metadata section');
                 } else {
                     if (!data.metadata.partName || data.metadata.partName !== 'Positioning') {
-                        errors.push('Invalid part name - expected "Positioning"');
+                        const detectedType = data.metadata?.partName || 'Unknown';
+                        errors.push(`Wrong data type: Found "${detectedType}" data, but expected "Positioning" data. Please select a Positioning export file.`);
                     }
                     if (!data.metadata.exportDate) {
                         errors.push('Missing export date in metadata');
@@ -4438,7 +4441,8 @@ The primary trigger is the high rate of manual errors during the financial close
                 }
                 
                 if (!data.metadata || data.metadata.partName !== 'Category Design') {
-                    errors.push('Invalid part type - expected Category Design data');
+                    const detectedType = data.metadata?.partName || 'Unknown';
+                    errors.push(`Wrong data type: Found "${detectedType}" data, but expected "Category Design" data. Please select a Category Design export file.`);
                 }
                 
                 if (!data.content || typeof data.content !== 'object') {
