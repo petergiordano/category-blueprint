@@ -2,17 +2,17 @@
 
 **Prompt Title:** Positioning and Category Deep Research Brief for [Company Name]
 
-**Objective:** To conduct comprehensive, outside-in research into **[Company Name]**, a player in the **[Industry]** industry, and its product **[Product/Service Name]**. This brief will serve as a foundational intelligence layer for a strategic workshop, providing the external market view to contrast with the company's internal assumptions. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+**Objective:** To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product or Service Name]**. This brief will serve as a foundational intelligence layer for a strategic workshop, providing the external market view to contrast with the company's internal assumptions. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
 
 **Target Company:** [Company Name]
 **Company Website:** [Company Website]
 **Industry:** [Industry]
-**Product/Service Name:** [Product/Service Name]
+**Product or Service Name:** [Product or Service Name]
 **User-Provided Competitors (Starting Point):** [Competitor 1, Competitor 2, Competitor 3]
 
-**Core Research Mandate:** Your mission is to populate every element in the outline below by synthesizing public information. Your analysis must be tailored to the specific context of the **[Industry]** industry. Go beyond simple data collection to find the qualitative "breadcrumbs and clues"—the nuance, sentiment, and semantics in the market's language. Your final output MUST strictly adhere to the formatting rules in the "Deliverable" section.
+**Core Research Mandate:** Your mission is to populate every element in the outline below by synthesizing public information. Go beyond simple data collection to find the qualitative "breadcrumbs and clues"—the nuance, sentiment, and semantics in the market's language. Your final output MUST strictly adhere to the formatting rules in the "Deliverable" section.
 
----
+-----
 
 ### **Key Areas of Deep Investigation**
 
@@ -21,73 +21,121 @@
 #### **Part 1: The Segment Foundation (The Market's "Why")**
 
 **1A. Jobs To Be Done (JTBD):**
-1.  **Context**
-2.  **Struggling Moments**
-3.  **Pushes & Pulls**
-4.  **Anxieties & Habits**
-5.  **Desired Outcomes**
-6.  **Basic Quality (Table Stakes)**
-7.  **Hiring Criteria**
-8.  **Firing Criteria**
-9.  **Key Trade-offs**
+
+1.  **Context:** The business situation or operating environment.
+2.  **Struggling Moments:** The breakdowns, inefficiencies, or risks that trigger the search.
+3.  **Pushes & Pulls:** Internal and external forces moving them toward or away from change.
+4.  **Anxieties & Habits:** Concerns about adopting something new and inertia with current processes.
+5.  **Desired Outcomes:** The business goals and success metrics they want to achieve.
+6.  **Basic Quality (Table Stakes):** Minimum standards a solution must meet to be considered.
+7.  **Hiring Criteria:** Differentiators that make them select one vendor over another.
+8.  **Firing Criteria:** Triggers that get a vendor rejected or replaced.
+9.  **Key Trade-offs:** Acceptable compromises customers are willing to make.
 
 **1B. Customer Value:**
-1.  **Table Stakes**
-2.  **Functional Value**
-3.  **Ease of Doing Business**
-4.  **Individual Value**
-5.  **Aspirational Value**
+
+1.  **Table Stakes:** Non-negotiables for credibility (compliance, security, integrations).
+2.  **Functional Value:** Tangible, measurable business outcomes (ROI, efficiency gains, cost savings).
+3.  **Ease of Doing Business:** Simplicity of adoption, implementation, and use.
+4.  **Individual Value:** Personal wins for stakeholders (status, workload relief, career wins).
+5.  **Aspirational Value:** Alignment with the customer's vision or higher-order goals.
 
 **1C. Willingness to Pay (WTP):**
-1.  **Ability to Pay**
-2.  **Economic Justification**
-3.  **Relative Value vs. Alternatives**
-4.  **Risk & Switching Costs**
-5.  **Market Reference Points**
 
-#### **Part 2: The Ideal Customer Profile & Buyer Personas**
+1.  **Ability to Pay:** Evidence of budget and capacity to spend.
+2.  **Economic Justification:** The ROI and payback case that makes financial sense.
+3.  **Relative Value vs. Alternatives:** How the solution's value compares to competitors or the status quo.
+4.  **Risk & Switching Costs:** The perceived risk or friction in making a change.
+5.  **Market Reference Points:** The pricing anchors customers use from competitors or prior spend.
+
+#### **Part 2: The Ideal Customer Profile (The "Who")**
 
 **2A. Operational ICP:**
-1.  **Firmographics**
-2.  **Technographics**
-3.  **Behavioral**
-4.  **Quick Decision Making**
-5.  **Prioritized Requirements**
-6.  **Implementation Readiness**
 
-**2B. Key Buyer Personas & Stakeholder Roles:**
-1.  **Task:** For each of the key stakeholder roles listed below, identify the typical job titles, their primary goals, and their common challenges/concerns when evaluating a product like **[Product/Service Name]**.
-    * **Initiator**, **Primary Decision Maker**, **Approver**, **Economic Buyer**, **End User**, **Champion (Influencer)**, **Blocker**, **Technical Operational Evaluator**, **Legal & Compliance**, **Gatekeeper**, **External Consultants**
+1.  **Firmographics:** Common industries, company sizes, and revenue stages.
+2.  **Technographics:** The technology stack or specific tools used by ideal customers.
+3.  **Behavioral:** Observable actions that signal a 'change-ready' mindset (e.g., job postings).
+4.  **Quick Decision Making:** Evidence of who the economic buyer is and their purchasing authority.
+5.  **Prioritized Requirements:** What they appear to value most in a solution.
+6.  **Implementation Readiness:** Public signals of their ability to adopt a new product.
 
 #### **Part 3: Positioning (The Market's "How")**
 
+**(This section must follow the 6-step positioning framework.)**
+
 **3A. Competitive Alternatives:**
-1.  **Analysis of User-Provided Competitors:** Begin by conducting a deep-dive analysis on the user-provided competitors: **[Competitor 1, Competitor 2, Competitor 3]**. For each one, provide a detailed summary covering their core messaging, primary target audience, and perceived strengths and weaknesses relative to **[Product/Service Name]**.
-2.  **Discovery of Other Alternatives:** Next, expand your research to identify and analyze other key alternatives, including:
-    * **Publicly-Identified Direct Competitors**
-    * **Indirect Competitors** (solving the same JTBD differently)
-    * **The Status Quo** (manual processes, internal tools, etc.)
 
-**3B. Unique Value and Proof:**
-1.  Identify 3-5 key value propositions as perceived by the market. For each one, detail the **Unique Attribute**, the **Benefit** it enables, and the **Value/Proof** (quantifiable metrics).
+1.  **Direct Competitors:** Identify companies offering a similar solution to a similar audience.
+2.  **Indirect Competitors:** Identify companies solving the same core problem with a different approach.
+3.  **Status Quo:** Describe the manual processes, internal tools, or workarounds customers use if they don't buy a dedicated solution.
+4.  **For each alternative, analyze:** Its primary `Weaknesses/Gaps`.
 
-**3C. Relevant Trends:**
-1.  Identify 2-3 major market trends relevant to the **[Industry]** industry. For each, explain:
-    * How this trend aligns with and enhances the product.
-    * How this trend makes the product more appealing.
-    * How this trend creates urgency for the product.
-    * How this trend impacts the underlying need for the product.
+**3B. Unique Attributes:**
 
-#### **Part 4: Category Design (The Market's "What")**
+1.  List the top 3-5 unique `Features/Capabilities` of **[Product or Service Name]** that the competitive alternatives lack. Focus on what is truly different.
 
-1.  **The Point of View (From/To Shift)**
-2.  **The New Opportunity**
-3.  **Category Name & Definition**
-4.  **The Manifesto**
+**3C. Value and Proof:**
 
----
+1.  For each Unique Attribute identified above, define its corresponding `Benefit` and `Value`:
+      * **Benefit:** What does the unique attribute enable for the customer?
+      * **Value:** What is the measurable outcome or KPI that demonstrates the benefit? (e.g., cost savings, time reduction, risk mitigation). Provide specific proof points if available.
+
+**3D. Target Market Characteristics:**
+
+1.  Based on the Value defined above, describe the ideal customer segment that will care the most. Be specific.
+      * **Needs (JTBD):** The specific job they are trying to accomplish.
+      * **Firmographic:** Company size, industry, revenue.
+      * **Technographic:** Their current technology stack.
+      * **Behavioral:** Observable actions or buying habits.
+
+**3E. Market Category:**
+
+1.  Analyze the market and determine the best-fit category for **[Product or Service Name]**.
+      * Is it an **Existing Category**? (If so, name it).
+      * Is it a **New Category** that must be created?
+      * Is it a **Sub-category** of an existing market?
+2.  Provide a **Rationale** for your choice, explaining why this categorization best helps customers understand the product's value.
+
+**3F. Relevant Trends:**
+
+1.  Identify 2-3 major market trends that make the solution timely and relevant. For each trend, explain:
+      * How it enhances the product's value or appeal.
+      * How it creates urgency for the customer to solve this problem now.
+
+#### **Part 4: Category Narrative & Messaging (The "What")**
+
+**4A. The Point of View (From/To Shift):**
+
+1.  Based on market narratives, what is the "From" (old, broken way) and what is the emerging "To" (new, better way)?
+
+**4B. The New Opportunity:**
+
+1.  What becomes possible for businesses that adopt the "To" perspective?
+
+**4C. The Manifesto:**
+
+1.  Synthesize the public-facing story and narrative into a concise manifesto draft that communicates the company's vision for the new category.
+
+-----
+
 **Deliverable: "Positioning and Category Deep Research Brief for [Company Name]"**
 
 The output MUST be a single markdown document titled "Positioning and Category Deep Research Brief for [Company Name]". You MUST adhere to the following **Structured Outline** format.
 
-**(The prompt would continue with the detailed "Formatting and Structure Mandates" and "Example Output Snippet" from the previous version.)**
+**Formatting and Structure Mandates:**
+
+  * Use markdown headings (`##`, `###`) to structure the report precisely as outlined above.
+  * For each element in the outline (e.g., "1. Context", "3A. Competitive Alternatives"), first write a synthesized paragraph that represents your best-analyzed finding.
+  * Below your synthesized finding, you MUST provide at least one piece of specific evidence as a sub-bullet.
+  * Direct quotes MUST be *italicized and enclosed in quotation marks*.
+  * Each piece of evidence MUST be followed by a `[Source: URL or Document Name, Date]` tag.
+
+**Example Output Snippet (Follow this "Synthesis then Evidence" structure precisely for ALL elements):**
+
+```markdown
+### 3A. Competitive Alternatives
+
+**Synthesis:** The primary competitive alternative for [Product or Service Name] is not another software vendor, but rather the internal status quo of using manual processes built around spreadsheets and email. This approach is chosen for its perceived low cost and familiarity, but its primary weakness is its inability to scale, leading to significant error rates and compliance risks.
+
+-   **Alternative:** Manual Processes (Status Quo)
+    -   **Weakness/Gap:** Manual review is completely unscalable, highly prone to human error, and provides zero visibility into actual workflows, making process improvement impossible. [Source: G2 Review for Competitor X, 2025-08-15]

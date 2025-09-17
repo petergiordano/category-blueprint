@@ -92,11 +92,37 @@ Before generating the final report, you will execute the following research plan
     10. **Gatekeeper:** An individual who controls access to key decision-makers, such as an executive assistant or a junior analyst.
     11. **External Consultants:** Third-party firms or individuals hired by the company who may influence the decision-making process with their recommendations.
 
-### **Part 3: Positioning (The Market's "How")**
+**3A. Competitive Alternatives:**
+1.  Identify the top alternatives customers use if **[Product or Service Name]** doesn't exist. This must include:
+    * **Direct Competitors:** Companies offering a similar solution.
+    * **Indirect Competitors:** Companies solving the same core problem with a different approach.
+    * **Status Quo:** The manual processes, internal tools, or workarounds customers currently use.
+2.  For each alternative, analyze and report its primary **Weaknesses/Gaps**.
 
-1.  **Competitive Alternatives:** List the top Direct, Indirect, and Status Quo alternatives mentioned in your research, starting with the User-Provided Competitors. For each, describe why customers choose it and its primary weaknesses.
-2.  **Unique Value and Proof (The Positioning Table):** Identify 3-5 key value propositions for **[Product or Service Name]**. For each one, detail the **Unique Attribute**, the **Benefit** it enables, and the **Value/Proof** (quantifiable metrics).
-3.  **Relevant Trends:** Identify 2-3 major trends in the **[Industry]**. For each, explain:
+**3B. Unique Attributes:**
+1.  List the top 3-5 unique **Features/Capabilities** of **[Product or Service Name]** that the competitive alternatives lack. Focus on what is verifiably different.
+
+**3C. Value and Proof:**
+1.  For each Unique Attribute identified above, define its corresponding **Benefit** and **Value**:
+    * **Benefit:** What does the unique attribute enable for the customer?
+    * **Value:** What is the measurable outcome or KPI that demonstrates the benefit? (e.g., cost savings, time reduction, risk mitigation). Provide specific proof points if available.
+
+**3D. Target Market Characteristics:**
+1.  Based on the Value defined in the previous step, describe the ideal customer segment that will care the most about what you offer. Be specific about their:
+    * **Needs (JTBD):** The specific job they are trying to accomplish.
+    * **Firmographic:** Company size, industry, revenue.
+    * **Technographic:** Their current technology stack.
+    * **Behavioral:** Observable actions or buying habits.
+
+**3E. Market Category:**
+1.  Analyze the market and determine the best-fit category for **[Product or Service Name]**.
+    * Is it an **Existing Category**? (If so, name it).
+    * Is it a **New Category** that must be created and evangelized?
+    * Is it a **Sub-category** of an existing market?
+2.  Provide a **Rationale** for your choice, explaining why this categorization best helps customers understand the product's value and context.
+
+**3F. Relevant Trends:**
+1.  Identify 2-3 major market trends that make the solution timely. For each trend, explain:
     * How this trend aligns with and enhances the product.
     * How this trend makes the product more appealing.
     * How this trend creates urgency for the product.
