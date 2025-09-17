@@ -9,42 +9,18 @@
       {
         "alternative": "",
         "description": ""
-      },
-      {
-        "alternative": "",
-        "description": ""
-      },
-      {
-        "alternative": "",
-        "description": ""
       }
     ],
     "uniqueValueAndProof": [
       {
-        "attribute": "",
-        "benefit": "",
-        "value": ""
-      },
-      {
-        "attribute": "",
-        "benefit": "",
-        "value": ""
-      },
-      {
-        "attribute": "",
+        "attributeName": "",
+        "attributeDescription": "",
         "benefit": "",
         "value": ""
       }
     ],
     "marketCategory": "",
     "categoryName": "",
-    "targetMarketCharacteristics": {
-      "firmographic": "",
-      "technographic": "",
-      "behavioral": "",
-      "decisionMaking": "",
-      "keyRequirements": ""
-    },
     "relevantTrends": {
       "trend1": "",
       "trend2": "",

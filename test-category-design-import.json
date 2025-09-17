@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-17T01:00:00.000Z",
+    "partName": "Category Design",
+    "company": {
+      "companyName": "Test Company",
+      "productName": "Test Product"
+    }
+  },
+  "content": {
+    "pointOfView": {
+      "fromStatement": "Business transformation is a series of slow, high-risk, episodic projects.",
+      "toStatement": "Operational excellence is a continuous, automated, data-driven business function."
+    },
+    "newOpportunity": "There's a better way using AI",
+    "categoryName": {
+      "name": "Smart Process Automation",
+      "definition": "AI-powered automation that learns and adapts"
+    },
+    "manifesto": "We believe every company deserves intelligent automation",
+    "marketCategory": "Enterprise Automation Software",
+    "targetMarketCharacteristics": {
+      "summary": "Mid-market companies seeking efficiency",
+      "firmographic": "50-500 employees, $10M-$100M revenue",
+      "technographic": "Cloud-first, using modern tech stack",
+      "behavioral": "Early adopters of automation tools",
+      "implementationReadiness": "Have dedicated IT team"
+    }
+  }
+}

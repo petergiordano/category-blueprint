@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-17T01:00:00.000Z",
+    "partName": "Positioning",
+    "company": {
+      "companyName": "Test Company",
+      "productName": "Test Product"
+    }
+  },
+  "content": {
+    "competitiveAlternatives": [
+      {
+        "alternative": "Manual Process",
+        "description": "Traditional manual way of doing things"
+      },
+      {
+        "alternative": "Competitor A",
+        "description": "Legacy solution provider"
+      }
+    ],
+    "uniqueValueAndProof": [
+      {
+        "attributeName": "AI-Powered Automation",
+        "attributeDescription": "Advanced machine learning capabilities",
+        "benefit": "Reduces manual work by 80%",
+        "value": "Save 20 hours per week"
+      }
+    ],
+    "marketCategory": "Process Automation",
+    "categoryName": "Intelligent Process Automation",
+    "relevantTrends": {
+      "trend1": "Growing demand for automation",
+      "trend2": "AI adoption in enterprise",
+      "trend3": "Remote work efficiency",
+      "trend4": "Cost optimization focus"
+    }
+  }
+}
