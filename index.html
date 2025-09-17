@@ -5318,7 +5318,10 @@ The primary trigger is the high rate of manual errors during the financial close
                 // Initialize modal state based on setup completion
                 return !appState.companyContext?.isSetupComplete;
             });
-            
+
+            // State for the user guide accordion
+            const [showUserGuide, setShowUserGuide] = useState(false);
+
             // State for the prompt display modal
             const [promptModalData, setPromptModalData] = useState({
                 isOpen: false,
@@ -5339,7 +5342,7 @@ The primary trigger is the high rate of manual errors during the financial close
                     <div className="max-w-3xl mx-auto">
                         {/* Existing welcome content */}
                         <h1 className="text-4xl font-bold text-center mb-8 scale-green-text">Welcome to Category Blueprint</h1>
-                        
+
                         {/* Company Context Display */}
                         {appState.companyContext?.isSetupComplete && (
                             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -5380,17 +5383,6 @@ The primary trigger is the high rate of manual errors during the financial close
                                         Change Company Setup
                                     </button>
                                     
-                                    {/* Export Buttons - Only show if there's data to export */}
-                                    {(appState.segmentData || appState.positioningData || appState.categoryData) && (
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={onExport}
-                                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                            >
-                                                Export All Data
-                                            </button>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         )}
@@ -5482,6 +5474,98 @@ The primary trigger is the high rate of manual errors during the financial close
                                 </>
                             )}
                         </div>
+
+                        {/* User Guide Button */}
+                        <div className="text-center mb-8 mt-12">
+                            <button
+                                onClick={() => setShowUserGuide(!showUserGuide)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200 inline-flex items-center gap-2"
+                            >
+                                <span>📚</span>
+                                User Guide
+                                <span className={`transform transition-transform duration-200 ${showUserGuide ? 'rotate-180' : ''}`}>▼</span>
+                            </button>
+                        </div>
+
+                        {/* User Guide Accordion */}
+                        {showUserGuide && (
+                            <div className="bg-white rounded-lg shadow-md p-6 mb-8 border-l-4 border-blue-600">
+                                <div className="prose max-w-none">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Getting Started</h2>
+
+                                    <div className="space-y-6">
+                                        {/* Step 1: Company Setup */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 1: Company Setup</h3>
+                                            <div className="ml-4 space-y-2">
+                                                <p className="text-gray-700">1. Enter your company information in the welcome screen:</p>
+                                                <ul className="ml-6 list-disc space-y-1 text-gray-600">
+                                                    <li>Company name</li>
+                                                    <li>Website URL</li>
+                                                    <li>Product/service name</li>
+                                                    <li>Industry</li>
+                                                </ul>
+                                                <p className="text-gray-700">2. Click "Continue" to proceed to the main application</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 2: Prepare Your Import Files */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 2: Prepare Your Import Files (Optional)</h3>
+                                            <div className="ml-4 space-y-2">
+                                                <p className="text-gray-700">If you have export files from a previous session or have been provided with template files:</p>
+                                                <ul className="ml-6 list-disc space-y-1 text-gray-600">
+                                                    <li>Ensure you have the appropriate JSON files for the parts you want to import</li>
+                                                    <li>Files should be in JSON format with the correct data structure</li>
+                                                    <li>Each part has its own import file format</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 3: Using the Import Feature */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 3: Using the Import Feature (Optional Fast-Track)</h3>
+                                            <div className="ml-4 space-y-2">
+                                                <p className="text-gray-700">If you have import files, you can populate any section quickly instead of manual data entry.</p>
+                                                <p className="text-gray-700 font-medium">To import data into a section:</p>
+                                                <ol className="ml-6 list-decimal space-y-1 text-gray-600">
+                                                    <li>Navigate to the specific part you want to import data into (Part 1: Segment Foundation, Part 2: ICP Definition, or Part 3: Positioning)</li>
+                                                    <li>Click the "Import Data" button (located in the top-right of each section)</li>
+                                                    <li>Select your JSON import file from your computer:
+                                                        <ul className="ml-4 list-disc space-y-1 mt-1">
+                                                            <li><strong>Part 1:</strong> Segment Foundation export files</li>
+                                                            <li><strong>Part 2:</strong> ICP Definition export files</li>
+                                                            <li><strong>Part 3:</strong> Positioning export files</li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>Verify the import - You'll see a success message and the form will populate with the imported data</li>
+                                                    <li>Review and customize the imported data as needed for your specific situation</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 4: Manual Entry */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 4: Manual Entry (Alternative)</h3>
+                                            <div className="ml-4 space-y-2">
+                                                <p className="text-gray-700">If you prefer to fill out the forms manually or want to customize beyond the imported templates:</p>
+                                                <ul className="ml-6 list-disc space-y-1 text-gray-600">
+                                                    <li><strong>Part 1:</strong> Define your market segments and target characteristics</li>
+                                                    <li><strong>Part 2:</strong> Create your Ideal Customer Profile (ICP)</li>
+                                                    <li><strong>Part 3:</strong> Develop your positioning strategy</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                            <p className="text-blue-800 text-sm">
+                                                <strong>💡 Tips:</strong> You can export your work from any section and re-import it later. This makes it easy to save your progress or share your data between sessions.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <p className="text-sm text-gray-500 mt-8 text-center max-w-2xl mx-auto">
                             Your progress is saved automatically in your browser. This data is private and is not sent to any server.
