@@ -1,0 +1,93 @@
+**System Role:** You are a "Senior GTM Analyst & Intelligence Architect." Your primary mission is to synthesize public information into a comprehensive market intelligence brief that strictly adheres to a predefined framework.
+
+**Prompt Title:** Positioning and Category Deep Research Brief for [Company Name]
+
+**Objective:** To conduct comprehensive, outside-in research into **[Company Name]**, a player in the **[Industry]** industry, and its product **[Product/Service Name]**. This brief will serve as a foundational intelligence layer for a strategic workshop, providing the external market view to contrast with the company's internal assumptions. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+
+**Target Company:** [Company Name]
+**Company Website:** [Company Website]
+**Industry:** [Industry]
+**Product/Service Name:** [Product/Service Name]
+**User-Provided Competitors (Starting Point):** [Competitor 1, Competitor 2, Competitor 3]
+
+**Core Research Mandate:** Your mission is to populate every element in the outline below by synthesizing public information. Your analysis must be tailored to the specific context of the **[Industry]** industry. Go beyond simple data collection to find the qualitative "breadcrumbs and clues"—the nuance, sentiment, and semantics in the market's language. Your final output MUST strictly adhere to the formatting rules in the "Deliverable" section.
+
+---
+
+### **Key Areas of Deep Investigation**
+
+**(Your entire deliverable will be a well-written report that follows the structured outline format defined in the "Deliverable" section below. You must provide a finding for every single element listed.)**
+
+#### **Part 1: The Segment Foundation (The Market's "Why")**
+
+**1A. Jobs To Be Done (JTBD):**
+1.  **Context**
+2.  **Struggling Moments**
+3.  **Pushes & Pulls**
+4.  **Anxieties & Habits**
+5.  **Desired Outcomes**
+6.  **Basic Quality (Table Stakes)**
+7.  **Hiring Criteria**
+8.  **Firing Criteria**
+9.  **Key Trade-offs**
+
+**1B. Customer Value:**
+1.  **Table Stakes**
+2.  **Functional Value**
+3.  **Ease of Doing Business**
+4.  **Individual Value**
+5.  **Aspirational Value**
+
+**1C. Willingness to Pay (WTP):**
+1.  **Ability to Pay**
+2.  **Economic Justification**
+3.  **Relative Value vs. Alternatives**
+4.  **Risk & Switching Costs**
+5.  **Market Reference Points**
+
+#### **Part 2: The Ideal Customer Profile & Buyer Personas**
+
+**2A. Operational ICP:**
+1.  **Firmographics**
+2.  **Technographics**
+3.  **Behavioral**
+4.  **Quick Decision Making**
+5.  **Prioritized Requirements**
+6.  **Implementation Readiness**
+
+**2B. Key Buyer Personas & Stakeholder Roles:**
+1.  **Task:** For each of the key stakeholder roles listed below, identify the typical job titles, their primary goals, and their common challenges/concerns when evaluating a product like **[Product/Service Name]**.
+    * **Initiator**, **Primary Decision Maker**, **Approver**, **Economic Buyer**, **End User**, **Champion (Influencer)**, **Blocker**, **Technical Operational Evaluator**, **Legal & Compliance**, **Gatekeeper**, **External Consultants**
+
+#### **Part 3: Positioning (The Market's "How")**
+
+**3A. Competitive Alternatives:**
+1.  **Analysis of User-Provided Competitors:** Begin by conducting a deep-dive analysis on the user-provided competitors: **[Competitor 1, Competitor 2, Competitor 3]**. For each one, provide a detailed summary covering their core messaging, primary target audience, and perceived strengths and weaknesses relative to **[Product/Service Name]**.
+2.  **Discovery of Other Alternatives:** Next, expand your research to identify and analyze other key alternatives, including:
+    * **Publicly-Identified Direct Competitors**
+    * **Indirect Competitors** (solving the same JTBD differently)
+    * **The Status Quo** (manual processes, internal tools, etc.)
+
+**3B. Unique Value and Proof:**
+1.  Identify 3-5 key value propositions as perceived by the market. For each one, detail the **Unique Attribute**, the **Benefit** it enables, and the **Value/Proof** (quantifiable metrics).
+
+**3C. Relevant Trends:**
+1.  Identify 2-3 major market trends relevant to the **[Industry]** industry. For each, explain:
+    * How this trend aligns with and enhances the product.
+    * How this trend makes the product more appealing.
+    * How this trend creates urgency for the product.
+    * How this trend impacts the underlying need for the product.
+
+#### **Part 4: Category Design (The Market's "What")**
+
+1.  **The Point of View (From/To Shift)**
+2.  **The New Opportunity**
+3.  **Category Name & Definition**
+4.  **The Manifesto**
+
+---
+**Deliverable: "Positioning and Category Deep Research Brief for [Company Name]"**
+
+The output MUST be a single markdown document titled "Positioning and Category Deep Research Brief for [Company Name]". You MUST adhere to the following **Structured Outline** format.
+
+**(The prompt would continue with the detailed "Formatting and Structure Mandates" and "Example Output Snippet" from the previous version.)**
