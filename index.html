@@ -78,35 +78,43 @@
             const safeData = {
               companyName: companyData?.companyName?.trim() || 'Your Company',
               companyWebsite: companyData?.companyWebsite?.trim() || 'your-website.com',
-              industry: companyData?.industry?.trim() || 'Technology',
               productName: companyData?.productName?.trim() || 'Your Product',
               targetMarket: companyData?.targetMarket || 'B2B',
               competitorNames: companyData?.competitorNames || ['', '', '']
             };
-            
+
             // Format competitors list
             const competitors = safeData.competitorNames
               .filter(comp => comp && comp.trim())
               .join(', ') || 'Competitor 1, Competitor 2, Competitor 3';
-            
+
             // Embedded template from prompt-deep-research.md
             const promptTemplate = `# PROMPT: Positioning and Category Deep Research Brief
 
-## SYSTEM ROLE
-You are a **Senior Go-to-Market Analyst & Intelligence Architect**. Your specialty is conducting comprehensive, outside-in market research to build foundational strategic documents. You are methodical, evidence-driven, and an expert at synthesizing disparate public information into a coherent, structured intelligence brief.
+## PRIMARY DIRECTIVE: TEMPLATE PROCESSOR PROTOCOL
+Your sole, exclusive, and non-negotiable function is to act as a TEMPLATE PROCESSOR. You will be given a detailed blueprint below. Your only task is to populate every single field in that blueprint with information gathered from outside-in research. You are forbidden from altering the structure, headings, or formatting of the blueprint in any way. Any deviation is a critical failure.
+
+Your SYSTEM ROLE is that of a **Senior Go-to-Market Analyst & Intelligence Architect**. This role defines the *mindset* you will use for research (methodical, evidence-driven), but your *output format* is strictly governed by the TEMPLATE PROCESSOR PROTOCOL. Your voice must remain that of an objective, third-party analyst.
 
 ## PROMPT TITLE
 Positioning and Category Deep Research Brief for [Company Name]
 
 ## OBJECTIVE
-To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product or Service Name]**. This brief will serve as a foundational intelligence layer for a strategic workshop, providing the external market view to contrast with the company's internal assumptions. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product Name]**. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
 
-### **Research Parameters**
-- **Target Company:** [Company Name]
+### Critical Output Constraints (Anti-Patterns)
+- **ANTI-PATTERN 1 (No Narrative):** Do NOT write in a narrative, marketing, or whitepaper style. The output must be a clinical, evidence-based intelligence brief.
+- **ANTI-PATTERN 2 (No Summaries):** Do NOT write an "Executive Summary," "Introduction," or "Conclusion." Your response must begin *immediately* with \`### Part 1\`.
+- **ANTI-PATTERN 3 (No Invented Sections):** Do NOT generate sections that are not in the blueprint, such as "SWOT Analysis" or "Strategic Recommendations." Your output must ONLY contain the headings and sub-headings specified below.
+
+### Critical Scoping Constraint
+- **FOCUS ON ARCHITECT ONLY:** Your research and analysis must be exclusively focused on the **[Product Name]** product. The target company, [Company Name], may have other products that you are to actively ignore and exclude any information, features, use cases, or value propositions that relate to products other than [Product Name]. Your entire report must reflect the perspective of a buyer for **[Product Name]**.
+
+### Research Parameters
+- **Company Name:** [Company Name]
 - **Company Website:** [Company Website]
-- **Industry:** [Industry]
-- **Product or Service Name:** [Product or Service Name]
-- **User-Provided Competitors (Starting Point):** [Competitor 1, Competitor 2, Competitor 3]
+- **Product Name:** [Product Name]
+- **Competitors or Alternatives** [Competitor 1, Competitor 2, Competitor 3]
 
 ---
 
@@ -115,7 +123,7 @@ To conduct comprehensive, outside-in research into **[Company Name]** and its pr
 
 Before generating the final report, you will execute the following research plan:
 
-1.  **Phase 1: Keyword & Entity Formulation:** Based on the full outline below, formulate a comprehensive set of search queries. These should cover the target company, product, user-provided competitors, market categories, customer personas (e.g., "[Industry] CFO challenges," "pain points with [Product or Service Name] alternatives"), and JTBD concepts related to the [Industry].
+1.  **Phase 1: Keyword & Entity Formulation:** Based on the full outline below, formulate a comprehensive set of search queries. These should cover the target company, product, user-provided competitors, market categories, customer personas (e.g.,  "pain points with [Product] alternatives"), and related JTBD concepts.
 2.  **Phase 2: Broad Scan & Source Prioritization:** Execute the searches to identify a wide range of high-quality, public sources. Prioritize sources such as:
     * Official company websites ([Company Name] and competitors)
     * Third-party review sites (G2, Capterra, Gartner Peer Insights)
@@ -125,16 +133,63 @@ Before generating the final report, you will execute the following research plan
     * Professional forums and communities (LinkedIn, industry-specific forums, Reddit where relevant)
     * Key employee LinkedIn profiles for role descriptions and language
 3.  **Phase 3: Deep Dive & Evidence Extraction:** Meticulously review the prioritized sources. For each element in the outline below, extract specific, verbatim quotes, data points, and factual statements. Organize this raw evidence, mapping each piece to the relevant section of the outline.
-4.  **Phase 4: Synthesis & Assembly:** Using the extracted evidence, assemble the final report. You will write the report section by section, adhering to the "Absolute Formatting Rules" below. The synthesis for each point should be written *after* you have gathered and reviewed the evidence for it.
+4. **Phase 4: Synthesis & Assembly:** Using the extracted evidence, assemble the final report. You will write the report section by section, adhering to the "Formatting Requirements" above. The synthesis for each point should be written *after* you have gathered and reviewed the evidence for it.
+5. **Phase 5: Format Validation:** Verify that all heading levels follow the prescribed hierarchy and major sections are properly separated with horizontal rules.
 
 ---
 
-## FRAMEWORK: Core Structure for Synthesis
-**(Your entire deliverable will be a well-written report that follows this structured outline format precisely.)**
+## FORMATTING REQUIREMENTS
 
-### **Part 1: The Segment Foundation (The Market's "Why")**
+### Markdown Hierarchy Rules:
+- Use ## for major parts (Parts 1-4)
+- Use ### for main sections (1A, 1B, 1C, 2A, 2B, etc.)
+- Use #### for subsection elements (Context, Struggling Moments, etc.)
+- Use ##### for numbered items (buyer personas, unique attributes)
+- Add horizontal rules (---) between major parts only
+- Maintain 2 line breaks before major parts, 1 line break elsewhere
 
-#### **1A. Jobs To Be Done (JTBD):**
+---
+
+## FRAMEWORK: Core Structure for Synthesis**(Your entire deliverable MUST follow this structured outline format precisely.)**
+
+### Formatting Model: Synthesis + Evidence
+For every single element listed in the blueprint below (e.g., "Context," "Functional Value," "Firmographics," etc.), you MUST apply the following **"Synthesis + Evidence"** model precisely. This is the master format for the entire report.
+
+==== FORMATTING EXAMPLE BEGINS ====
+
+
+## Part 1: The Segment Foundation (The Market's "Why")
+### 1A. JTBD (9 Elements)
+#### Context
+**Synthesis:** [1-3 sentence analytical summary of the key finding for this element based on your research.]
+**Evidence:**
+* [Direct quote, paraphrased data point, or factual statement from your research.] [Source]
+* [Direct quote, paraphrased data point, or factual statement from a different source.] [Source]
+
+#### Struggling Moments
+**Synthesis:** [1-3 sentence analytical summary]
+**Evidence:**
+* [Quote/data point] [Source]
+* [Quote/data point] [Source]
+
+---
+
+
+## Part 2: The Customer & Their Problem
+### **2A. Operational ICP**
+#### Firmographics
+* Common industries, company sizes, and revenue stages.
+#### Technographics
+* The technology stack or specific tools used by ideal customers.
+
+==== FORMATTING EXAMPLE ENDS ====
+
+**IMPORTANT:** The content above between the "====" markers is ONLY a formatting example. Your actual report begins below with the framework outline and must follow this exact format structure.
+
+### Part 1: The Segment Foundation (The Market's "Why")
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
+
+#### 1A. JTBD (9 Elements)
 - **Context:** The business situation or operating environment.
 - **Struggling Moments:** The breakdowns, inefficiencies, or risks that trigger the search.
 - **Pushes & Pulls:** Internal and external forces moving them toward or away from change.
@@ -145,21 +200,22 @@ Before generating the final report, you will execute the following research plan
 - **Firing Criteria:** Triggers that get a vendor rejected or replaced.
 - **Key Trade-offs:** Acceptable compromises customers are willing to make.
 
-#### **1B. Customer Value:**
+#### 1B. Customer Value (5 Elements)
 - **Table Stakes:** Non-negotiables for credibility (compliance, security, integrations).
 - **Functional Value:** Tangible, measurable business outcomes (ROI, efficiency gains, cost savings).
 - **Ease of Doing Business:** Simplicity of adoption, implementation, and use.
 - **Individual Value:** Personal wins for stakeholders (status, workload relief, career wins).
 - **Aspirational Value:** Alignment with the customer's vision or higher-order goals.
 
-#### **1C. Willingness to Pay (WTP):**
+#### 1C. Willingness to Pay (5 Elements)
 - **Ability to Pay:** Evidence of budget and capacity to spend.
 - **Economic Justification:** The ROI and payback case that makes financial sense.
 - **Relative Value vs. Alternatives:** How the solution's value compares to competitors or the status quo.
 - **Risk & Switching Costs:** The perceived risk or friction in making a change.
 - **Market Reference Points:** The pricing anchors customers use from competitors or prior spend.
 
-### **Part 2: The Ideal Customer Profile & Buyer Personas**
+### Part 2: The Customer & Their Problem
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
 
 #### **2A. Operational ICP:**
 - **Firmographics:** Common industries, company sizes, and revenue stages.
@@ -169,81 +225,63 @@ Before generating the final report, you will execute the following research plan
 - **Prioritized Requirements:** What they appear to value most in a solution.
 - **Implementation Readiness:** Public signals of their ability to adopt a new product.
 
-#### **2B. Key Buyer Personas & Stakeholder Roles:**
-- **Task:** For each of the key stakeholder roles defined below, conduct research to identify their typical job titles, primary goals, and common challenges/concerns when evaluating a product like **[Product or Service Name]**.
-- **Role Definitions:**
-    1.  **Initiator:** The individual who first identifies the business pain or opportunity and starts the search for a solution.
-    2.  **Primary Decision Maker:** The person with the ultimate authority to make the final "yes" or "no" decision on the purchase.
-    3.  **Approver:** An individual (often in finance or procurement) who must approve the final purchase order and terms, ensuring it meets budget and policy constraints.
-    4.  **Economic Buyer:** The person who owns the budget and is ultimately responsible for the financial viability of the purchase (often the same as the Primary Decision Maker, but not always).
-    5.  **End User:** The hands-on practitioner(s) who will use the product regularly to perform their job.
-    6.  **Champion (Influencer):** A well-respected individual who advocates for the solution's adoption, often because they see its direct benefit for their team or the company.
-    7.  **Blocker:** Anyone who can slow down or stop the deal, often due to concerns about security, change management, budget, or integration.
-    8.  **Technical Operational Evaluator:** The subject matter expert (often in IT or a specific business unit) responsible for vetting the solution's technical capabilities, feasibility, and fit with existing systems.
-    9.  **Legal & Compliance:** The team responsible for reviewing contracts, ensuring data privacy, and validating that the solution meets all regulatory and compliance requirements.
-    10. **Gatekeeper:** An individual who controls access to key decision-makers, such as an executive assistant or a junior analyst.
-    11. **External Consultants:** Third-party firms or individuals hired by the company who may influence the decision-making process with their recommendations.
+#### 2B. Key Buyer Personas (4 Roles)
+Collect evidence for:
+    1.  **Economic Buyer:** The person who owns the budget and is ultimately responsible for the financial viability of the purchase (e.g., CFO, CAO).
+    2.  **Champion (Influencer):** The internal advocate who feels the acute pain and drives the evaluation (e.g., VP/Director of Revenue, Operations, or Transformation).
+    3.  **End User:** The hands-on practitioner who will use the product regularly (e.g., Financial Analyst, Revenue Accountant).
+    4.  **Blocker / Evaluator:** The individual with veto power who assesses risk and technical feasibility (e.g., Director of IT Security, General Counsel).
 
-### **Part 3: Positioning (The Market's "How")**
+### Part 3: Positioning
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
 
-**3A. Competitive Alternatives:**
-1.  Identify the top alternatives customers use if **[Product or Service Name]** doesn't exist. This must include:
-    * **Direct Competitors:** Companies offering a similar solution.
-    * **Indirect Competitors:** Companies solving the same core problem with a different approach.
-    * **Status Quo:** The manual processes, internal tools, or workarounds customers currently use.
-2.  For each alternative, analyze and report its primary **Weaknesses/Gaps**.
+#### 3A. The Product
+* A factual, non-marketing description of what the product is and does.
 
-**3B. Unique Attributes:**
-1.  List the top 3-5 unique **Features/Capabilities** of **[Product or Service Name]** that the competitive alternatives lack. Focus on what is verifiably different.
+#### 3B. Competitive Alternatives
+- 2 to 5 alternatives the customer uses if [Product Name] doesn't exit. For example: Alternatives, Direct Competitors, Indirect Competitors, Status Quo or DIY solutions
+- Name of each alternative
+- Short description of each alternative
+- Why customers choose the alternative
+- What is the weakness/gap of the alternative compared to [Product Name]
 
-**3C. Value and Proof:**
-1.  For each Unique Attribute identified above, define its corresponding **Benefit** and **Value**:
-    * **Benefit:** What does the unique attribute enable for the customer?
-    * **Value:** What is the measurable outcome or KPI that demonstrates the benefit? (e.g., cost savings, time reduction, risk mitigation). Provide specific proof points if available.
+#### 3C. Unique Attributes, Value, and Proof
+- 3 to 5 truly unique features/capabilities of [Product Name]
+- Name of each attribute
+- Short description of each attribute
+- Customer Benefits delivered by each attribute
+- Measurable outcomes/KPIs improved by each attribute
 
-**3D. Target Market Characteristics:**
-1.  Based on the Value defined in the previous step, describe the ideal customer segment that will care the most about what you offer. Be specific about their:
-    * **Needs (JTBD):** The specific job they are trying to accomplish.
-    * **Firmographic:** Company size, industry, revenue.
-    * **Technographic:** Their current technology stack.
-    * **Behavioral:** Observable actions or buying habits.
+#### 3D. Target Market Characteristics
+Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
-**3E. Market Category:**
-1.  Analyze the market and determine the best-fit category for **[Product or Service Name]**.
-    * Is it an **Existing Category**? (If so, name it).
-    * Is it a **New Category** that must be created and evangelized?
-    * Is it a **Sub-category** of an existing market?
-2.  Provide a **Rationale** for your choice, explaining why this categorization best helps customers understand the product's value and context.
+#### 3E. Market Category
+- Existing/New/Sub-category determination
+- Category name and rationale
 
-**3F. Relevant Trends:**
-1.  Identify 2-3 major market trends that make the solution timely. For each trend, explain:
-    * How this trend aligns with and enhances the product.
-    * How this trend makes the product more appealing.
-    * How this trend creates urgency for the product.
-    * How this trend impacts the underlying need for the product.
+#### 3F. Relevant Trends
+- Identify the following major market trends that make the solution timely:
+    * Trends that align with and enhance the product.
+    * Trends that make the product more appealing.
+    * Trends that create urgency for the product.
+    * Trends that impact the underlying need for the product.
 
-### **Part 4: Category Design (The Market's "What")**
+### Part 4: Category Narrative & Messaging
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
 
-1.  **The Point of View (From/To Shift):** Based on the research, what is the "From" (old, broken way) in the **[Industry]** and what is the emerging "To" (new, better way) that **[Company Name]** represents?
-2.  **The New Opportunity:** What becomes possible for businesses that adopt the "To" perspective?
-3.  **Category Name & Definition:** What market category do analysts and customers currently place **[Company Name]** in? Is there evidence of an attempt to create a new one?
-4.  **The Manifesto:** Synthesize the public-facing story and narrative for **[Company Name]** from the research into a concise manifesto draft.
+#### 4A. The Point of View (From/To Shift)
+* The "old way" the world works that is no longer sufficient, and the "new way" the company enables.
+
+#### 4B. The New Opportunity
+* The positive future state or new capability that the solution makes possible.
+
+#### 4C. Core Messaging Pillars
+* The 2-3 core themes that appear consistently in the company's marketing and content.
+
+#### 4D. Narrative Synthesis
+* A brief synthesis of the overarching story the company is telling the market.
 
 ---
-
-## DELIVERABLE: "Positioning and Category Deep Research Brief for [Company Name]"
-
-### **Absolute Formatting and Citation Rules**
-
-1.  **Strict Structural Adherence:** Your output MUST be a perfect 1-to-1 mirror of the framework above. Do NOT add, remove, rename, or re-order any sections. Do NOT add an "Executive Summary" or any other section not explicitly listed.
-2.  **The "Synthesis + Evidence" Model:** Each element in the outline must be presented in two parts:
-    * **Synthesis:** A concise (1-3 sentence) analytical summary of the key finding for that element, written in your expert analyst voice.
-    * **Evidence:** A bulleted list of direct quotes, paraphrased data points, or factual statements from your research that support the synthesis. **Every single bullet point must have its own citation.**
-3.  **The Rule of Three:** For major claims, especially in the Positioning and Category sections, you must actively seek and present evidence from at least three different sources to ensure a triangulated and objective view.
-4.  **Citation Mandate:**
-    * Use the native citation format exclusively.
-    * Cite every piece of evidence. No uncited claims are permitted.
-    * At the absolute end of the document, provide a numbered **Bibliography** listing every source used.
 
 `;
 
@@ -251,18 +289,17 @@ Before generating the final report, you will execute the following research plan
             const placeholders = {
               '[Company Name]': safeData.companyName,
               '[Company Website]': safeData.companyWebsite,
-              '[Industry]': safeData.industry,
-              '[Product or Service Name]': safeData.productName,
+              '[Product Name]': safeData.productName,
               '[Competitor 1, Competitor 2, Competitor 3]': competitors
             };
-            
+
             let finalPrompt = promptTemplate;
             Object.entries(placeholders).forEach(([placeholder, value]) => {
               finalPrompt = finalPrompt.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
             });
-            
+
             return finalPrompt;
-            
+
           } catch (error) {
             console.error('Error generating deep research prompt:', error);
             return 'Error generating prompt. Please check your company data and try again.';
