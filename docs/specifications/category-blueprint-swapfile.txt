@@ -1,0 +1,42 @@
+# SwapFile
+
+## Company Setup
+**Target Company:** Klarity.ai
+**Company Website:** https://www.Klarity.ai
+**Industry:** SaaS
+**Product/Service Name:** Architect
+**User-Provided Competitors (Starting Point):** Scribe, Microsoft Power Automate Process Mining, UiPath Process Mining, Management Consulting Firms (e.g., McKinsey)
+
+---
+
+
+## Globally
+
+For the Export button in the top right, within the modal, after the user clicks "Copy to Clipboard", show "Copied" and a message telling the user to paste into Google Doc  and edit > paste from markdown to preserve the formatting
+
+---
+Implement positioning2x2sim.html capabilities
+---
+		  
+## Company Setup
+	- Add export button for both json and txt formats, same as other parts of the app
+	
+ 
+## Part 1: Segment Foundation
+	- Pull in the company and company url from the company setup into the segment-foundation-export.json
+
+
+## Part 2: ICP Definition
+		
+
+
+## Part 3: Positioning    
+
+
+
+
+
+## Part 4: Category Design
+
+
+

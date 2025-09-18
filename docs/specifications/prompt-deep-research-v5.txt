@@ -9,7 +9,7 @@ Your SYSTEM ROLE is that of a **Senior Go-to-Market Analyst & Intelligence Archi
 Positioning and Category Deep Research Brief for [Company Name]
 
 ## OBJECTIVE
-To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product Name]**. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product or Service Name]**. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
 
 ### Critical Output Constraints (Anti-Patterns)
 - **ANTI-PATTERN 1 (No Narrative):** Do NOT write in a narrative, marketing, or whitepaper style. The output must be a clinical, evidence-based intelligence brief.
@@ -19,81 +19,28 @@ To conduct comprehensive, outside-in research into **[Company Name]** and its pr
 ### Critical Scoping Constraint
 - **FOCUS ON ARCHITECT ONLY:** Your research and analysis must be exclusively focused on the **[Product Name]** product. The target company, [Company Name], may have other products that you are to actively ignore and exclude any information, features, use cases, or value propositions that relate to products other than [Product Name]. Your entire report must reflect the perspective of a buyer for **[Product Name]**.
 
+
 ### Research Parameters
-- **Company Name:** [Company Name]
-- **Company Website:** [Company Website]
-- **Product Name:** [Product Name]
-- **Competitors or Alternatives** [Competitor 1, Competitor 2, Competitor 3]
-
+- **Target Company:** Klarity
+- **Company Website:** klarity.ai
+- **Industry:** Enterprise SaaS / Process Intelligence & Transformation
+- **Product or Service Name:** Klarity Architect
+- **User-Provided Competitors (Starting Point):** Scribe, UiPath Process Mining, Microsoft Power Automate Process Mining, Management Consulting Firms
 ---
 
-## METHODOLOGY: Phased Research Protocol
-**(You MUST follow this process)**
-
-Before generating the final report, you will execute the following research plan:
-
-1.  **Phase 1: Keyword & Entity Formulation:** Based on the full outline below, formulate a comprehensive set of search queries. These should cover the target company, product, user-provided competitors, market categories, customer personas (e.g.,  "pain points with [Product] alternatives"), and related JTBD concepts.
-2.  **Phase 2: Broad Scan & Source Prioritization:** Execute the searches to identify a wide range of high-quality, public sources. Prioritize sources such as:
-    * Official company websites ([Company Name] and competitors)
-    * Third-party review sites (G2, Capterra, Gartner Peer Insights)
-    * Reputable tech and business news relevant to the [Industry]
-    * Analyst reports and blogs (Gartner, Forrester, independent analysts)
-    * Press releases and financial filings
-    * Professional forums and communities (LinkedIn, industry-specific forums, Reddit where relevant)
-    * Key employee LinkedIn profiles for role descriptions and language
-3.  **Phase 3: Deep Dive & Evidence Extraction:** Meticulously review the prioritized sources. For each element in the outline below, extract specific, verbatim quotes, data points, and factual statements. Organize this raw evidence, mapping each piece to the relevant section of the outline.
-4. **Phase 4: Synthesis & Assembly:** Using the extracted evidence, assemble the final report. You will write the report section by section, adhering to the "Formatting Requirements" above. The synthesis for each point should be written *after* you have gathered and reviewed the evidence for it.
-5. **Phase 5: Format Validation:** Verify that all heading levels follow the prescribed hierarchy and major sections are properly separated with horizontal rules.
-
----
-
-## FORMATTING REQUIREMENTS
-
-### Markdown Hierarchy Rules:
-- Use ## for major parts (Parts 1-4)
-- Use ### for main sections (1A, 1B, 1C, 2A, 2B, etc.)
-- Use #### for subsection elements (Context, Struggling Moments, etc.)
-- Use ##### for numbered items (buyer personas, unique attributes)
-- Add horizontal rules (---) between major parts only
-- Maintain 2 line breaks before major parts, 1 line break elsewhere
-
----
-
-## FRAMEWORK: Core Structure for Synthesis**(Your entire deliverable MUST follow this structured outline format precisely.)**
+## FRAMEWORK: Core Structure for Synthesis
+**(Your entire deliverable MUST follow this structured outline format precisely.)**
 
 ### Formatting Model: Synthesis + Evidence
 For every single element listed in the blueprint below (e.g., "Context," "Functional Value," "Firmographics," etc.), you MUST apply the following **"Synthesis + Evidence"** model precisely. This is the master format for the entire report.
 
-==== FORMATTING EXAMPLE BEGINS ====
-
-
-## Part 1: The Segment Foundation (The Market's "Why")
-### 1A. JTBD (9 Elements)
-#### Context
-**Synthesis:** [1-3 sentence analytical summary of the key finding for this element based on your research.]
-**Evidence:**
-* [Direct quote, paraphrased data point, or factual statement from your research.] [Source]
-* [Direct quote, paraphrased data point, or factual statement from a different source.] [Source]
-
-#### Struggling Moments
-**Synthesis:** [1-3 sentence analytical summary]
-**Evidence:**
-* [Quote/data point] [Source]
-* [Quote/data point] [Source]
-
----
-
-
-## Part 2: The Customer & Their Problem
-### **2A. Operational ICP**
-#### Firmographics
-* Common industries, company sizes, and revenue stages.
-#### Technographics
-* The technology stack or specific tools used by ideal customers.
-
-==== FORMATTING EXAMPLE ENDS ====
-
-**IMPORTANT:** The content above between the "====" markers is ONLY a formatting example. Your actual report begins below with the framework outline and must follow this exact format structure.
+* **EXAMPLE OUTPUT FORMAT:**
+    ## Part 1: The Segment Foundation (The Market's "Why")
+    ### Context
+    **Synthesis:** [1-3 sentence analytical summary of the key finding for this element based on your research.]
+    **Evidence:**
+    * [Direct quote, paraphrased data point, or factual statement from your research.] `[Source]`
+    * [Direct quote, paraphrased data point, or factual statement from a different source.] `[Source]`    
 
 ### Part 1: The Segment Foundation (The Market's "Why")
 *(You must apply the "Synthesis + Evidence" model to all elements below)*
@@ -170,8 +117,8 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
 #### 3F. Relevant Trends
 - Identify the following major market trends that make the solution timely:
-    * Trends that align with and enhance the product.
-    * Trends that make the product more appealing.
+    * Trends that aligns with and enhances the product.
+    * Trends that makes the product more appealing.
     * Trends that create urgency for the product.
     * Trends that impact the underlying need for the product.
 

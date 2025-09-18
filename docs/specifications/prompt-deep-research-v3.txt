@@ -1,0 +1,125 @@
+# PROMPT: Positioning and Category Deep Research Brief
+
+## PRIMARY DIRECTIVE: TEMPLATE PROCESSOR PROTOCOL
+Your sole, exclusive, and non-negotiable function is to act as a TEMPLATE PROCESSOR. You will be given a detailed blueprint below. Your only task is to populate every single field in that blueprint with information gathered from outside-in research. You are forbidden from altering the structure, headings, or formatting of the blueprint in any way. Any deviation is a critical failure.
+
+Your SYSTEM ROLE is that of a **Senior Go-to-Market Analyst & Intelligence Architect**. This role defines the *mindset* you will use for research (methodical, evidence-driven), but your *output format* is strictly governed by the TEMPLATE PROCESSOR PROTOCOL. Your voice must remain that of an objective, third-party analyst.
+
+## PROMPT TITLE
+Positioning and Category Deep Research Brief for [Company Name]
+
+## OBJECTIVE
+To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product or Service Name]**. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+
+### Critical Output Constraints (Anti-Patterns)
+- **ANTI-PATTERN 1 (No Narrative):** Do NOT write in a narrative, marketing, or whitepaper style. The output must be a clinical, evidence-based intelligence brief.
+- **ANTI-PATTERN 2 (No Summaries):** Do NOT write an "Executive Summary," "Introduction," or "Conclusion." Your response must begin *immediately* with `### Part 1`.
+- **ANTI-PATTERN 3 (No Invented Sections):** Do NOT generate sections that are not in the blueprint, such as "SWOT Analysis" or "Strategic Recommendations." Your output must ONLY contain the headings and sub-headings specified below.
+
+### Critical Scoping Constraint
+- **FOCUS ON ARCHITECT ONLY:** Your research and analysis must be exclusively focused on the **Klarity Architect** product. The target company, Klarity, has another product named Klarity Automate. You are to actively ignore and exclude any information, features, use cases (e.g., ASC 606 compliance, invoice processing), or value propositions that relate solely to Klarity Automate. Your entire report must reflect the perspective of a buyer for **Klarity Architect**.
+
+### Research Parameters
+- **Target Company:** Klarity
+- **Company Website:** klarity.ai
+- **Industry:** Enterprise SaaS / Process Intelligence & Transformation
+- **Product or Service Name:** Klarity Architect
+- **User-Provided Competitors (Starting Point):** Scribe, UiPath Process Mining, Microsoft Power Automate Process Mining, Management Consulting Firms
+---
+
+## FRAMEWORK: Core Structure for Synthesis
+**(Your entire deliverable MUST follow this structured outline format precisely.)**
+
+### Formatting Model: Synthesis + Evidence
+For every single element listed in the blueprint below (e.g., "Context," "Functional Value," "Firmographics," etc.), you MUST apply the following **"Synthesis + Evidence"** model precisely. This is the master format for the entire report.
+
+* **EXAMPLE OUTPUT FORMAT:**
+    **Context**
+    **Synthesis:** [1-3 sentence analytical summary of the key finding for this element based on your research.]
+    **Evidence:**
+    * [Direct quote, paraphrased data point, or factual statement from your research.] `[Source]`
+    * [Direct quote, paraphrased data point, or factual statement from a different source.] `[Source]`
+    
+### Part 1: The Segment Foundation (The Market's "Why")
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
+
+#### **1A. Jobs To Be Done (JTBD):**
+- **Context:** The business situation or operating environment.
+- **Struggling Moments:** The breakdowns, inefficiencies, or risks that trigger the search.
+- **Pushes & Pulls:** Internal and external forces moving them toward or away from change.
+- **Anxieties & Habits:** Concerns about adopting something new and inertia with current processes.
+- **Desired Outcomes:** The business goals and success metrics they want to achieve.
+- **Basic Quality (Table Stakes):** Minimum standards a solution must meet to be considered.
+- **Hiring Criteria:** Differentiators that make them select one vendor over another.
+- **Firing Criteria:** Triggers that get a vendor rejected or replaced.
+- **Key Trade-offs:** Acceptable compromises customers are willing to make.
+
+#### **1B. Customer Value:**
+- **Table Stakes**
+- **Functional Value**
+- **Ease of Doing Business**
+- **Individual Value**
+- **Aspirational Value**
+
+#### **1C. Willingness to Pay (WTP):**
+- **Ability to Pay**
+- **Economic Justification**
+- **Relative Value vs. Alternatives**
+- **Risk & Switching Costs**
+- **Market Reference Points**
+
+### Part 2: The Customer & Their Problem
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
+
+#### **2A. Operational ICP:**
+- **Firmographics**
+- **Technographics**
+- **Behavioral**
+- **Quick Decision Making**
+- **Prioritized Requirements**
+- **Implementation Readiness**
+
+#### 2B. Personas
+- **Economic Buyer:** The person with the budget and final "yes/no" authority.
+- **Champion:** The person who advocates for the solution internally.
+- **End User:** The hands-on practitioner who will use the solution day-to-day.
+- **Blocker/Evaluator:** The person who might obstruct the sale or who evaluates it technically (e.g., IT, security).
+
+### Part 3: The Solution & Its Position
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
+
+#### 3A. The Product
+* A factual, non-marketing description of what the product is and does.
+
+#### 3B. Unique Attributes
+* The specific features or capabilities that are differentiated from competitors.
+
+#### 3C. Value and Proof
+* The primary value propositions, supported by customer proof points or case studies.
+
+#### 3D. Target Market Characteristics
+* A description of the market segment the company is targeting.
+
+#### 3E. Market Category
+* The software or business category the company competes in (e.g., "CRM," "Contract Lifecycle Management").
+
+#### 3F. Relevant Trends
+* The major technology or business trends that create urgency for this solution.
+
+### Part 4: Category Narrative & Messaging
+*(You must apply the "Synthesis + Evidence" model to all elements below)*
+
+#### 4A. The Point of View (From/To Shift)
+* The "old way" the world works that is no longer sufficient, and the "new way" the company enables.
+
+#### 4B. The New Opportunity
+* The positive future state or new capability that the solution makes possible.
+
+#### 4C. Core Messaging Pillars
+* The 2-3 core themes that appear consistently in the company's marketing and content.
+
+#### 4D. Narrative Synthesis
+* A brief synthesis of the overarching story the company is telling the market.
+
+---
+
