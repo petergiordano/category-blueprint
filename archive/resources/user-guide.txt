@@ -8,7 +8,7 @@ Step 1: Company Setup
    - Company name
    - Website URL
    - Product/service name
-   - Industry
+
 2. Click "Continue" to proceed to the main application
 
 Step 2: Download & Prepare Import Files
