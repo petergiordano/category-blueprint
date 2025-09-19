@@ -1004,11 +1004,12 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             } else if (!/^[a-zA-Z0-9][a-zA-Z0-9-_.]*\.[a-zA-Z]{2,}/.test(safeCompanyData.companyWebsite.replace(/^https?:\/\//, ''))) {
               newErrors.companyWebsite = 'Please enter a valid domain (e.g., example.com)';
             }
-            
-            if (!safeCompanyData.industry) {
-              newErrors.industry = 'Please select an industry';
-            }
-            
+
+            // Industry validation temporarily disabled - field is hidden
+            // if (!safeCompanyData.industry) {
+            //   newErrors.industry = 'Please select an industry';
+            // }
+
             if (!safeCompanyData.productName || safeCompanyData.productName.length < 2) {
               newErrors.productName = 'Product name must be at least 2 characters';
             }
@@ -1080,8 +1081,8 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                       {errors.companyWebsite && <p className="text-red-500 text-sm mt-1">{errors.companyWebsite}</p>}
                     </div>
 
-                    {/* Industry */}
-                    <div className="mb-4">
+                    {/* Industry - TEMPORARILY HIDDEN per user decision (can be restored by removing style={{display:'none'}}) */}
+                    <div className="mb-4" style={{ display: 'none' }}>
                       <label className="block font-bold text-gray-700 mb-1">Industry</label>
                       <select
                         className={`w-full p-2 border rounded-md ${errors.industry ? 'border-red-500' : 'border-gray-300'}`}
@@ -1709,11 +1710,11 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             const [wtpDraftError, setWtpDraftError] = useState(null);
 
             const handleValidateJtbd = async (jtbdElementName, userInput) => {
-                // Check if company context is properly set up
-                if (!appState.companyContext?.industry || !appState.companyContext?.productName) {
-                    setValidationState(prev => ({ 
-                        ...prev, 
-                        [jtbdElementName]: { 
+                // Check if company context is properly set up (industry no longer required)
+                if (!appState.companyContext?.productName) {
+                    setValidationState(prev => ({
+                        ...prev,
+                        [jtbdElementName]: {
                             status: 'error', 
                             result: {
                                 alignmentScore: 0,
