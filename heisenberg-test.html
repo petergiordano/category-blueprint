@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Heisenbug Repro Harness</title>
+</head>
+<body>
+  <h1>Heisenbug Test Harness</h1>
+  <pre id="output"></pre>
+  <script>
+    const output = document.getElementById('output');
+
+    function log(msg) {
+      output.textContent += msg + "\n";
+    }
+
+    // Sample input data (matches sfContent.jobsToBeDone shape)
+    const sampleData = {
+      context: "Business situation",
+      strugglingMoments: "Inefficiencies",
+      pushesAndPulls: "Market forces",
+      anxieties: "Fear of migration",
+      desiredOutcomes: "Higher ROI",
+      basicQuality: "Must be SOC2",
+      hiringCriteria: "Best integrations",
+      firingCriteria: "Poor support",
+      keyTradeOffs: "Price vs speed"
+    };
+
+    function runTest(mode) {
+      const newState = { segmentData: {} };
+
+      Object.keys(sampleData).forEach(key => {
+        const val = sampleData[key];
+        if (val && val.trim()) {
+          newState.segmentData[key] = val;
+
+          // Different modes of "barrier"
+          if (mode === "console") {
+            console.log("Mapped:", key, val); // WORKS
+          } else if (mode === "perf") {
+            performance.now(); // Candidate replacement
+          } else if (mode === "noop") {
+            // Nothing at all
+          }
+        }
+      });
+
+      return newState;
+    }
+
+    function runSuite() {
+      ["console", "perf", "noop"].forEach(mode => {
+        let success = 0;
+        for (let i = 0; i < 10; i++) {
+          const result = runTest(mode);
+          // verify all keys present
+          const keys = Object.keys(sampleData);
+          const ok = keys.every(k => result.segmentData[k]);
+          if (ok) success++;
+        }
+        log(`Mode=${mode} → success ${success}/10`);
+      });
+    }
+
+    runSuite();
+  </script>
+</body>
+</html>

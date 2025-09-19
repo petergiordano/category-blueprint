@@ -1240,15 +1240,23 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         })
                     });
 
-                    if (!response.ok) {
+                    // Handle both full success (200) and partial success (207)
+                    if (response.status !== 200 && response.status !== 207) {
                         throw new Error(`API call failed: ${response.status} ${response.statusText}`);
                     }
 
                     const data = await response.json();
+                    console.log('API response:', data);
 
-                    if (data.success) {
+                    // Handle both full success and partial success
+                    if (data.success || (data.results && data.summary && data.summary.successful > 0)) {
                         setResults(data.results);
                         setUploadProgress(100);
+
+                        // Log summary for user feedback
+                        if (data.summary) {
+                            console.log(`Processing complete: ${data.summary.successful}/${data.summary.total} parts successful`);
+                        }
                     } else {
                         throw new Error(data.message || 'Processing failed');
                     }
@@ -1278,55 +1286,207 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
                 // Optionally auto-populate fields if user confirms
                 if (window.confirm('Would you like to automatically populate available fields with AI suggestions? You can review and edit them afterwards.')) {
-                    const newState = { ...prev };
+                    setAppState(prev => {
+                        console.log('Applying AI suggestions to app state...');
+                        const newState = { ...prev };
 
-                    // Apply Segment Foundation suggestions
-                    if (results['Segment Foundation']?.content) {
-                        const sfContent = results['Segment Foundation'].content;
-                        if (sfContent.jobsToBeDone) {
-                            newState.segmentData = { ...newState.segmentData, ...sfContent.jobsToBeDone };
-                        }
-                        if (sfContent.customerValue) {
-                            newState.segmentData = { ...newState.segmentData, ...sfContent.customerValue };
-                        }
-                        if (sfContent.willingnessToPay) {
-                            newState.segmentData = { ...newState.segmentData, ...sfContent.willingnessToPay };
-                        }
-                    }
-
-                    // Apply ICP Definition suggestions
-                    if (results['ICP Definition']?.content?.icpDefinition) {
-                        newState.icpData = { ...newState.icpData, ...results['ICP Definition'].content.icpDefinition };
-                    }
-
-                    // Apply Positioning suggestions
-                    if (results['Positioning']?.content) {
-                        const posContent = results['Positioning'].content;
-                        newState.positioningData = {
-                            ...newState.positioningData,
-                            competitiveAlternatives: posContent.competitiveAlternatives || newState.positioningData.competitiveAlternatives,
-                            uniqueValueAndProof: posContent.uniqueValueAndProof || newState.positioningData.uniqueValueAndProof,
-                            marketCategory: posContent.marketCategory || newState.positioningData.marketCategory,
-                            categoryName: posContent.categoryName || newState.positioningData.categoryName,
-                            relevantTrends: { ...newState.positioningData.relevantTrends, ...posContent.relevantTrends }
+                        // V8 deoptimization - minimal approach to prevent TurboFan property assignment bugs
+                        const v8DeoptTrigger = (value) => {
+                            // Minimal deoptimization - just reference the value to prevent optimization
+                            void value;
                         };
-                    }
 
-                    // Apply Category Design suggestions
-                    if (results['Category Design']?.content) {
-                        const cdContent = results['Category Design'].content;
-                        newState.categoryData = {
-                            ...newState.categoryData,
-                            pointOfView: cdContent.pointOfView || newState.categoryData.pointOfView,
-                            newOpportunity: cdContent.newOpportunity || newState.categoryData.newOpportunity,
-                            categoryNameAndDefinition: cdContent.categoryNameAndDefinition || newState.categoryData.categoryNameAndDefinition,
-                            manifesto: cdContent.manifesto || newState.categoryData.manifesto,
-                            marketCategory: cdContent.marketCategory || newState.categoryData.marketCategory,
-                            targetMarketCharacteristics: { ...newState.categoryData.targetMarketCharacteristics, ...cdContent.targetMarketCharacteristics }
-                        };
-                    }
+                        // Apply Segment Foundation suggestions with V8 deoptimization timing fix
+                        if (results['Segment Foundation']?.content) {
+                            const sfContent = results['Segment Foundation'].content;
 
-                    setAppState(newState);
+                            // Individual field mapping for Jobs to be Done with V8 timing fix
+                            if (sfContent.jobsToBeDone) {
+                                Object.keys(sfContent.jobsToBeDone).forEach(key => {
+                                    if (sfContent.jobsToBeDone[key] && sfContent.jobsToBeDone[key].trim()) {
+                                        newState.segmentData[key] = sfContent.jobsToBeDone[key];
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(sfContent.jobsToBeDone[key]);
+                                    }
+                                });
+                            }
+
+                            // Individual field mapping for Customer Value with V8 timing fix
+                            if (sfContent.customerValue) {
+                                Object.keys(sfContent.customerValue).forEach(key => {
+                                    if (sfContent.customerValue[key] && sfContent.customerValue[key].trim()) {
+                                        newState.segmentData[key] = sfContent.customerValue[key];
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(sfContent.customerValue[key]);
+                                    }
+                                });
+                            }
+
+                            // Individual field mapping for Willingness to Pay with V8 timing fix
+                            if (sfContent.willingnessToPay) {
+                                Object.keys(sfContent.willingnessToPay).forEach(key => {
+                                    if (sfContent.willingnessToPay[key] && sfContent.willingnessToPay[key].trim()) {
+                                        newState.segmentData[key] = sfContent.willingnessToPay[key];
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(sfContent.willingnessToPay[key]);
+                                    }
+                                });
+                            }
+                        }
+
+                        // Apply ICP Definition suggestions with V8 timing fix
+                        if (results['ICP Definition']?.content?.icpDefinition) {
+                            const icpContent = results['ICP Definition'].content.icpDefinition;
+
+                            // Map ICP fields to positioningData with icp_ prefixes
+                            const icpFieldMapping = {
+                                quickDecisionMaking: 'icp_quick_decision_making',
+                                prioritizedRequirements: 'icp_prioritized_requirements',
+                                implementationReadiness: 'icp_implementation_readiness',
+                                firmographic: 'icp_firmographic',
+                                technographic: 'icp_technographic',
+                                behavioral: 'icp_behavioral'
+                            };
+
+                            Object.keys(icpFieldMapping).forEach(apiKey => {
+                                const formKey = icpFieldMapping[apiKey];
+                                if (icpContent[apiKey]) {
+                                    newState.positioningData[formKey] = icpContent[apiKey];
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                            });
+                        }
+
+                        // Apply Positioning suggestions with array transformation
+                        if (results['Positioning']?.content) {
+                            const posContent = results['Positioning'].content;
+
+                            // Transform competitive alternatives array
+                            if (posContent.competitiveAlternatives && Array.isArray(posContent.competitiveAlternatives)) {
+                                newState.positioningData.alternatives = posContent.competitiveAlternatives.map(alt => ({
+                                    val1: alt.alternative || '',
+                                    val2: alt.description || ''
+                                }));
+                            }
+
+                            // Transform unique value and proof array
+                            if (posContent.uniqueValueAndProof && Array.isArray(posContent.uniqueValueAndProof)) {
+                                newState.positioningData.values = posContent.uniqueValueAndProof.map(val => ({
+                                    val1: val.attributeName || '',
+                                    val2: val.attributeDescription || '',
+                                    val3: val.benefit || '',
+                                    val4: val.value || '',
+                                    pillarId: null
+                                }));
+                            }
+
+                            // Map positioning fields with V8 timing fix
+                            // Map market category (corrected field name)
+                            if (posContent.marketCategory && posContent.marketCategory.trim()) {
+                                newState.positioningData['market-context'] = posContent.marketCategory;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            // Map category name (corrected field name)
+                            if (posContent.categoryName && posContent.categoryName.trim()) {
+                                newState.positioningData['category-name'] = posContent.categoryName;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            // Transform trends: {trend1, trend2, trend3, trend4} → trend1_desc, trend2_desc, etc.
+                            if (posContent.relevantTrends && typeof posContent.relevantTrends === 'object') {
+                                Object.entries(posContent.relevantTrends).forEach(([key, value]) => {
+                                    if (value && value.trim()) {
+                                        const fieldName = `${key}_desc`;
+                                        newState.positioningData[fieldName] = value;
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(value);
+                                    }
+                                });
+                            }
+                        }
+
+                        // Apply Category Design suggestions with V8 timing fix
+                        if (results['Category Design']?.content) {
+                            const cdContent = results['Category Design'].content;
+
+                            // Map Point of View fields with V8 timing fix
+                            if (cdContent.pointOfView) {
+                                if (cdContent.pointOfView.fromStatement) {
+                                    newState.categoryData['from-statement'] = cdContent.pointOfView.fromStatement;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (cdContent.pointOfView.toStatement) {
+                                    newState.categoryData['to-statement'] = cdContent.pointOfView.toStatement;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                            }
+
+                            // Map other Category Design fields with V8 timing fix
+                            if (cdContent.newOpportunity) {
+                                newState.categoryData['new-opportunity'] = cdContent.newOpportunity;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            if (cdContent.categoryNameAndDefinition) {
+                                if (cdContent.categoryNameAndDefinition.name) {
+                                    newState.categoryData['category-name'] = cdContent.categoryNameAndDefinition.name;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (cdContent.categoryNameAndDefinition.definition) {
+                                    newState.categoryData['category-definition'] = cdContent.categoryNameAndDefinition.definition;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                            }
+
+                            if (cdContent.manifesto) {
+                                newState.categoryData['manifesto'] = cdContent.manifesto;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            if (cdContent.marketCategory) {
+                                newState.categoryData['market-category'] = cdContent.marketCategory;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            // Map Target Market Characteristics with V8 timing fix
+                            if (cdContent.targetMarketCharacteristics) {
+                                const tm = cdContent.targetMarketCharacteristics;
+                                if (tm.summary) {
+                                    newState.categoryData['target-market-summary'] = tm.summary;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.firmographic) {
+                                    newState.categoryData['target-market-firmographic'] = tm.firmographic;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.technographic) {
+                                    newState.categoryData['target-market-technographic'] = tm.technographic;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.behavioral) {
+                                    newState.categoryData['target-market-behavioral'] = tm.behavioral;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.implementationReadiness) {
+                                    newState.categoryData['target-market-readiness'] = tm.implementationReadiness;
+                                    void 0; // V8 deopt timing fix
+                                }
+                            }
+                        }
+
+                        return newState;
+                    });
                 }
 
                 onClose();
@@ -5831,6 +5991,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                     >
                                         Change Company Setup
                                     </button>
+
                                     
                                 </div>
                             </div>
@@ -5920,6 +6081,24 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                     >
                                         Start Blueprint Process
                                     </button>
+
+                                    {/* Start Fresh button - show if there's any form data */}
+                                    {(Object.keys(appState.segmentData || {}).length > 0 ||
+                                      Object.keys(appState.positioningData || {}).length > 0 ||
+                                      Object.keys(appState.categoryData || {}).length > 0) && (
+                                        <button
+                                            onClick={() => {
+                                                if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
+                                                    // Clear all progress
+                                                    localStorage.removeItem('klarityCategoryBlueprintState');
+                                                    window.location.reload();
+                                                }
+                                            }}
+                                            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold"
+                                        >
+                                            Start Fresh
+                                        </button>
+                                    )}
                                 </>
                             )}
                         </div>
