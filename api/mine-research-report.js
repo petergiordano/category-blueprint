@@ -560,19 +560,33 @@ export default async function handler(req, res) {
       }
 
       // Ensure data has at least some content (not all empty strings)
-      const hasContent = Object.values(data).some(value => {
-        if (typeof value === 'string') return value.trim().length > 0;
-        if (Array.isArray(value)) return value.length > 0;
-        if (typeof value === 'object' && value !== null) {
-          return Object.values(value).some(nestedValue =>
-            typeof nestedValue === 'string' ? nestedValue.trim().length > 0 : true
-          );
+      // More lenient validation - allow content if any field has meaningful text
+      const hasContent = (function checkContent(obj) {
+        for (const key in obj) {
+          const value = obj[key];
+          if (typeof value === 'string' && value.trim().length > 3) {
+            return true;
+          }
+          if (Array.isArray(value)) {
+            for (const item of value) {
+              if (typeof item === 'object' && item !== null && checkContent(item)) {
+                return true;
+              }
+              if (typeof item === 'string' && item.trim().length > 3) {
+                return true;
+              }
+            }
+          }
+          if (typeof value === 'object' && value !== null && checkContent(value)) {
+            return true;
+          }
         }
-        return true;
-      });
+        return false;
+      })(data);
 
       if (!hasContent) {
         console.log('Validation failed: Data contains no meaningful content');
+        console.log('Data structure:', JSON.stringify(data, null, 2).substring(0, 500) + '...');
         return false;
       }
 
