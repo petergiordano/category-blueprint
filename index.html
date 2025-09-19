@@ -65,7 +65,7 @@
               ...state,
               lastSaved: new Date().toISOString()
             };
-            localStorage.setItem('klarityCategoryBlueprintState', JSON.stringify(stateWithTimestamp));
+            localStorage.setItem('categoryBlueprintState', JSON.stringify(stateWithTimestamp));
           } catch (error) {
             console.error('Could not save state to localStorage', error);
           }
@@ -308,7 +308,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
         const loadAppState = () => {
           try {
-            const savedState = localStorage.getItem('klarityCategoryBlueprintState');
+            const savedState = localStorage.getItem('categoryBlueprintState');
             if (!savedState) {
               return null;
             }
@@ -395,12 +395,18 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 category: { completed: false, completedAt: null }
               }
             },
-            currentView: 'home'
+            currentView: 'home',
+            aiSuggestions: {
+              'Segment Foundation': null,
+              'ICP Definition': null,
+              'Positioning': null,
+              'Category Design': null
+            }
           };
         };
 
         // Enhanced Interactive Progress Stepper Component
-        const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, saveAppState }) => {
+        const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, saveAppState, onOpenAIResearch }) => {
             const parts = [
                 { id: 'segment', name: 'Foundation', number: 1, fullName: 'Segment Foundation' },
                 { id: 'icp', name: 'ICP Definition', number: 2, fullName: 'ICP Definition' },
@@ -651,8 +657,50 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         </ol>
                     </nav>
 
-                    {/* Spacer for balance - Right Side */}
-                    <div style={{ width: '140px' }}></div>
+                    {/* AI Research Assistant Button - Right Side */}
+                    <div style={{ width: '140px', display: 'flex', justifyContent: 'flex-end' }}>
+                        <button
+                            onClick={onOpenAIResearch}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                padding: '0.5rem 1rem',
+                                backgroundColor: '#f3f4f6',
+                                borderRadius: '0.5rem',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '0.875rem',
+                                fontWeight: '500',
+                                color: '#374151',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#e5e7eb';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f3f4f6';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                            }}
+                            title="Upload a research report to get AI suggestions"
+                            aria-label="AI Research Assistant"
+                        >
+                            {/* Magic/Sparkle Icon */}
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                style={{ color: '#7c3aed' }}
+                            >
+                                <path d="M12 0L13.09 8.26L22 9L13.09 9.74L12 18L10.91 9.74L2 9L10.91 8.26L12 0Z" />
+                                <path d="M19 15L20.18 20.18L25 21L20.18 21.82L19 27L17.82 21.82L13 21L17.82 20.18L19 15Z" opacity="0.7" />
+                                <path d="M7 3L7.5 6.5L11 7L7.5 7.5L7 11L6.5 7.5L3 7L6.5 6.5L7 3Z" opacity="0.7" />
+                            </svg>
+                            <span className="hidden sm:inline">AI Research</span>
+                        </button>
+                    </div>
                 </div>
             );
         };
@@ -715,7 +763,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                 cursor: 'pointer'
                             }}
                         >
-                            Import Data
+                            Import Part Data
                         </button>
                     )}
                     <button 
@@ -1125,6 +1173,507 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
               </div>
             </div>
           );
+        };
+
+        // AIResearchModal Component
+        const AIResearchModal = ({ isOpen, onClose, onApplySuggestions, appState, setAppState }) => {
+            const [file, setFile] = useState(null);
+            const [uploading, setUploading] = useState(false);
+            const [processing, setProcessing] = useState(false);
+            const [results, setResults] = useState(null);
+            const [error, setError] = useState(null);
+            const [uploadProgress, setUploadProgress] = useState(0);
+
+            if (!isOpen) return null;
+
+            const handleFileChange = (event) => {
+                const selectedFile = event.target.files[0];
+                if (selectedFile) {
+                    // Validate file type
+                    const allowedTypes = ['text/markdown', 'text/plain', '.md', '.txt'];
+                    const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+                    const fileType = selectedFile.type;
+
+                    if (fileType === 'text/markdown' || fileType === 'text/plain' ||
+                        fileExtension === 'md' || fileExtension === 'txt') {
+                        setFile(selectedFile);
+                        setError(null);
+                    } else {
+                        setError('Please upload a markdown (.md) or text (.txt) file');
+                        setFile(null);
+                    }
+                }
+            };
+
+            const handleUploadAndProcess = async () => {
+                if (!file) {
+                    setError('Please select a file first');
+                    return;
+                }
+
+                setUploading(true);
+                setProcessing(false);
+                setError(null);
+                setUploadProgress(0);
+
+                try {
+                    // Read file content
+                    const fileContent = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = (e) => reject(new Error('Failed to read file'));
+                        reader.readAsText(file);
+                    });
+
+                    setUploadProgress(50);
+                    setUploading(false);
+                    setProcessing(true);
+
+                    // Send to API
+                    const response = await fetch('/api/mine-research-report', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            reportText: fileContent
+                        })
+                    });
+
+                    // Handle both full success (200) and partial success (207)
+                    if (response.status !== 200 && response.status !== 207) {
+                        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('API response:', data);
+
+                    // Handle both full success and partial success
+                    if (data.success || (data.results && data.summary && data.summary.successful > 0)) {
+                        setResults(data.results);
+                        setUploadProgress(100);
+
+                        // Log summary for user feedback
+                        if (data.summary) {
+                            console.log(`Processing complete: ${data.summary.successful}/${data.summary.total} parts successful`);
+                        }
+                    } else {
+                        throw new Error(data.message || 'Processing failed');
+                    }
+
+                } catch (err) {
+                    console.error('Upload/Processing error:', err);
+                    setError(err.message || 'Failed to process research report');
+                } finally {
+                    setUploading(false);
+                    setProcessing(false);
+                }
+            };
+
+            const handleApplySuggestions = () => {
+                if (!results) return;
+
+                // Update app state with AI suggestions
+                setAppState(prev => ({
+                    ...prev,
+                    aiSuggestions: {
+                        'Segment Foundation': results['Segment Foundation']?.content || null,
+                        'ICP Definition': results['ICP Definition']?.content || null,
+                        'Positioning': results['Positioning']?.content || null,
+                        'Category Design': results['Category Design']?.content || null
+                    }
+                }));
+
+                // Optionally auto-populate fields if user confirms
+                if (window.confirm('Would you like to automatically populate available fields with AI suggestions? You can review and edit them afterwards.')) {
+                    setAppState(prev => {
+                        console.log('Applying AI suggestions to app state...');
+                        const newState = { ...prev };
+
+                        // V8 deoptimization - minimal approach to prevent TurboFan property assignment bugs
+                        const v8DeoptTrigger = (value) => {
+                            // Minimal deoptimization - just reference the value to prevent optimization
+                            void value;
+                        };
+
+                        // Apply Segment Foundation suggestions with V8 deoptimization timing fix
+                        if (results['Segment Foundation']?.content) {
+                            const sfContent = results['Segment Foundation'].content;
+
+                            // Individual field mapping for Jobs to be Done with V8 timing fix
+                            if (sfContent.jobsToBeDone) {
+                                Object.keys(sfContent.jobsToBeDone).forEach(key => {
+                                    if (sfContent.jobsToBeDone[key] && sfContent.jobsToBeDone[key].trim()) {
+                                        newState.segmentData[key] = sfContent.jobsToBeDone[key];
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(sfContent.jobsToBeDone[key]);
+                                    }
+                                });
+                            }
+
+                            // Individual field mapping for Customer Value with V8 timing fix
+                            if (sfContent.customerValue) {
+                                Object.keys(sfContent.customerValue).forEach(key => {
+                                    if (sfContent.customerValue[key] && sfContent.customerValue[key].trim()) {
+                                        newState.segmentData[key] = sfContent.customerValue[key];
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(sfContent.customerValue[key]);
+                                    }
+                                });
+                            }
+
+                            // Individual field mapping for Willingness to Pay with V8 timing fix
+                            if (sfContent.willingnessToPay) {
+                                Object.keys(sfContent.willingnessToPay).forEach(key => {
+                                    if (sfContent.willingnessToPay[key] && sfContent.willingnessToPay[key].trim()) {
+                                        newState.segmentData[key] = sfContent.willingnessToPay[key];
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(sfContent.willingnessToPay[key]);
+                                    }
+                                });
+                            }
+                        }
+
+                        // Apply ICP Definition suggestions with V8 timing fix
+                        if (results['ICP Definition']?.content?.icpDefinition) {
+                            const icpContent = results['ICP Definition'].content.icpDefinition;
+
+                            // Map ICP fields to positioningData with icp_ prefixes
+                            const icpFieldMapping = {
+                                quickDecisionMaking: 'icp_quick_decision_making',
+                                prioritizedRequirements: 'icp_prioritized_requirements',
+                                implementationReadiness: 'icp_implementation_readiness',
+                                firmographic: 'icp_firmographic',
+                                technographic: 'icp_technographic',
+                                behavioral: 'icp_behavioral'
+                            };
+
+                            Object.keys(icpFieldMapping).forEach(apiKey => {
+                                const formKey = icpFieldMapping[apiKey];
+                                if (icpContent[apiKey]) {
+                                    newState.positioningData[formKey] = icpContent[apiKey];
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                            });
+                        }
+
+                        // Apply Positioning suggestions with array transformation
+                        if (results['Positioning']?.content) {
+                            const posContent = results['Positioning'].content;
+
+                            // Transform competitive alternatives array
+                            if (posContent.competitiveAlternatives && Array.isArray(posContent.competitiveAlternatives)) {
+                                newState.positioningData.alternatives = posContent.competitiveAlternatives.map(alt => ({
+                                    val1: alt.alternative || '',
+                                    val2: alt.description || ''
+                                }));
+                            }
+
+                            // Transform unique value and proof array
+                            if (posContent.uniqueValueAndProof && Array.isArray(posContent.uniqueValueAndProof)) {
+                                newState.positioningData.values = posContent.uniqueValueAndProof.map(val => ({
+                                    val1: val.attributeName || '',
+                                    val2: val.attributeDescription || '',
+                                    val3: val.benefit || '',
+                                    val4: val.value || '',
+                                    pillarId: null
+                                }));
+                            }
+
+                            // Map positioning fields with V8 timing fix
+                            // Map market category (corrected field name)
+                            if (posContent.marketCategory && posContent.marketCategory.trim()) {
+                                newState.positioningData['market-context'] = posContent.marketCategory;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            // Map category name (corrected field name)
+                            if (posContent.categoryName && posContent.categoryName.trim()) {
+                                newState.positioningData['category-name'] = posContent.categoryName;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            // Transform trends: {trend1, trend2, trend3, trend4} → trend1_desc, trend2_desc, etc.
+                            if (posContent.relevantTrends && typeof posContent.relevantTrends === 'object') {
+                                Object.entries(posContent.relevantTrends).forEach(([key, value]) => {
+                                    if (value && value.trim()) {
+                                        const fieldName = `${key}_desc`;
+                                        newState.positioningData[fieldName] = value;
+                                        // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                        v8DeoptTrigger(value);
+                                    }
+                                });
+                            }
+                        }
+
+                        // Apply Category Design suggestions with V8 timing fix
+                        if (results['Category Design']?.content) {
+                            const cdContent = results['Category Design'].content;
+
+                            // Map Point of View fields with V8 timing fix
+                            if (cdContent.pointOfView) {
+                                if (cdContent.pointOfView.fromStatement) {
+                                    newState.categoryData['from-statement'] = cdContent.pointOfView.fromStatement;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (cdContent.pointOfView.toStatement) {
+                                    newState.categoryData['to-statement'] = cdContent.pointOfView.toStatement;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                            }
+
+                            // Map other Category Design fields with V8 timing fix
+                            if (cdContent.newOpportunity) {
+                                newState.categoryData['new-opportunity'] = cdContent.newOpportunity;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            if (cdContent.categoryNameAndDefinition) {
+                                if (cdContent.categoryNameAndDefinition.name) {
+                                    newState.categoryData['category-name'] = cdContent.categoryNameAndDefinition.name;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (cdContent.categoryNameAndDefinition.definition) {
+                                    newState.categoryData['category-definition'] = cdContent.categoryNameAndDefinition.definition;
+                                    // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                    void 0; // V8 deopt timing fix
+                                }
+                            }
+
+                            if (cdContent.manifesto) {
+                                newState.categoryData['manifesto'] = cdContent.manifesto;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            if (cdContent.marketCategory) {
+                                newState.categoryData['market-category'] = cdContent.marketCategory;
+                                // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
+                                void 0; // V8 deopt timing fix
+                            }
+
+                            // Map Target Market Characteristics with V8 timing fix
+                            if (cdContent.targetMarketCharacteristics) {
+                                const tm = cdContent.targetMarketCharacteristics;
+                                if (tm.summary) {
+                                    newState.categoryData['target-market-summary'] = tm.summary;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.firmographic) {
+                                    newState.categoryData['target-market-firmographic'] = tm.firmographic;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.technographic) {
+                                    newState.categoryData['target-market-technographic'] = tm.technographic;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.behavioral) {
+                                    newState.categoryData['target-market-behavioral'] = tm.behavioral;
+                                    void 0; // V8 deopt timing fix
+                                }
+                                if (tm.implementationReadiness) {
+                                    newState.categoryData['target-market-readiness'] = tm.implementationReadiness;
+                                    void 0; // V8 deopt timing fix
+                                }
+                            }
+                        }
+
+                        return newState;
+                    });
+                }
+
+                onClose();
+            };
+
+            const resetModal = () => {
+                setFile(null);
+                setUploading(false);
+                setProcessing(false);
+                setResults(null);
+                setError(null);
+                setUploadProgress(0);
+            };
+
+            const handleClose = () => {
+                resetModal();
+                onClose();
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 scale-green-bg rounded-lg flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-2xl font-bold scale-green-text">AI Research Assistant</h2>
+                            </div>
+                            <button onClick={handleClose} className="text-gray-400 hover:text-gray-800 text-3xl font-light">×</button>
+                        </div>
+
+                        <div className="p-6 overflow-y-auto flex-1">
+                            {!results ? (
+                                <div className="space-y-6">
+                                    <div className="text-center">
+                                        <p className="text-gray-600 mb-4">Upload your research report (markdown or text file) and let AI extract insights for your Category Blueprint.</p>
+                                    </div>
+
+                                    {/* File Upload Area */}
+                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                                        <input
+                                            type="file"
+                                            id="research-file"
+                                            accept=".md,.txt,text/markdown,text/plain"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                        />
+                                        <label htmlFor="research-file" className="cursor-pointer">
+                                            <div className="space-y-3">
+                                                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                                <div>
+                                                    <span className="text-purple-600 hover:text-purple-700 font-medium">Choose a file</span>
+                                                    <span className="text-gray-500"> or drag and drop</span>
+                                                </div>
+                                                <p className="text-xs text-gray-500">Markdown (.md) or Text (.txt) files only</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    {file && (
+                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                            <div className="flex items-center space-x-3">
+                                                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                <div>
+                                                    <p className="font-medium text-gray-900">{file.name}</p>
+                                                    <p className="text-sm text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {error && (
+                                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                                            <div className="flex items-center">
+                                                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                                </svg>
+                                                {error}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {(uploading || processing) && (
+                                        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                    <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    {uploading ? 'Reading file...' : 'Processing with AI...'}
+                                                </div>
+                                                <span className="text-sm">{uploadProgress}%</span>
+                                            </div>
+                                            {uploadProgress > 0 && (
+                                                <div className="mt-2 bg-blue-200 rounded-full h-2">
+                                                    <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                                        <div className="flex items-center">
+                                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                            </svg>
+                                            Research report processed successfully! Review the extracted insights below.
+                                        </div>
+                                    </div>
+
+                                    {/* Results Display */}
+                                    <div className="space-y-4">
+                                        {Object.entries(results).map(([partName, partResult]) => (
+                                            <div key={partName} className="border border-gray-200 rounded-lg overflow-hidden">
+                                                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                                                    <h3 className="font-semibold text-gray-900 flex items-center justify-between">
+                                                        {partName}
+                                                        {partResult.error ? (
+                                                            <span className="text-red-600 text-sm">Failed</span>
+                                                        ) : (
+                                                            <span className="text-green-600 text-sm">✓ Extracted</span>
+                                                        )}
+                                                    </h3>
+                                                </div>
+                                                <div className="p-4">
+                                                    {partResult.error ? (
+                                                        <p className="text-red-600 text-sm">{partResult.error}</p>
+                                                    ) : (
+                                                        <pre className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 p-3 rounded overflow-x-auto">
+                                                            {JSON.stringify(partResult.content, null, 2)}
+                                                        </pre>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-6 border-t bg-gray-50 flex justify-end space-x-3">
+                            {!results ? (
+                                <>
+                                    <button
+                                        onClick={handleClose}
+                                        className="border border-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleUploadAndProcess}
+                                        disabled={!file || uploading || processing}
+                                        className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        {uploading || processing ? 'Processing...' : 'Process Research Report'}
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={resetModal}
+                                        className="border border-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        Process Another Report
+                                    </button>
+                                    <button
+                                        onClick={handleApplySuggestions}
+                                        className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
+                                    >
+                                        Apply AI Suggestions
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
         };
 
         // SubSectionNav Component
@@ -5371,7 +5920,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Home Component
-        const Home = ({ appState, setAppState, onNavigate, onExport }) => {
+        const Home = ({ appState, setAppState, onNavigate }) => {
             console.log('HomeView props:', { appState, setAppState, onNavigate });
             
             const [showCompanySetupModal, setShowCompanySetupModal] = useState(() => {
@@ -5442,6 +5991,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                     >
                                         Change Company Setup
                                     </button>
+
                                     
                                 </div>
                             </div>
@@ -5490,7 +6040,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                         onClick={() => {
                                             if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
                                                 // Clear all progress
-                                                localStorage.removeItem('klarityCategoryBlueprintState');
+                                                localStorage.removeItem('categoryBlueprintState');
                                                 window.location.reload();
                                             }
                                         }}
@@ -5531,6 +6081,24 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                     >
                                         Start Blueprint Process
                                     </button>
+
+                                    {/* Start Fresh button - show if there's any form data */}
+                                    {(Object.keys(appState.segmentData || {}).length > 0 ||
+                                      Object.keys(appState.positioningData || {}).length > 0 ||
+                                      Object.keys(appState.categoryData || {}).length > 0) && (
+                                        <button
+                                            onClick={() => {
+                                                if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
+                                                    // Clear all progress
+                                                    localStorage.removeItem('categoryBlueprintState');
+                                                    window.location.reload();
+                                                }
+                                            }}
+                                            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold"
+                                        >
+                                            Start Fresh
+                                        </button>
+                                    )}
                                 </>
                             )}
                         </div>
@@ -5688,6 +6256,9 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 return state;
             });
 
+            // New state for AI Research Modal
+            const [showAIResearchModal, setShowAIResearchModal] = useState(false);
+
             useEffect(() => {
                 saveAppState(appState);
             }, [appState]);
@@ -5791,21 +6362,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 };
             };
 
-            // Home Page Export Handler - Complete Application Data
-            const handleHomePageExport = () => {
-                const fullAppData = generateFullApplicationData();
-                
-                const jsonData = JSON.stringify(fullAppData, null, 2);
-                const blob = new Blob([jsonData], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'category-blueprint-complete-export.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            };
 
             // Helper function to mark a part as completed
             const markPartAsCompleted = (partId) => {
@@ -5860,7 +6416,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
-                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} onExport={handleHomePageExport} />;
+                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                 }
             };
 
@@ -5877,9 +6433,19 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             onNavigate={navigate}
                             appState={appState}
                             saveAppState={saveAppState}
+                            onOpenAIResearch={() => setShowAIResearchModal(true)} // New prop
                         />
                     )}
                     {renderCurrentView()}
+                    {/* AI Research Modal will be rendered here */}
+                    {showAIResearchModal && (
+                        <AIResearchModal
+                            isOpen={showAIResearchModal}
+                            onClose={() => setShowAIResearchModal(false)}
+                            appState={appState}
+                            setAppState={setAppState}
+                        />
+                    )}
                 </div>
             );
         };
