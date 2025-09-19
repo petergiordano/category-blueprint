@@ -14,20 +14,27 @@
 
 For the Export button in the top right, within the modal, after the user clicks "Copy to Clipboard", show "Copied" and a message telling the user to paste into Google Doc  and edit > paste from markdown to preserve the formatting
 
+Once the user successfully processes the deep research report there should be a way for the user to re-load the processed files without having to do the expensive AI assisted processing. 
+
+
 ---
 Implement positioning2x2sim.html capabilities
 ---
 		  
 ## Company Setup
-	- Add export button for both json and txt formats, same as other parts of the app
-	
+- on initial company setup, hide the Industry field and dropdown box from the user. I dont Want you to make any code changes. I just want it hidden right now and I want this to be an issue and commented in the code that we just made a decision to hide this field.	
+ 
+ On the "welcome to category blueprint" page, relocate the gray "start fresh" button to be beneath the blue "generate research prompt" button or somewhere else that indicates to the user "start fresh" is a step back, not a step forward. The current position of the "start fresh" button on the very far right makes it look like that is the "next" button to press. 
  
 ## Part 1: Segment Foundation
-	- Pull in the company and company url from the company setup into the segment-foundation-export.json
+
+
 
 
 ## Part 2: ICP Definition
 		
+
+
 
 
 ## Part 3: Positioning    

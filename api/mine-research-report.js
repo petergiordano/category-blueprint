@@ -159,7 +159,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ message: 'Server configuration error: GEMINI_API_KEY is not set.' });
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" }); // Using gemini-pro for text generation
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using gemini-1.5-flash for text generation
 
   const results = {};
   const errors = [];
@@ -195,7 +195,96 @@ export default async function handler(req, res) {
           extractedJsonString = extractedJsonString.split('**Your JSON Output:**')[1].trim();
         }
 
-        const parsedJson = JSON.parse(extractedJsonString);
+        // Fix common JSON escape character issues
+        extractedJsonString = extractedJsonString
+          .replace(/\\\\/g, '\\') // Fix double-escaped backslashes
+          .replace(/\\"/g, '"') // Fix escaped quotes that shouldn't be escaped in values
+          .replace(/\\'/g, "'") // Fix escaped single quotes
+          .replace(/\\\//g, '/') // Fix escaped forward slashes
+          .replace(/\\n/g, ' ') // Replace literal \n with spaces
+          .replace(/\\t/g, ' ') // Replace literal \t with spaces
+          .replace(/\\r/g, ' ') // Replace literal \r with spaces
+          .replace(/\s+/g, ' ') // Normalize multiple spaces
+          .trim();
+
+        // Try parsing with fallback to repair malformed JSON
+        let parsedJson;
+        try {
+          parsedJson = JSON.parse(extractedJsonString);
+        } catch (parseError) {
+          console.log(`JSON parse failed for ${partName}, attempting repair: ${parseError.message}`);
+
+          // Log the problematic area around the error position for debugging
+          const errorMatch = parseError.message.match(/position (\d+)/);
+          if (errorMatch) {
+            const errorPos = parseInt(errorMatch[1]);
+            const start = Math.max(0, errorPos - 50);
+            const end = Math.min(extractedJsonString.length, errorPos + 50);
+            console.log(`Problem area around position ${errorPos}:`);
+            console.log(`"${extractedJsonString.substring(start, end)}"`);
+          }
+
+          // More aggressive JSON repair for malformed escape sequences and structure
+          let repairedJson = extractedJsonString
+            // Fix common escape sequence issues
+            .replace(/([^\\])\\([^"\\\/bfnrt])/g, '$1$2') // Remove invalid escape sequences
+            .replace(/^\\([^"\\\/bfnrt])/g, '$1') // Fix invalid escapes at start
+            .replace(/\\+"/g, '\\"') // Normalize quote escaping
+            .replace(/\\+'/g, "\\'") // Normalize single quote escaping
+            .replace(/([^\\])\\$/g, '$1') // Remove trailing single backslash
+            .replace(/\\{2,}/g, '\\') // Replace multiple backslashes with single
+            // Fix missing commas between properties - comprehensive patterns
+            .replace(/"\s*\n\s*"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '",\n  "$1":') // Add comma between newline-separated properties
+            .replace(/"\s*"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '", "$1":') // Add comma between string properties
+            .replace(/}\s*"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '}, "$1":') // Add comma after closing brace
+            .replace(/]\s*"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '], "$1":') // Add comma after closing bracket
+            .replace(/([^,\s{])\s*"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '$1, "$2":') // General comma fix
+            // Fix missing commas after property values
+            .replace(/([^,\s])\s*\n\s*"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '$1,\n  "$2":') // Add comma after values before newline properties
+            .replace(/([^,\s{}[\]])\s+"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '$1, "$2":') // Add comma after non-comma, non-brace characters
+            // Fix specific patterns that might be causing issues
+            .replace(/([a-zA-Z0-9_"])\s*"([a-zA-Z_][a-zA-Z0-9_]*)":/g, '$1, "$2":'); // Catch any remaining missing comma patterns
+
+          try {
+            parsedJson = JSON.parse(repairedJson);
+            console.log(`Successfully repaired JSON for ${partName}`);
+          } catch (repairError) {
+            console.log(`JSON repair failed for ${partName}: ${repairError.message}`);
+
+            // Final fallback: try to rebuild JSON structure for missing comma patterns
+            console.log(`Attempting final structural repair for ${partName}`);
+
+            // Ultra-aggressive comma insertion for position 853 type errors
+            let finalRepair = repairedJson
+              // Most aggressive fix: find any pattern where a string value is immediately followed by another property
+              .replace(/("[^"]*")\s+("[\w_]+"\s*:)/g, '$1, $2')
+              // Fix missing commas between any value and property name
+              .replace(/([^,\s}])\s+("[\w_]+"\s*:)/g, '$1, $2')
+              // Specific fix for array/object closing followed by property
+              .replace(/([\]}])\s+("[\w_]+"\s*:)/g, '$1, $2')
+              // Fix any remaining patterns where punctuation/word is followed by property
+              .replace(/([a-zA-Z0-9_"'}.\]!?])\s+("[\w_]+"\s*:)/g, '$1, $2');
+
+            try {
+              parsedJson = JSON.parse(finalRepair);
+              console.log(`Successfully applied final structural repair for ${partName}`);
+            } catch (finalError) {
+              console.log(`Final structural repair failed for ${partName}: ${finalError.message}`);
+
+              // Last resort: try to understand what's at position 853
+              const errorMatch = finalError.message.match(/position (\d+)/);
+              if (errorMatch) {
+                const errorPos = parseInt(errorMatch[1]);
+                const start = Math.max(0, errorPos - 100);
+                const end = Math.min(finalRepair.length, errorPos + 100);
+                console.log(`Final repair failed. Text around position ${errorPos}:`);
+                console.log(`"${finalRepair.substring(start, end)}"`);
+              }
+
+              throw finalError;
+            }
+          }
+        }
 
         // Validate that the parsed JSON has the expected structure
         if (validateJsonStructure(parsedJson, schema)) {
