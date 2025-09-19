@@ -24,7 +24,10 @@ Implement positioning2x2sim.html capabilities
 ## Company Setup
 - on initial company setup, hide the Industry field and dropdown box from the user. I dont Want you to make any code changes. I just want it hidden right now and I want this to be an issue and commented in the code that we just made a decision to hide this field.	
  
+ 
  On the "welcome to category blueprint" page, relocate the gray "start fresh" button to be beneath the blue "generate research prompt" button or somewhere else that indicates to the user "start fresh" is a step back, not a step forward. The current position of the "start fresh" button on the very far right makes it look like that is the "next" button to press. 
+ 
+ I think we need to move the button "Ai Research" that is at the top right of each part to the "welcome to category-blueprint" page and position it to the right of the "Start Fresh" button
  
 ## Part 1: Segment Foundation
 

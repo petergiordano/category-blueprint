@@ -12,6 +12,53 @@ if (!GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
+// Pre-process markdown to clean Google Docs escaped characters
+// Adapted from Python markdown_cleaner.py for JavaScript
+const cleanMarkdownForProcessing = (content) => {
+  if (!content) return content;
+
+  // Pattern replacements ordered by specificity to avoid conflicts
+  const cleanedContent = content
+    // Headers: \# \## \### etc.
+    .replace(/\\(#{1,6})/g, '$1')
+
+    // Lists: \- \* \+ at start of line or after whitespace
+    .replace(/(^|\s)\\([-*+])\s/gm, '$1$2 ')
+
+    // Numbered lists: \1. \2. etc.
+    .replace(/(^|\s)\\(\d+)\./gm, '$1$2.')
+    .replace(/\\(\d+)\./g, '$1.')
+
+    // Escaped plus signs: \+1-2 → +1-2
+    .replace(/\\(\+)/g, '$1')
+
+    // Escaped underscores: project\_system\_instructions → project_system_instructions
+    .replace(/\\(_)/g, '$1')
+
+    // Emphasis: \*text\* \_text\_
+    .replace(/(?<!\\)\\([*_])/g, '$1')
+
+    // Links: \[text\] → [text]
+    .replace(/\\\[/g, '[')
+    .replace(/\\\]/g, ']')
+    .replace(/\\\(/g, '(')
+    .replace(/\\\)/g, ')')
+
+    // Blockquotes: \> → >
+    .replace(/\\>/g, '>')
+
+    // Code blocks: \` → `
+    .replace(/\\`/g, '`')
+
+    // Escaped periods, commas, and other punctuation
+    .replace(/\\([.,!?;:])/g, '$1')
+
+    // Clean up any double backslashes that might remain
+    .replace(/\\\\/g, '\\');
+
+  return cleanedContent;
+};
+
 // Define the JSON templates for each part of the application
 // These match the actual import templates used by the application
 const jsonTemplates = {
@@ -111,6 +158,21 @@ const masterPrompt = (reportText, jsonSchema, partName) => {
   6. For array fields (like competitiveAlternatives, uniqueValueAndProof), extract multiple items when available.
   7. Your output MUST be ONLY valid JSON - no markdown, no comments, no additional text.
 
+  **JSON Formatting Requirements:**
+  - Use double quotes for all strings
+  - Properly escape special characters: \\" for quotes, \\\\ for backslashes, \\n for newlines
+  - Ensure proper comma placement between properties and array items
+  - Do not include markdown formatting in string values
+  - UTF-8 characters are acceptable, no need to escape unicode
+  - Example of properly formatted JSON:
+    {
+      "propertyName": "Value with \\"quotes\\" and special chars",
+      "arrayField": [
+        { "item1": "value1" },
+        { "item2": "value2" }
+      ]
+    }
+
   **Context About This Section:**
   ${getPartContext(partName)}
 
@@ -155,6 +217,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: 'Missing reportText in request body.' });
   }
 
+  // Pre-process markdown to clean escaped characters
+  const cleanedReportText = cleanMarkdownForProcessing(reportText);
+  console.log(`Cleaned ${reportText.length - cleanedReportText.length} escaped characters from report text`);
+
   if (!GEMINI_API_KEY) {
     return res.status(500).json({ message: 'Server configuration error: GEMINI_API_KEY is not set.' });
   }
@@ -167,7 +233,7 @@ export default async function handler(req, res) {
   // Process each part with retry logic
   for (const partName in jsonTemplates) {
     const schema = jsonTemplates[partName];
-    const prompt = masterPrompt(reportText, schema, partName);
+    const prompt = masterPrompt(cleanedReportText, schema, partName);
 
     let success = false;
     let attempt = 0;
@@ -195,16 +261,21 @@ export default async function handler(req, res) {
           extractedJsonString = extractedJsonString.split('**Your JSON Output:**')[1].trim();
         }
 
-        // Fix common JSON escape character issues
+        // Standard JSON escape character normalization
         extractedJsonString = extractedJsonString
-          .replace(/\\\\/g, '\\') // Fix double-escaped backslashes
-          .replace(/\\"/g, '"') // Fix escaped quotes that shouldn't be escaped in values
-          .replace(/\\'/g, "'") // Fix escaped single quotes
-          .replace(/\\\//g, '/') // Fix escaped forward slashes
-          .replace(/\\n/g, ' ') // Replace literal \n with spaces
-          .replace(/\\t/g, ' ') // Replace literal \t with spaces
-          .replace(/\\r/g, ' ') // Replace literal \r with spaces
-          .replace(/\s+/g, ' ') // Normalize multiple spaces
+          // Fix malformed escape sequences that break JSON parsing
+          .replace(/\\\\\\\\/g, '\\\\') // Fix quadruple backslashes
+          .replace(/\\\\"/g, '\\"') // Fix over-escaped quotes
+          .replace(/\\\\'/g, "\\'") // Fix over-escaped single quotes
+          .replace(/\\\\\//g, '\\/') // Fix over-escaped forward slashes
+
+          // Handle literal escape sequences that should be actual characters
+          .replace(/\\n(?![rnt"])/g, ' ') // Replace literal \n with spaces (but preserve \n", \nr, \nt)
+          .replace(/\\t(?![rnt"])/g, ' ') // Replace literal \t with spaces
+          .replace(/\\r(?![rnt"])/g, ' ') // Replace literal \r with spaces
+
+          // Normalize whitespace
+          .replace(/\s+/g, ' ')
           .trim();
 
         // Try parsing with fallback to repair malformed JSON
@@ -281,7 +352,15 @@ export default async function handler(req, res) {
                 console.log(`"${finalRepair.substring(start, end)}"`);
               }
 
-              throw finalError;
+              // Fallback JSON construction - extract any usable content
+              console.log(`Attempting fallback JSON construction for ${partName}`);
+              parsedJson = constructFallbackJson(extractedJsonString, schema, partName);
+
+              if (parsedJson) {
+                console.log(`Successfully constructed fallback JSON for ${partName}`);
+              } else {
+                throw finalError;
+              }
             }
           }
         }
@@ -327,21 +406,180 @@ export default async function handler(req, res) {
     }
   }
 
-  // Helper function to validate JSON structure
-  function validateJsonStructure(data, schema) {
+  // Fallback JSON construction - attempts to extract usable content when JSON parsing fails
+  function constructFallbackJson(rawText, schema, partName) {
     try {
-      // Basic validation - ensure it's an object and has some expected keys
-      if (typeof data !== 'object' || data === null) return false;
+      console.log(`Constructing fallback JSON for ${partName}`);
 
-      // For arrays in schema, don't require exact match but ensure structure is reasonable
-      for (const key in schema) {
-        if (Array.isArray(schema[key]) && data[key] && !Array.isArray(data[key])) {
-          return false;
+      // Start with base schema structure
+      const fallbackJson = JSON.parse(JSON.stringify(schema));
+
+      // Initialize all string fields as empty strings
+      function initializeStructure(obj) {
+        for (const key in obj) {
+          if (typeof obj[key] === 'string') {
+            obj[key] = '';
+          } else if (Array.isArray(obj[key])) {
+            obj[key] = [];
+          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            initializeStructure(obj[key]);
+          }
         }
       }
 
+      initializeStructure(fallbackJson);
+
+      // Try to extract meaningful content using basic text analysis
+      // This is a simplified extraction that looks for quoted strings and key-value patterns
+
+      // Extract potential property-value pairs from text
+      const extractedPairs = [];
+
+      // Look for quoted content that might be property values
+      const quotedStrings = rawText.match(/"([^"]{3,})"/g) || [];
+      quotedStrings.forEach(quoted => {
+        const cleanQuoted = quoted.replace(/^"|"$/g, '').trim();
+        if (cleanQuoted.length > 2 && cleanQuoted.length < 500) {
+          extractedPairs.push(cleanQuoted);
+        }
+      });
+
+      // Look for colon-separated patterns that might be property definitions
+      const colonPatterns = rawText.match(/([a-zA-Z][a-zA-Z0-9_\s]*)\s*:\s*([^,}\n]{3,100})/g) || [];
+      colonPatterns.forEach(pattern => {
+        const match = pattern.match(/([a-zA-Z][a-zA-Z0-9_\s]*)\s*:\s*(.+)/);
+        if (match) {
+          const key = match[1].trim().toLowerCase().replace(/\s+/g, '');
+          const value = match[2].trim().replace(/^"|"$/g, '');
+          if (value.length > 2 && value.length < 500) {
+            extractedPairs.push({ key, value });
+          }
+        }
+      });
+
+      // Distribute extracted content to schema fields
+      let pairIndex = 0;
+      function populateStructure(obj, objPath = '') {
+        for (const key in obj) {
+          if (typeof obj[key] === 'string' && pairIndex < extractedPairs.length) {
+            const extracted = extractedPairs[pairIndex];
+            if (typeof extracted === 'string') {
+              obj[key] = extracted;
+            } else if (extracted && extracted.value) {
+              obj[key] = extracted.value;
+            }
+            pairIndex++;
+          } else if (Array.isArray(obj[key]) && obj[key].length === 0) {
+            // For arrays, try to add one item if we have template structure
+            if (schema[key] && Array.isArray(schema[key]) && schema[key].length > 0) {
+              const itemTemplate = JSON.parse(JSON.stringify(schema[key][0]));
+              populateStructure(itemTemplate, objPath + '.' + key);
+              if (Object.values(itemTemplate).some(v => typeof v === 'string' && v.length > 0)) {
+                obj[key].push(itemTemplate);
+              }
+            }
+          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            populateStructure(obj[key], objPath + '.' + key);
+          }
+        }
+      }
+
+      populateStructure(fallbackJson);
+
+      // Check if we extracted any meaningful content
+      const hasContent = JSON.stringify(fallbackJson).includes('"') &&
+                        JSON.stringify(fallbackJson).length > JSON.stringify(schema).length + 10;
+
+      if (hasContent) {
+        console.log(`Fallback JSON constructed for ${partName} with ${pairIndex} extracted values`);
+        return fallbackJson;
+      } else {
+        console.log(`Fallback JSON construction failed for ${partName} - insufficient content extracted`);
+        return null;
+      }
+
+    } catch (error) {
+      console.log(`Fallback JSON construction error for ${partName}: ${error.message}`);
+      return null;
+    }
+  }
+
+  // Enhanced structural validation for JSON based on schema requirements
+  function validateJsonStructure(data, schema) {
+    try {
+      // Basic validation - ensure it's an object and has some expected keys
+      if (typeof data !== 'object' || data === null) {
+        console.log('Validation failed: Data is not an object');
+        return false;
+      }
+
+      // Validate structure matches expected schema patterns
+      for (const key in schema) {
+        const schemaValue = schema[key];
+        const dataValue = data[key];
+
+        // Handle array fields (like competitiveAlternatives, uniqueValueAndProof)
+        if (Array.isArray(schemaValue)) {
+          if (dataValue !== undefined && !Array.isArray(dataValue)) {
+            console.log(`Validation failed: ${key} should be an array but got ${typeof dataValue}`);
+            return false;
+          }
+          // Validate array items have expected structure if present
+          if (Array.isArray(dataValue) && dataValue.length > 0 && schemaValue.length > 0) {
+            const expectedItemKeys = Object.keys(schemaValue[0]);
+            for (const item of dataValue) {
+              if (typeof item !== 'object' || item === null) {
+                console.log(`Validation failed: Array item in ${key} is not an object`);
+                return false;
+              }
+              // Check if item has at least some expected keys
+              const hasExpectedKeys = expectedItemKeys.some(expectedKey =>
+                item.hasOwnProperty(expectedKey)
+              );
+              if (!hasExpectedKeys) {
+                console.log(`Validation failed: Array item in ${key} missing expected keys`);
+                return false;
+              }
+            }
+          }
+        }
+        // Handle object fields (nested structures)
+        else if (typeof schemaValue === 'object' && schemaValue !== null && !Array.isArray(schemaValue)) {
+          if (dataValue !== undefined && (typeof dataValue !== 'object' || dataValue === null || Array.isArray(dataValue))) {
+            console.log(`Validation failed: ${key} should be an object but got ${typeof dataValue}`);
+            return false;
+          }
+        }
+        // Handle string fields - ensure they're strings if present
+        else if (typeof schemaValue === 'string') {
+          if (dataValue !== undefined && typeof dataValue !== 'string') {
+            console.log(`Validation failed: ${key} should be a string but got ${typeof dataValue}`);
+            return false;
+          }
+        }
+      }
+
+      // Ensure data has at least some content (not all empty strings)
+      const hasContent = Object.values(data).some(value => {
+        if (typeof value === 'string') return value.trim().length > 0;
+        if (Array.isArray(value)) return value.length > 0;
+        if (typeof value === 'object' && value !== null) {
+          return Object.values(value).some(nestedValue =>
+            typeof nestedValue === 'string' ? nestedValue.trim().length > 0 : true
+          );
+        }
+        return true;
+      });
+
+      if (!hasContent) {
+        console.log('Validation failed: Data contains no meaningful content');
+        return false;
+      }
+
+      console.log('JSON structure validation passed');
       return true;
     } catch (error) {
+      console.log(`Validation error: ${error.message}`);
       return false;
     }
   }
