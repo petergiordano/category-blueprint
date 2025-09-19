@@ -5934,17 +5934,15 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                 <div className="mt-4 flex flex-col sm:flex-row gap-2 items-start">
                                     <button
                                         onClick={() => {
-                                            if (window.confirm('This will reset your company setup and clear all form data. Are you sure?')) {
-                                                // Reset company context
-                                                setAppState(prev => ({
-                                                    ...prev,
-                                                    companyContext: {
-                                                        ...prev.companyContext,
-                                                        isSetupComplete: false
-                                                    }
-                                                }));
-                                                // This will trigger the CompanySetupModal to show again
-                                            }
+                                            // Reset company context to trigger modal
+                                            setAppState(prev => ({
+                                                ...prev,
+                                                companyContext: {
+                                                    ...prev.companyContext,
+                                                    isSetupComplete: false
+                                                }
+                                            }));
+                                            // This will trigger the CompanySetupModal to show again
                                         }}
                                         className="text-sm text-gray-600 hover:text-blue-600 underline"
                                     >
