@@ -60,6 +60,3 @@ tmp/
 temp/
 .tmp/
 .vercel
-
-# Project-specific files (local only)
-docs/specifications/category-blueprint-swapfile.txt
