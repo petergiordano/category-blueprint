@@ -12,18 +12,19 @@
 
 ## Globally
 
-For the Export button in the top right, within the modal, after the user clicks "Copy to Clipboard", show "Copied" and a message telling the user to paste into Google Doc  and edit > paste from markdown to preserve the formatting
+
+Need to update the user guide: docs/resources/user-guide.txt to be current
+
+
 
 ---
 Implement positioning2x2sim.html capabilities
 ---
 		  
 ## Company Setup
-	- Add export button for both json and txt formats, same as other parts of the app
 	
  
 ## Part 1: Segment Foundation
-	- Pull in the company and company url from the company setup into the segment-foundation-export.json
 
 
 ## Part 2: ICP Definition
@@ -31,8 +32,6 @@ Implement positioning2x2sim.html capabilities
 
 
 ## Part 3: Positioning    
-
-
 
 
 
