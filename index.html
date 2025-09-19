@@ -406,7 +406,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Enhanced Interactive Progress Stepper Component
-        const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, saveAppState, onOpenAIResearch }) => {
+        const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, saveAppState }) => {
             const parts = [
                 { id: 'segment', name: 'Foundation', number: 1, fullName: 'Segment Foundation' },
                 { id: 'icp', name: 'ICP Definition', number: 2, fullName: 'ICP Definition' },
@@ -657,50 +657,8 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         </ol>
                     </nav>
 
-                    {/* AI Research Assistant Button - Right Side */}
-                    <div style={{ width: '140px', display: 'flex', justifyContent: 'flex-end' }}>
-                        <button
-                            onClick={onOpenAIResearch}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                padding: '0.5rem 1rem',
-                                backgroundColor: '#f3f4f6',
-                                borderRadius: '0.5rem',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '0.875rem',
-                                fontWeight: '500',
-                                color: '#374151',
-                                transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#e5e7eb';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#f3f4f6';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                            }}
-                            title="Upload a research report to get AI suggestions"
-                            aria-label="AI Research Assistant"
-                        >
-                            {/* Magic/Sparkle Icon */}
-                            <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                style={{ color: '#7c3aed' }}
-                            >
-                                <path d="M12 0L13.09 8.26L22 9L13.09 9.74L12 18L10.91 9.74L2 9L10.91 8.26L12 0Z" />
-                                <path d="M19 15L20.18 20.18L25 21L20.18 21.82L19 27L17.82 21.82L13 21L17.82 20.18L19 15Z" opacity="0.7" />
-                                <path d="M7 3L7.5 6.5L11 7L7.5 7.5L7 11L6.5 7.5L3 7L6.5 6.5L7 3Z" opacity="0.7" />
-                            </svg>
-                            <span className="hidden sm:inline">AI Research</span>
-                        </button>
-                    </div>
+                    {/* Right side spacing - removed AI Research button */}
+                    <div style={{ width: '140px' }}></div>
                 </div>
             );
         };
@@ -5921,7 +5879,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Home Component
-        const Home = ({ appState, setAppState, onNavigate }) => {
+        const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal }) => {
             console.log('HomeView props:', { appState, setAppState, onNavigate });
             
             const [showCompanySetupModal, setShowCompanySetupModal] = useState(() => {
@@ -5998,109 +5956,85 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             </div>
                         )}
                         
-                        {/* Continue/Start Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            {appState.navigationProgress.completedParts.length > 0 ? (
-                                <>
-                                    <button
-                                        onClick={() => {
-                                            try {
-                                                const promptText = generateDeepResearchPrompt(appState.companyContext);
-                                                
-                                                if (promptText && promptText.startsWith('Error generating prompt')) {
-                                                    alert(promptText);
-                                                    return;
-                                                }
-                                                
-                                                setPromptModalData({
-                                                    isOpen: true,
-                                                    title: `Deep Research Prompt for ${appState.companyContext?.companyName || 'Your Company'}`,
-                                                    promptText: promptText
-                                                });
-                                            } catch (error) {
-                                                console.error('Failed to generate prompt:', error);
-                                                alert('Failed to generate research prompt. Please try again.');
-                                            }
-                                        }}
-                                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
-                                    >
-                                        Generate Research Prompt
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            // Find the last incomplete part
-                                            const parts = ['segment', 'icp', 'positioning', 'category'];
-                                            const nextPart = parts.find(p => !appState.navigationProgress.completedParts.includes(p));
-                                            onNavigate(nextPart || 'segment');
-                                        }}
-                                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
-                                    >
-                                        Continue Where You Left Off
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
-                                                // Clear all progress
-                                                localStorage.removeItem('categoryBlueprintState');
-                                                window.location.reload();
-                                            }
-                                        }}
-                                        className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold"
-                                    >
-                                        Start Fresh
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={() => {
-                                            try {
-                                                const promptText = generateDeepResearchPrompt(appState.companyContext);
-                                                
-                                                if (promptText && promptText.startsWith('Error generating prompt')) {
-                                                    alert(promptText);
-                                                    return;
-                                                }
-                                                
-                                                setPromptModalData({
-                                                    isOpen: true,
-                                                    title: `Deep Research Prompt for ${appState.companyContext?.companyName || 'Your Company'}`,
-                                                    promptText: promptText
-                                                });
-                                            } catch (error) {
-                                                console.error('Failed to generate prompt:', error);
-                                                alert('Failed to generate research prompt. Please try again.');
-                                            }
-                                        }}
-                                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
-                                    >
-                                        Generate Research Prompt
-                                    </button>
-                                    <button
-                                        onClick={() => onNavigate('segment')}
-                                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-xl"
-                                    >
-                                        Start Blueprint Process
-                                    </button>
+                        {/* Action Buttons Grid - Enhanced UX Layout */}
+                        {/* 2x2 responsive grid with conditional green button logic */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+                            {/* Generate Research Prompt */}
+                            <button
+                                onClick={() => {
+                                    try {
+                                        const promptText = generateDeepResearchPrompt(appState.companyContext);
 
-                                    {/* Start Fresh button - show if there's any form data */}
-                                    {(Object.keys(appState.segmentData || {}).length > 0 ||
-                                      Object.keys(appState.positioningData || {}).length > 0 ||
-                                      Object.keys(appState.categoryData || {}).length > 0) && (
-                                        <button
-                                            onClick={() => {
-                                                if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
-                                                    // Clear all progress
-                                                    localStorage.removeItem('categoryBlueprintState');
-                                                    window.location.reload();
-                                                }
-                                            }}
-                                            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold"
-                                        >
-                                            Start Fresh
-                                        </button>
-                                    )}
-                                </>
+                                        if (promptText && promptText.startsWith('Error generating prompt')) {
+                                            alert(promptText);
+                                            return;
+                                        }
+
+                                        setPromptModalData({
+                                            isOpen: true,
+                                            title: `Deep Research Prompt for ${appState.companyContext?.companyName || 'Your Company'}`,
+                                            promptText: promptText
+                                        });
+                                    } catch (error) {
+                                        console.error('Failed to generate prompt:', error);
+                                        alert('Failed to generate research prompt. Please try again.');
+                                    }
+                                }}
+                                className="p-6 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold text-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+                            >
+                                Generate Research Prompt
+                            </button>
+
+                            {/* AI Research Assistant */}
+                            <button
+                                onClick={() => setShowAIResearchModal(true)}
+                                className="p-6 bg-purple-600 text-white rounded-xl hover:bg-purple-700 font-semibold text-lg shadow-lg transition-all duration-200 hover:shadow-xl flex items-center justify-center gap-2"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                AI Research Assistant
+                            </button>
+
+                            {/* Primary Action Button - Conditional Green Button */}
+                            {appState.navigationProgress.completedParts.length > 0 ? (
+                                <button
+                                    onClick={() => {
+                                        // Find the last incomplete part
+                                        const parts = ['segment', 'icp', 'positioning', 'category'];
+                                        const nextPart = parts.find(p => !appState.navigationProgress.completedParts.includes(p));
+                                        onNavigate(nextPart || 'segment');
+                                    }}
+                                    className="p-6 bg-green-600 text-white rounded-xl hover:bg-green-700 font-bold text-xl shadow-lg transition-all duration-200 hover:shadow-xl md:col-span-1"
+                                >
+                                    Continue Where You Left Off
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => onNavigate('segment')}
+                                    className="p-6 bg-green-600 text-white rounded-xl hover:bg-green-700 font-bold text-xl shadow-lg transition-all duration-200 hover:shadow-xl md:col-span-1"
+                                >
+                                    Start Blueprint Process
+                                </button>
+                            )}
+
+                            {/* Start Fresh Button - Show conditionally */}
+                            {(appState.navigationProgress.completedParts.length > 0 ||
+                              Object.keys(appState.segmentData || {}).length > 0 ||
+                              Object.keys(appState.positioningData || {}).length > 0 ||
+                              Object.keys(appState.categoryData || {}).length > 0) && (
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
+                                            // Clear all progress
+                                            localStorage.removeItem('categoryBlueprintState');
+                                            window.location.reload();
+                                        }
+                                    }}
+                                    className="p-4 bg-gray-500 text-white rounded-xl hover:bg-gray-600 font-medium text-base shadow-md transition-all duration-200 hover:shadow-lg"
+                                >
+                                    Start Fresh
+                                </button>
                             )}
                         </div>
 
@@ -6417,7 +6351,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
-                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} />;
+                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} setShowAIResearchModal={setShowAIResearchModal} />;
                 }
             };
 
@@ -6434,7 +6368,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             onNavigate={navigate}
                             appState={appState}
                             saveAppState={saveAppState}
-                            onOpenAIResearch={() => setShowAIResearchModal(true)} // New prop
                         />
                     )}
                     {renderCurrentView()}
