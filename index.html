@@ -65,7 +65,7 @@
               ...state,
               lastSaved: new Date().toISOString()
             };
-            localStorage.setItem('klarityCategoryBlueprintState', JSON.stringify(stateWithTimestamp));
+            localStorage.setItem('categoryBlueprintState', JSON.stringify(stateWithTimestamp));
           } catch (error) {
             console.error('Could not save state to localStorage', error);
           }
@@ -308,7 +308,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
         const loadAppState = () => {
           try {
-            const savedState = localStorage.getItem('klarityCategoryBlueprintState');
+            const savedState = localStorage.getItem('categoryBlueprintState');
             if (!savedState) {
               return null;
             }
@@ -5920,7 +5920,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Home Component
-        const Home = ({ appState, setAppState, onNavigate, onExport }) => {
+        const Home = ({ appState, setAppState, onNavigate }) => {
             console.log('HomeView props:', { appState, setAppState, onNavigate });
             
             const [showCompanySetupModal, setShowCompanySetupModal] = useState(() => {
@@ -6040,7 +6040,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                         onClick={() => {
                                             if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
                                                 // Clear all progress
-                                                localStorage.removeItem('klarityCategoryBlueprintState');
+                                                localStorage.removeItem('categoryBlueprintState');
                                                 window.location.reload();
                                             }
                                         }}
@@ -6090,7 +6090,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                             onClick={() => {
                                                 if (window.confirm('This will clear all your progress and form data. Are you sure?')) {
                                                     // Clear all progress
-                                                    localStorage.removeItem('klarityCategoryBlueprintState');
+                                                    localStorage.removeItem('categoryBlueprintState');
                                                     window.location.reload();
                                                 }
                                             }}
@@ -6362,21 +6362,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 };
             };
 
-            // Home Page Export Handler - Complete Application Data
-            const handleHomePageExport = () => {
-                const fullAppData = generateFullApplicationData();
-                
-                const jsonData = JSON.stringify(fullAppData, null, 2);
-                const blob = new Blob([jsonData], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'category-blueprint-complete-export.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            };
 
             // Helper function to mark a part as completed
             const markPartAsCompleted = (partId) => {
@@ -6431,7 +6416,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
-                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} onExport={handleHomePageExport} />;
+                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} />;
                 }
             };
 
