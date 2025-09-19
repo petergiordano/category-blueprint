@@ -5905,6 +5905,14 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 console.log('Modal state:', showCompanySetupModal);
             });
 
+            // useEffect to sync modal state with company context changes
+            useEffect(() => {
+                const shouldShowModal = !appState.companyContext?.isSetupComplete;
+                if (shouldShowModal !== showCompanySetupModal) {
+                    setShowCompanySetupModal(shouldShowModal);
+                }
+            }, [appState.companyContext?.isSetupComplete]);
+
             return (
                 <div className="min-h-screen bg-gray-50 py-12 px-4">
                     <div className="max-w-3xl mx-auto">
