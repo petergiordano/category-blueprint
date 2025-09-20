@@ -1,10 +1,10 @@
-# CLAUDE.md - Interactive Category Blueprint Development Guide
+# CLAUDE.md - Interactive Positioning Blueprint Development Guide
 
-This file provides comprehensive instructions for Claude Code when working on the Category Blueprint repository, following database-driven development with GitHub Issues as the single source of truth.
+This file provides comprehensive instructions for Claude Code when working on the Positioning Blueprint repository, following database-driven development with GitHub Issues as the single source of truth.
 
 **Version**: 4.0 - Enhanced Structure Following LangChain Best Practices
-**Repository**: `petergiordano/category-blueprint`
-**Production**: https://category-blueprint.vercel.app/
+**Repository**: `petergiordano/positioning-blueprint`
+**Production**: https://positioning-blueprint.vercel.app/
 
 ---
 
@@ -12,7 +12,7 @@ This file provides comprehensive instructions for Claude Code when working on th
 
 ### Core Application Architecture
 ```
-category-blueprint/
+positioning-blueprint/
 ├── index.html           # Single-page React application
 ├── api/                 # Vercel serverless functions
 │   ├── generate-research-prompt.js
@@ -331,7 +331,7 @@ git push origin main
 vercel deploy --prod
 
 # Verify production
-open https://category-blueprint.vercel.app/
+open https://positioning-blueprint.vercel.app/
 ```
 
 ### Environment Variables
@@ -353,10 +353,10 @@ Required in Vercel dashboard:
 | Shared Context | `.aicontext/context.md` |
 
 ### Key URLs
-- **Production**: https://category-blueprint.vercel.app/
-- **Repository**: https://github.com/petergiordano/category-blueprint
+- **Production**: https://positioning-blueprint.vercel.app/
+- **Repository**: https://github.com/petergiordano/positioning-blueprint
 - **Project Board**: https://github.com/users/petergiordano/projects/1
-- **Issues**: https://github.com/petergiordano/category-blueprint/issues
+- **Issues**: https://github.com/petergiordano/positioning-blueprint/issues
 
 ### Emergency Commands
 ```bash
