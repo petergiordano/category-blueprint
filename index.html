@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Category Blueprint Series</title>
+    <title>Interactive Positioning Blueprint Series</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -565,7 +565,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         >
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
-                        <span className="hidden sm:inline">Category Blueprint</span>
+                        <span className="hidden sm:inline">Positioning Blueprint</span>
                         <span className="sm:hidden">Home</span>
                     </button>
 
@@ -1484,7 +1484,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             {!results ? (
                                 <div className="space-y-6">
                                     <div className="text-center">
-                                        <p className="text-gray-600 mb-4">Upload your research report (markdown or text file) and let AI extract insights for your Category Blueprint.</p>
+                                        <p className="text-gray-600 mb-4">Upload your research report (markdown or text file) and let AI extract insights for your Positioning Blueprint.</p>
                                     </div>
 
                                     {/* File Upload Area */}
@@ -5917,7 +5917,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 <div className="min-h-screen bg-gray-50 py-12 px-4">
                     <div className="max-w-3xl mx-auto">
                         {/* Existing welcome content */}
-                        <h1 className="text-4xl font-bold text-center mb-8 scale-green-text">Welcome to Category Blueprint</h1>
+                        <h1 className="text-4xl font-bold text-center mb-8 scale-green-text">Welcome to Positioning Blueprint</h1>
 
                         {/* Company Context Display */}
                         {appState.companyContext?.isSetupComplete && (
@@ -6017,7 +6017,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             <button
                                 onClick={() => setShowAIResearchModal(true)}
                                 className="p-6 bg-purple-600 text-white rounded-xl hover:bg-purple-700 font-semibold text-lg shadow-lg transition-all duration-200 hover:shadow-xl flex items-center justify-center gap-2 order-3"
-                                title="Upload and analyze research reports to automatically populate form fields across the Category Blueprint"
+                                title="Upload and analyze research reports to automatically populate form fields across the Positioning Blueprint"
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -6073,50 +6073,145 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                                     <li>Company name</li>
                                                     <li>Website URL</li>
                                                     <li>Product/service name</li>
-                                                    <li>Industry</li>
+                                                    <li>Competitors or Alternatives</li>
                                                 </ul>
                                                 <p className="text-gray-700">2. Click "Continue" to proceed to the main application</p>
                                             </div>
                                         </div>
 
-                                        {/* Step 2: Prepare Your Import Files */}
+                                        {/* Step 2: AI-Powered Research Features */}
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 2: Prepare Your Import Files (Optional)</h3>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 2: AI-Powered Research Features</h3>
                                             <div className="ml-4 space-y-2">
-                                                <p className="text-gray-700">If you have export files from a previous session or have been provided with template files:</p>
-                                                <ul className="ml-6 list-disc space-y-1 text-gray-600">
-                                                    <li>Ensure you have the appropriate JSON files for the parts you want to import</li>
-                                                    <li>Files should be in JSON format with the correct data structure</li>
-                                                    <li>Each part has its own import file format</li>
-                                                </ul>
+                                                <p className="text-gray-700">Positioning Blueprint offers several AI-powered tools to accelerate your research and analysis:</p>
+
+                                                <div className="bg-blue-50 p-3 rounded-lg mt-3">
+                                                    <h4 className="font-semibold text-blue-800 mb-2">📝 Generate Research Prompt</h4>
+                                                    <p className="text-blue-700 text-sm mb-2">Creates a customized AI research prompt based on your company information.</p>
+                                                    <ul className="ml-4 list-disc space-y-1 text-blue-700 text-sm">
+                                                        <li>Available on the home screen after company setup</li>
+                                                        <li>Generates prompts tailored to your company, product, and competitors</li>
+                                                        <li>Copy to use with external AI assistants like ChatGPT or Claude</li>
+                                                        <li>Download as text file for future reference</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div className="bg-purple-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-purple-800 mb-2">🔬 Process a Deep Research Report</h4>
+                                                    <p className="text-purple-700 text-sm mb-2">Upload research reports and let AI extract insights for your Positioning Blueprint.</p>
+                                                    <ul className="ml-4 list-disc space-y-1 text-purple-700 text-sm">
+                                                        <li>Available via the purple button on home screen</li>
+                                                        <li>Supports markdown (.md) and text (.txt) files</li>
+                                                        <li>AI analyzes content and suggests form field inputs</li>
+                                                        <li>Apply suggestions directly to your blueprint sections</li>
+                                                        <li>Process multiple reports to build comprehensive data</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div className="bg-gray-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-gray-800 mb-2">✨ AI Research Assistant</h4>
+                                                    <p className="text-gray-700 text-sm mb-2">Available during blueprint process via navigation bar.</p>
+                                                    <ul className="ml-4 list-disc space-y-1 text-gray-700 text-sm">
+                                                        <li>Sparkle icon in top navigation while working on sections</li>
+                                                        <li>Upload research documents for context-aware suggestions</li>
+                                                        <li>Get AI recommendations for current section you're working on</li>
+                                                        <li>Tooltip guidance: "Upload a research report to get AI suggestions"</li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* Step 3: Using the Import Feature */}
+                                        {/* Step 3: Import/Export Features */}
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 3: Using the Import Feature (Optional Fast-Track)</h3>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 3: Import/Export Features</h3>
                                             <div className="ml-4 space-y-2">
-                                                <p className="text-gray-700">If you have import files, you can populate any section quickly instead of manual data entry.</p>
-                                                <p className="text-gray-700 font-medium">To import data into a section:</p>
+                                                <p className="text-gray-700">Save and restore your work using the built-in import/export functionality:</p>
+
+                                                <div className="bg-indigo-50 p-3 rounded-lg mt-3">
+                                                    <h4 className="font-semibold text-indigo-800 mb-2">📤 Export Your Work</h4>
+                                                    <p className="text-indigo-700 text-sm mb-2">Save your progress as downloadable files:</p>
+                                                    <ul className="ml-4 list-disc space-y-1 text-indigo-700 text-sm">
+                                                        <li>Each section has an "Export" button in the top-right</li>
+                                                        <li>Download as JSON files for easy backup and sharing</li>
+                                                        <li>Export individual sections or entire completed parts</li>
+                                                        <li>Files include metadata with company info and export date</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div className="bg-orange-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-orange-800 mb-2">📥 Import Previous Work</h4>
+                                                    <p className="text-orange-700 text-sm mb-2">Restore data from previous sessions or template files:</p>
+                                                    <ul className="ml-4 list-disc space-y-1 text-orange-700 text-sm">
+                                                        <li>Use "Import Data" button in each section header</li>
+                                                        <li>Supports JSON files exported from previous sessions</li>
+                                                        <li>Template files from consultants or previous projects</li>
+                                                        <li>Each part has its own specific import file format</li>
+                                                        <li>Data validation ensures compatibility and accuracy</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 4: Navigation & Workflow Management */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 4: Navigation & Workflow Management</h3>
+                                            <div className="ml-4 space-y-2">
+                                                <p className="text-gray-700">Understanding how to navigate and manage your progress in the Positioning Blueprint:</p>
+
+                                                <div className="bg-green-50 p-3 rounded-lg mt-3">
+                                                    <h4 className="font-semibold text-green-800 mb-2">📋 Four-Part Blueprint Process</h4>
+                                                    <p className="text-green-700 text-sm mb-2">Complete your category positioning through these sequential parts:</p>
+                                                    <ol className="ml-4 list-decimal space-y-1 text-green-700 text-sm">
+                                                        <li><strong>Part 1: Segment Foundation</strong> - Define market segments and target characteristics</li>
+                                                        <li><strong>Part 2: ICP Definition</strong> - Create your Ideal Customer Profile</li>
+                                                        <li><strong>Part 3: Positioning</strong> - Develop your positioning strategy and competitive alternatives</li>
+                                                        <li><strong>Part 4: Category Design</strong> - Design your category narrative and market opportunity</li>
+                                                    </ol>
+                                                </div>
+
+                                                <div className="bg-blue-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-blue-800 mb-2">🧭 Navigation Options</h4>
+                                                    <p className="text-blue-700 text-sm mb-2">Control your workflow with these navigation features:</p>
+                                                    <ul className="ml-4 list-disc space-y-1 text-blue-700 text-sm">
+                                                        <li><strong>Continue Where You Left Off:</strong> Resume from your last incomplete section</li>
+                                                        <li><strong>Start Fresh:</strong> Clear all progress and form data to begin anew</li>
+                                                        <li><strong>Change Company Setup:</strong> Reset company context while preserving section progress</li>
+                                                        <li><strong>Progress Tracking:</strong> App automatically tracks completed parts and saves progress</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div className="bg-yellow-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-yellow-800 mb-2">💾 Auto-Save & Data Management</h4>
+                                                    <p className="text-yellow-700 text-sm mb-2">Your work is automatically preserved:</p>
+                                                    <ul className="ml-4 list-disc space-y-1 text-yellow-700 text-sm">
+                                                        <li><strong>Auto-Save:</strong> Progress automatically saved in your browser as you type</li>
+                                                        <li><strong>Local Storage:</strong> All data stays on your device - nothing sent to servers</li>
+                                                        <li><strong>Session Persistence:</strong> Return to your work anytime in the same browser</li>
+                                                        <li><strong>Export/Import:</strong> Save your work as files for backup or sharing</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 5: Quick Import Process */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 5: Quick Import Process</h3>
+                                            <div className="ml-4 space-y-2">
+                                                <p className="text-gray-700">Fast-track your work by importing existing data:</p>
                                                 <ol className="ml-6 list-decimal space-y-1 text-gray-600">
-                                                    <li>Navigate to the specific part you want to import data into (Part 1: Segment Foundation, Part 2: ICP Definition, or Part 3: Positioning)</li>
-                                                    <li>Click the "Import Data" button (located in the top-right of each section)</li>
-                                                    <li>Select your JSON import file from your computer:
-                                                        <ul className="ml-4 list-disc space-y-1 mt-1">
-                                                            <li><strong>Part 1:</strong> Segment Foundation export files</li>
-                                                            <li><strong>Part 2:</strong> ICP Definition export files</li>
-                                                            <li><strong>Part 3:</strong> Positioning export files</li>
-                                                        </ul>
-                                                    </li>
-                                                    <li>Verify the import - You'll see a success message and the form will populate with the imported data</li>
-                                                    <li>Review and customize the imported data as needed for your specific situation</li>
+                                                    <li>Navigate to the section where you want to import data</li>
+                                                    <li>Click the "Import Data" button in the section header</li>
+                                                    <li>Select your JSON file (from exports or templates)</li>
+                                                    <li>Verify the imported data and customize as needed</li>
+                                                    <li>Continue with your blueprint process</li>
                                                 </ol>
+                                                <p className="text-gray-700 text-sm mt-2 italic">💡 Each section supports its own import format - exported files from the same section will work perfectly.</p>
                                             </div>
                                         </div>
 
-                                        {/* Step 4: Manual Entry */}
+                                        {/* Step 6: Manual Entry */}
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 4: Manual Entry (Alternative)</h3>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 6: Manual Entry (Alternative)</h3>
                                             <div className="ml-4 space-y-2">
                                                 <p className="text-gray-700">If you prefer to fill out the forms manually or want to customize beyond the imported templates:</p>
                                                 <ul className="ml-6 list-disc space-y-1 text-gray-600">
@@ -6127,10 +6222,46 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                             </div>
                                         </div>
 
-                                        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                            <p className="text-blue-800 text-sm">
-                                                <strong>💡 Tips:</strong> You can export your work from any section and re-import it later. This makes it easy to save your progress or share your data between sessions.
-                                            </p>
+                                        {/* Step 7: Tips, Privacy & Best Practices */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">Step 7: Tips, Privacy & Best Practices</h3>
+                                            <div className="ml-4 space-y-3">
+
+                                                <div className="bg-green-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-green-800 mb-2">💡 Pro Tips</h4>
+                                                    <ul className="list-disc ml-4 space-y-1 text-green-700 text-sm">
+                                                        <li>Use AI features early - generate research prompts before starting manual work</li>
+                                                        <li>Export your work frequently as backup files</li>
+                                                        <li>Complete sections in order for best results - each part builds on the previous</li>
+                                                        <li>Use "Change Company Setup" instead of "Start Fresh" to preserve section progress</li>
+                                                        <li>Process multiple research reports to get comprehensive AI suggestions</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div className="bg-blue-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-blue-800 mb-2">🔐 Privacy & Data Security</h4>
+                                                    <ul className="list-disc ml-4 space-y-1 text-blue-700 text-sm">
+                                                        <li><strong>Local Storage Only:</strong> All your data stays on your device</li>
+                                                        <li><strong>No Server Uploads:</strong> Nothing is sent to external servers</li>
+                                                        <li><strong>Browser-Based:</strong> Data persists in your browser's local storage</li>
+                                                        <li><strong>AI Processing:</strong> Research analysis happens through secure API calls</li>
+                                                        <li><strong>File Control:</strong> You control all exports and imports manually</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div className="bg-yellow-50 p-3 rounded-lg">
+                                                    <h4 className="font-semibold text-yellow-800 mb-2">🎯 Best Practices</h4>
+                                                    <ul className="list-disc ml-4 space-y-1 text-yellow-700 text-sm">
+                                                        <li>Start with comprehensive company setup - quality inputs lead to better AI suggestions</li>
+                                                        <li>Use research prompts to gather external data before filling forms manually</li>
+                                                        <li>Take advantage of auto-save - your progress is preserved as you work</li>
+                                                        <li>Export completed sections immediately for backup and sharing</li>
+                                                        <li>Review and customize AI suggestions - they're starting points, not final answers</li>
+                                                        <li>Keep the same browser/device for consistent access to your saved work</li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

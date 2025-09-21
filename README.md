@@ -1,18 +1,18 @@
-# Interactive Category Blueprint
+# Interactive Positioning Blueprint
 
 **A production web application for B2B SaaS category positioning strategy development**
 
-[![Production Deployment](https://img.shields.io/badge/Production-Live-success?logo=vercel)](https://category-blueprint.vercel.app/)
-[![GitHub Issues](https://img.shields.io/github/issues/petergiordano/category-blueprint)](https://github.com/petergiordano/category-blueprint/issues)
+[![Production Deployment](https://img.shields.io/badge/Production-Live-success?logo=vercel)](https://positioning-blueprint.vercel.app/)
+[![GitHub Issues](https://img.shields.io/github/issues/petergiordano/positioning-blueprint)](https://github.com/petergiordano/positioning-blueprint/issues)
 [![GitHub Project](https://img.shields.io/badge/Project%20Board-Active-blue)](https://github.com/users/petergiordano/projects/1)
 
-**Live Application**: https://category-blueprint.vercel.app/
+**Live Application**: https://positioning-blueprint.vercel.app/
 
 ---
 
 ## 🎯 What This Application Does
 
-The Interactive Category Blueprint transforms B2B SaaS category positioning strategy development from a complex, time-consuming process into a guided, AI-powered experience. Companies can:
+The Interactive Positioning Blueprint transforms B2B SaaS category positioning strategy development from a complex, time-consuming process into a guided, AI-powered experience. Companies can:
 
 - **Analyze Market Segments** with structured frameworks
 - **Define Ideal Customer Profiles** using proven methodologies  
@@ -72,7 +72,7 @@ Following Scale VP brand guidelines and focusing on enterprise SaaS category pos
 ## 🚀 Getting Started
 
 ### For Users
-1. **Visit the Live Application**: https://category-blueprint.vercel.app/
+1. **Visit the Live Application**: https://positioning-blueprint.vercel.app/
 2. **Complete Company Setup**: Provide basic company information
 3. **Run AI Analysis**: Generate initial segment foundation data
 4. **Refine Your Strategy**: Use the guided tools to develop your category positioning approach
@@ -81,8 +81,8 @@ Following Scale VP brand guidelines and focusing on enterprise SaaS category pos
 ### For Developers
 ```bash
 # Clone the repository
-git clone https://github.com/petergiordano/category-blueprint.git
-cd category-blueprint
+git clone https://github.com/petergiordano/positioning-blueprint.git
+cd positioning-blueprint
 
 # Install dependencies
 npm install
@@ -125,7 +125,7 @@ open http://localhost:3000
 ## 📁 Project Structure
 
 ```
-category-blueprint/
+positioning-blueprint/
 ├── index.html              # Main application (SPA)
 ├── api/                     # Vercel serverless functions
 │   ├── discover-jtbd.js    # Company analysis and JTBD generation
@@ -185,7 +185,7 @@ This project uses a **simplified database-driven development approach** with Git
 ## 📊 Current Status
 
 ### **Production Deployment** ✅
-- **Live URL**: https://category-blueprint.vercel.app/
+- **Live URL**: https://positioning-blueprint.vercel.app/
 - **All Core Features**: Implemented and functional
 - **Mobile Responsive**: Optimized for all device types
 - **Performance**: Fast loading with serverless architecture
@@ -247,7 +247,7 @@ Use the automated scripts for consistent issue management:
 ## 🛠️ Support & Issues
 
 ### **Application Support**
-- **Live Issues**: Report bugs through [GitHub Issues](https://github.com/petergiordano/category-blueprint/issues)
+- **Live Issues**: Report bugs through [GitHub Issues](https://github.com/petergiordano/positioning-blueprint/issues)
 - **Feature Requests**: Use the issue creation scripts for standardized requests
 - **Questions**: Contact through GitHub Issues with the appropriate labels
 
@@ -268,7 +268,7 @@ This application is built for Scale Venture Partners portfolio companies and fol
 
 ## 🏢 About Scale Venture Partners
 
-Scale Venture Partners is a leading venture capital firm focused on B2B software companies. This Interactive Category Blueprint reflects Scale's proven methodologies for category positioning excellence, distilled into an AI-powered tool for portfolio companies.
+Scale Venture Partners is a leading venture capital firm focused on B2B software companies. This Interactive Positioning Blueprint reflects Scale's proven methodologies for category positioning excellence, distilled into an AI-powered tool for portfolio companies.
 
 **Learn more**: [Scale Venture Partners](https://www.scalevp.com/)
 
