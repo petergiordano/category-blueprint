@@ -8,6 +8,9 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="public/src/session/schema.js"></script>
+    <script src="public/src/session/session-manager.js"></script>
+    <script src="public/src/session/file-io.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Work+Sans:wght@700&display=swap" rel="stylesheet">
@@ -36,6 +39,9 @@
     <script type="text/babel">
         // Get all React hooks we need
         const { useState, useEffect, useRef } = React;
+        const APP_VERSION = '1.0.0';
+        const SessionManager = window.SessionManager;
+        // Note: Access SessionFileIO directly from window.SessionFileIO instead of using const
 
         // Enhanced logging that sends to server
         const serverLog = async (level, message, error = null) => {
@@ -70,7 +76,142 @@
             console.error('Could not save state to localStorage', error);
           }
         };
-        
+
+        const SessionNotice = ({ notice, onDismiss }) => {
+          useEffect(() => {
+            if (!notice) return;
+            const timer = setTimeout(() => {
+              onDismiss();
+            }, 5000);
+            return () => clearTimeout(timer);
+          }, [notice, onDismiss]);
+
+          if (!notice) return null;
+
+          const baseClass = notice.type === 'error'
+            ? 'bg-red-100 border border-red-400 text-red-800'
+            : 'bg-green-100 border border-green-400 text-green-800';
+
+          return (
+            <div className={`fixed top-20 right-4 max-w-sm px-4 py-3 rounded shadow-md ${baseClass}`}>
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-sm font-medium leading-5">{notice.message}</span>
+                <button
+                  type="button"
+                  className="text-lg leading-none"
+                  aria-label="Dismiss notification"
+                  onClick={onDismiss}
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+          );
+        };
+
+        const SessionMenu = ({ onImport, onExport, disabled }) => {
+          const [open, setOpen] = useState(false);
+          const menuRef = useRef(null);
+
+
+          useEffect(() => {
+            if (!open) return;
+            const handleClickOutside = (event) => {
+              if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setOpen(false);
+              }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+          }, [open]);
+
+          const handleToggle = () => {
+            if (disabled) return;
+            setOpen(prev => !prev);
+          };
+
+          const handleImport = () => {
+            setOpen(false);
+            onImport?.();
+          };
+
+          const handleExport = () => {
+            setOpen(false);
+            onExport?.();
+          };
+
+          return (
+            <div className="relative inline-block text-left" ref={menuRef}>
+              <button
+                type="button"
+                onClick={handleToggle}
+                disabled={disabled}
+                className={`inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium shadow-sm transition ${disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-gray-100'}`}
+              >
+                Session
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                </svg>
+              </button>
+              {open && (
+                <div
+                  className="absolute right-0 z-[70] mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                >
+                  <div className="py-1">
+                    <button
+                      type="button"
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleImport}
+                    >
+                      Import Blueprint from File...
+                    </button>
+                    <button
+                      type="button"
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleExport}
+                    >
+                      Export Blueprint to File...
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        const SessionImportModal = ({ isOpen, fileName, onCancel, onConfirm, isProcessing }) => {
+          if (!isOpen) return null;
+
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+              <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+                <h2 className="text-lg font-semibold text-gray-900">Overwrite Current Blueprint?</h2>
+                <p className="mt-3 text-sm text-gray-700">Importing this file will overwrite all current progress in your session. This action cannot be undone directly, though a temporary backup will be made.</p>
+                {fileName && (
+                  <p className="mt-3 text-xs text-gray-500">Selected file: <span className="font-medium">{fileName}</span></p>
+                )}
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={onCancel}
+                    className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onConfirm}
+                    disabled={isProcessing}
+                    className={`rounded-md px-4 py-2 text-sm font-medium text-white transition ${isProcessing ? 'bg-red-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}`}
+                  >
+                    {isProcessing ? 'Importing...' : 'Confirm & Import'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
         // Deep Research Prompt Generation Engine
         const generateDeepResearchPrompt = (companyData) => {
           try {
@@ -406,7 +547,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Enhanced Interactive Progress Stepper Component
-        const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, saveAppState }) => {
+        const ProgressStepper = ({ currentPart, completedParts, onNavigate, appState, saveAppState, onImport, onExport, disabled }) => {
             const parts = [
                 { id: 'segment', name: 'Foundation', number: 1, fullName: 'Segment Foundation' },
                 { id: 'icp', name: 'ICP Definition', number: 2, fullName: 'ICP Definition' },
@@ -657,8 +798,12 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         </ol>
                     </nav>
 
-                    {/* Right side spacing - removed AI Research button */}
-                    <div style={{ width: '140px' }}></div>
+                    {/* Session Menu - Right side */}
+                    {React.createElement(SessionMenu, {
+                        onImport: onImport,
+                        onExport: onExport,
+                        disabled: disabled
+                    })}
                 </div>
             );
         };
@@ -1068,34 +1213,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                       {errors.productName && <p className="text-red-500 text-sm mt-1">{errors.productName}</p>}
                     </div>
 
-                    {/* Target Market */}
-                    <div className="mb-4">
-                      <label className="block font-bold text-gray-700 mb-1">Target Market</label>
-                      <div className="flex gap-4">
-                        <label className="flex items-center">
-                          <input
-                            type="radio"
-                            name="targetMarket"
-                            value="B2B"
-                            checked={safeCompanyData.targetMarket === 'B2B'}
-                            onChange={(e) => setCompanyData(prev => ({ ...safeCompanyData, ...prev, targetMarket: e.target.value }))}
-                            className="mr-2"
-                          />
-                          B2B
-                        </label>
-                        <label className="flex items-center">
-                          <input
-                            type="radio"
-                            name="targetMarket"
-                            value="B2C"
-                            checked={safeCompanyData.targetMarket === 'B2C'}
-                            onChange={(e) => setCompanyData(prev => ({ ...safeCompanyData, ...prev, targetMarket: e.target.value }))}
-                            className="mr-2"
-                          />
-                          B2C
-                        </label>
-                      </div>
-                    </div>
                   </div>
 
                   {/* Optional Fields Section */}
@@ -4429,7 +4546,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                     
                     // --- START of replacement for formatUniqueValueAndProof return statement ---
                     return appState.positioningData.values.map(val => ({
-                        attributeName: formatFieldValue(val.val1),
+                        attribute: formatFieldValue(val.val1),
                         attributeDescription: formatFieldValue(val.val2),
                         benefit: formatFieldValue(val.val3),
                         value: formatFieldValue(val.val4)
@@ -5127,7 +5244,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         const alternatives = appState.positioningData.alternatives
                             .filter(alt => alt && alt.val1)
                             .map(alt => ({
-                                name: formatFieldValue(alt.val1),
+                                alternative: formatFieldValue(alt.val1),
                                 description: formatFieldValue(alt.val2)
                             }));
                         if (alternatives.length > 0) {
@@ -5140,7 +5257,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         const values = appState.positioningData.values
                             .filter(v => v && v.val1)
                             .map(v => ({
-                                attributeName: formatFieldValue(v.val1),
+                                attribute: formatFieldValue(v.val1),
                                 attributeDescription: formatFieldValue(v.val2),
                                 benefit: formatFieldValue(v.val3),
                                 value: formatFieldValue(v.val4)
@@ -5256,7 +5373,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                     if (foundation.competitiveAlternatives && foundation.competitiveAlternatives.length > 0) {
                         markdown += `### 1. Competitive Alternatives\n`;
                         foundation.competitiveAlternatives.forEach(alt => {
-                            markdown += `- **${alt.name}**${alt.description ? `: ${alt.description}` : ''}\n`;
+                            markdown += `- **${alt.alternative}**${alt.description ? `: ${alt.description}` : ''}\n`;
                         });
                         markdown += `\n`;
                     }
@@ -5265,12 +5382,18 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                     if (foundation.uniqueValueAndProof && foundation.uniqueValueAndProof.length > 0) {
                         markdown += `### 2. Unique Value & Proof\n`;
                         foundation.uniqueValueAndProof.forEach(value => {
-                            markdown += `- **${value.attribute}**`;
-                            if (value.benefit) markdown += `: ${value.benefit}`;
-                            if (value.proof) markdown += ` - ${value.proof}`;
+                            markdown += `- **${value.attribute}**\n`;
+                            if (value.attributeDescription) {
+                                markdown += `  - *Description:* ${value.attributeDescription}\n`;
+                            }
+                            if (value.benefit) {
+                                markdown += `  - *Benefit:* ${value.benefit}\n`;
+                            }
+                            if (value.value) {
+                                markdown += `  - *Value & Proof:* ${value.value}\n`;
+                            }
                             markdown += `\n`;
                         });
-                        markdown += `\n`;
                     }
                     
                     // 3. Market Category
@@ -5923,18 +6046,12 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         {appState.companyContext?.isSetupComplete && (
                             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
                                 <h3 className="text-lg font-semibold mb-3">Current Company Context</h3>
-                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="flex flex-wrap gap-6 text-sm">
                                     <div>
                                         <span className="font-medium">Company:</span> {appState.companyContext.companyName || 'Not specified'}
                                     </div>
                                     <div>
                                         <span className="font-medium">Product:</span> {appState.companyContext.productName || 'Not specified'}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">Industry:</span> {appState.companyContext.industry || 'Not specified'}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">Market:</span> {appState.companyContext.targetMarket || 'Not specified'}
                                     </div>
                                 </div>
                                 
@@ -6319,10 +6436,94 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
             // New state for AI Research Modal
             const [showAIResearchModal, setShowAIResearchModal] = useState(false);
+            const [sessionNotice, setSessionNotice] = useState(null);
+            const [pendingImport, setPendingImport] = useState(null);
+            const [isProcessingImport, setIsProcessingImport] = useState(false);
 
             useEffect(() => {
                 saveAppState(appState);
             }, [appState]);
+
+            const dismissNotice = () => setSessionNotice(null);
+
+            const showNotice = (message, type = 'success') => {
+                setSessionNotice({ message, type, createdAt: Date.now() });
+            };
+
+            const handleExportSession = () => {
+                try {
+                    if (!window.SessionFileIO) {
+                        throw new Error('SessionFileIO not loaded. Please refresh the page and try again.');
+                    }
+                    const envelope = SessionManager.serializeSession({
+                        getState: () => appState,
+                        appVersion: APP_VERSION
+                    });
+                    const filename = `positioning-session-${new Date().toISOString().slice(0, 10)}.json`;
+                    window.SessionFileIO.triggerDownload(filename, JSON.stringify(envelope, null, 2));
+                    showNotice('Session exported successfully.');
+                } catch (error) {
+                    console.error('Failed to export session', error);
+                    showNotice(error.message || 'Failed to export session.', 'error');
+                }
+            };
+
+            const handleStartImport = async () => {
+                try {
+                    if (!window.SessionFileIO) {
+                        throw new Error('SessionFileIO not loaded. Please refresh the page and try again.');
+                    }
+                    const { json, fileName } = await window.SessionFileIO.pickJsonFile();
+                    setPendingImport({ json, fileName });
+                } catch (error) {
+                    if (error && error.message === 'NO_FILE_SELECTED') {
+                        return;
+                    }
+                    console.error('Failed to load session file', error);
+                    showNotice(error.message || 'Failed to load session file.', 'error');
+                }
+            };
+
+            const handleConfirmImport = async () => {
+                if (!pendingImport) {
+                    return;
+                }
+                setIsProcessingImport(true);
+                try {
+                    SessionManager.backupSession({
+                        getState: () => appState,
+                        appVersion: APP_VERSION
+                    });
+                } catch (error) {
+                    console.error('Failed to create session backup', error);
+                    showNotice('Could not create a backup. Import cancelled.', 'error');
+                    setIsProcessingImport(false);
+                    setPendingImport(null);
+                    return;
+                }
+
+                try {
+                    const mergedState = SessionManager.hydrateSession({
+                        json: pendingImport.json,
+                        replaceState: (nextState) => {
+                            setAppState(() => nextState);
+                        },
+                        getInitialState
+                    });
+                    saveAppState(mergedState);
+                    showNotice(`Imported session from ${pendingImport.fileName || 'file'} successfully.`);
+                } catch (error) {
+                    console.error('Failed to import session', error);
+                    showNotice(error.message || 'Failed to import session.', 'error');
+                } finally {
+                    setPendingImport(null);
+                    setIsProcessingImport(false);
+                }
+            };
+
+            const handleCancelImport = () => {
+                setPendingImport(null);
+            };
 
             // Generate complete application data for home page export
             const generateFullApplicationData = () => {
@@ -6485,6 +6686,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             const showProgressStepper = ['segment', 'icp', 'positioning', 'category'].includes(appState.currentView);
 
             
+
             return (
                 <div>
                     {showProgressStepper && (
@@ -6494,6 +6696,9 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             onNavigate={navigate}
                             appState={appState}
                             saveAppState={saveAppState}
+                            onImport={handleStartImport}
+                            onExport={handleExportSession}
+                            disabled={isProcessingImport}
                         />
                     )}
                     {renderCurrentView()}
@@ -6506,6 +6711,14 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             setAppState={setAppState}
                         />
                     )}
+                    <SessionNotice notice={sessionNotice} onDismiss={dismissNotice} />
+                    <SessionImportModal
+                        isOpen={Boolean(pendingImport)}
+                        fileName={pendingImport?.fileName}
+                        onCancel={handleCancelImport}
+                        onConfirm={handleConfirmImport}
+                        isProcessing={isProcessingImport}
+                    />
                 </div>
             );
         };
