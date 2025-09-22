@@ -1760,7 +1760,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         // Navigation now goes directly from Home to Segment Foundation
 
         // SegmentFoundationTool Component
-        const SegmentFoundationTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {
+        const SegmentFoundationTool = ({ appState, setAppState, onNavigate, markPartAsCompleted, startTourAtStep }) => {
             console.log('SegmentFoundationTool rendering, appState:', appState);
             const [exportModalOpen, setExportModalOpen] = useState(false);
             const [exportContent, setExportContent] = useState('');
@@ -2866,7 +2866,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // ICPDefinitionTool Component
-        const ICPDefinitionTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {
+        const ICPDefinitionTool = ({ appState, setAppState, onNavigate, markPartAsCompleted, startTourAtStep }) => {
             const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
             const [gradingState, setGradingState] = useState({});
             const [analysisState, setAnalysisState] = useState({});
@@ -6899,9 +6899,9 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 switch (appState.currentView) {
                     // case 'analysis': - REMOVED for simplification
                     case 'segment':
-                        return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
+                        return <SegmentFoundationTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} startTourAtStep={startTourAtStep} />;
                     case 'icp':
-                        return <ICPDefinitionTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
+                        return <ICPDefinitionTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} startTourAtStep={startTourAtStep} />;
                     case 'positioning':
                         return <PositioningTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'category':
