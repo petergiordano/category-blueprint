@@ -5638,7 +5638,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Home Component
-        const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal, setShowOnboardingTour }) => {
+        const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal, setShowOnboardingTour, onImport, onExport, disabled }) => {
             console.log('HomeView props:', { appState, setAppState, onNavigate });
             
             const [showCompanySetupModal, setShowCompanySetupModal] = useState(() => {
@@ -5817,6 +5817,12 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                     <span>🎯</span>
                                     Visual Tour
                                 </button>
+
+                                {React.createElement(SessionMenu, {
+                                    onImport: onImport,
+                                    onExport: onExport,
+                                    disabled: disabled
+                                })}
                             </div>
                         </div>
 
@@ -6799,7 +6805,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
-                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} setShowAIResearchModal={setShowAIResearchModal} setShowOnboardingTour={setShowOnboardingTour} />;
+                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} setShowAIResearchModal={setShowAIResearchModal} setShowOnboardingTour={setShowOnboardingTour} onImport={handleStartImport} onExport={handleExportSession} disabled={isProcessingImport} />;
                 }
             };
 
