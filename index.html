@@ -5710,14 +5710,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                         Change Company Setup
                                     </button>
 
-                                    {/* Visual Tour Button */}
-                                    <button
-                                        onClick={() => setShowOnboardingTour(true)}
-                                        className="text-sm bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-2"
-                                    >
-                                        <span>🎯</span>
-                                        Visual Tour
-                                    </button>
 
                                 </div>
                             </div>
@@ -5806,16 +5798,26 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             )}
                         </div>
 
-                        {/* User Guide Button */}
+                        {/* User Guide and Visual Tour Buttons */}
                         <div className="text-center mb-8 mt-12">
-                            <button
-                                onClick={() => setShowUserGuide(!showUserGuide)}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200 inline-flex items-center gap-2"
-                            >
-                                <span>📚</span>
-                                User Guide
-                                <span className={`transform transition-transform duration-200 ${showUserGuide ? 'rotate-180' : ''}`}>▼</span>
-                            </button>
+                            <div className="inline-flex gap-4">
+                                <button
+                                    onClick={() => setShowUserGuide(!showUserGuide)}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200 inline-flex items-center gap-2"
+                                >
+                                    <span>📚</span>
+                                    User Guide
+                                    <span className={`transform transition-transform duration-200 ${showUserGuide ? 'rotate-180' : ''}`}>▼</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setShowOnboardingTour(true)}
+                                    className="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200 inline-flex items-center gap-2"
+                                >
+                                    <span>🎯</span>
+                                    Visual Tour
+                                </button>
+                            </div>
                         </div>
 
                         {/* User Guide Accordion */}
@@ -6066,6 +6068,158 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         promptText={promptModalData.promptText}
                         title={promptModalData.title}
                     />
+                </div>
+            );
+        };
+
+        // OnboardingTour Component
+        const OnboardingTour = ({ isOpen, onClose, startStep = 1 }) => {
+            const [currentStep, setCurrentStep] = useState(startStep);
+            const [dontShowAgain, setDontShowAgain] = useState(false);
+
+            const tourSteps = [
+                {
+                    title: "Part 1: Segment Foundation",
+                    icon: "🏗️",
+                    content: "Welcome to the Positioning Blueprint! Everything starts with the Foundation. Here, you will define the core market problems and customer motivations using the Jobs-to-be-Done framework. This is the 'why' behind any purchase."
+                },
+                {
+                    title: "Part 2: ICP Definition",
+                    icon: "🎯",
+                    content: "Next, you'll use the foundation to build a clear picture of your Ideal Customer Profile (ICP). This step focuses on the firmographic, technographic, and behavioral attributes of your best customers."
+                },
+                {
+                    title: "Part 3: Positioning",
+                    icon: "🧩",
+                    content: "With a clear customer in mind, you can now define your product's unique positioning. This involves identifying competitive alternatives, unique attributes, and the value you deliver that no one else can."
+                },
+                {
+                    title: "Part 4: Category Design",
+                    icon: "📖",
+                    content: "Finally, you will craft the narrative. This is where you design a new market category or reframe an existing one, creating a powerful story that communicates your unique value and vision to the world."
+                }
+            ];
+
+            const handleNext = () => {
+                if (currentStep < tourSteps.length) {
+                    setCurrentStep(currentStep + 1);
+                }
+            };
+
+            const handleBack = () => {
+                if (currentStep > 1) {
+                    setCurrentStep(currentStep - 1);
+                }
+            };
+
+            const handleClose = () => {
+                if (dontShowAgain) {
+                    localStorage.setItem('hasCompletedTour', 'true');
+                }
+                onClose();
+            };
+
+            const handleEscapeKey = (e) => {
+                if (e.key === 'Escape') {
+                    handleClose();
+                }
+            };
+
+            useEffect(() => {
+                if (isOpen) {
+                    document.addEventListener('keydown', handleEscapeKey);
+                    return () => document.removeEventListener('keydown', handleEscapeKey);
+                }
+            }, [isOpen]);
+
+            if (!isOpen) return null;
+
+            const currentStepData = tourSteps[currentStep - 1];
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-lg w-full">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h2 className="text-xl font-bold text-gray-800">Visual Tour</h2>
+                            <button
+                                onClick={handleClose}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6">
+                            <div className="text-center mb-6">
+                                <div className="text-4xl mb-4">{currentStepData.icon}</div>
+                                <h3 className="text-lg font-semibold text-gray-800 mb-2">{currentStepData.title}</h3>
+                                <p className="text-gray-600 leading-relaxed">{currentStepData.content}</p>
+                            </div>
+
+                            {/* Step indicators */}
+                            <div className="flex justify-center space-x-2 mb-6">
+                                {tourSteps.map((_, index) => (
+                                    <div
+                                        key={index}
+                                        className={`w-2 h-2 rounded-full ${
+                                            index + 1 === currentStep ? 'bg-blue-600' : 'bg-gray-300'
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+
+                            {/* Don't show again checkbox - only on last step */}
+                            {currentStep === tourSteps.length && (
+                                <div className="flex items-center justify-center mb-4">
+                                    <label className="flex items-center text-sm text-gray-600 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={dontShowAgain}
+                                            onChange={(e) => setDontShowAgain(e.target.checked)}
+                                            className="mr-2 rounded"
+                                        />
+                                        Don't show this tour again
+                                    </label>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+                            <div className="text-sm text-gray-500">
+                                Step {currentStep} of {tourSteps.length}
+                            </div>
+                            <div className="flex gap-3">
+                                {currentStep > 1 && (
+                                    <button
+                                        onClick={handleBack}
+                                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                                    >
+                                        Back
+                                    </button>
+                                )}
+                                {currentStep < tourSteps.length ? (
+                                    <button
+                                        onClick={handleNext}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Next
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleClose}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Get Started
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             );
         };
@@ -6363,6 +6517,11 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         onCancel={handleCancelImport}
                         onConfirm={handleConfirmImport}
                         isProcessing={isProcessingImport}
+                    />
+                    <OnboardingTour
+                        isOpen={showOnboardingTour}
+                        onClose={() => setShowOnboardingTour(false)}
+                        startStep={1}
                     />
                 </div>
             );
