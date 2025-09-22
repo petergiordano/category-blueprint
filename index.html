@@ -6619,16 +6619,29 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             )}
                         </div>
 
-                        {/* User Guide Button */}
+                        {/* Help and User Guide Buttons */}
                         <div className="text-center mb-8 mt-12">
-                            <button
-                                onClick={() => setShowUserGuide(!showUserGuide)}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200 inline-flex items-center gap-2"
-                            >
-                                <span>📚</span>
-                                User Guide
-                                <span className={`transform transition-transform duration-200 ${showUserGuide ? 'rotate-180' : ''}`}>▼</span>
-                            </button>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                {/* Help Tour Button */}
+                                <button
+                                    onClick={() => setShowOnboardingTour(true)}
+                                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-200 inline-flex items-center gap-2"
+                                    title="Take the visual tour to learn the positioning methodology"
+                                >
+                                    <span>❓</span>
+                                    Visual Tour
+                                </button>
+
+                                {/* User Guide Button */}
+                                <button
+                                    onClick={() => setShowUserGuide(!showUserGuide)}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200 inline-flex items-center gap-2"
+                                >
+                                    <span>📚</span>
+                                    User Guide
+                                    <span className={`transform transition-transform duration-200 ${showUserGuide ? 'rotate-180' : ''}`}>▼</span>
+                                </button>
+                            </div>
                         </div>
 
                         {/* User Guide Accordion */}
