@@ -5638,7 +5638,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Home Component
-        const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal }) => {
+        const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal, setShowOnboardingTour }) => {
             console.log('HomeView props:', { appState, setAppState, onNavigate });
             
             const [showCompanySetupModal, setShowCompanySetupModal] = useState(() => {
@@ -5710,7 +5710,15 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                         Change Company Setup
                                     </button>
 
-                                    
+                                    {/* Visual Tour Button */}
+                                    <button
+                                        onClick={() => setShowOnboardingTour(true)}
+                                        className="text-sm bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-2"
+                                    >
+                                        <span>🎯</span>
+                                        Visual Tour
+                                    </button>
+
                                 </div>
                             </div>
                         )}
@@ -6314,7 +6322,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
-                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} setShowAIResearchModal={setShowAIResearchModal} />;
+                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} setShowAIResearchModal={setShowAIResearchModal} setShowOnboardingTour={setShowOnboardingTour} />;
                 }
             };
 
