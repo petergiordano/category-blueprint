@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-01T00:00:00.000Z",
+    "partName": "Category Design",
+    "company": {
+      "name": "",
+      "url": "",
+      "productName": "",
+      "industry": ""
+    }
+  },
+  "content": {
+    "pointOfView": {
+      "fromStatement": "",
+      "toStatement": ""
+    },
+    "newOpportunity": "",
+    "categoryNameAndDefinition": {
+      "name": "",
+      "definition": ""
+    },
+    "manifesto": "",
+    "marketCategory": "",
+    "targetMarketCharacteristics": {
+      "summary": "",
+      "firmographic": "",
+      "technographic": "",
+      "behavioral": "",
+      "implementationReadiness": ""
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "project": {
+    "name": "[PROJECT_NAME]",
+    "id": "[PROJECT_ID]",
+    "description": "[PROJECT_DESCRIPTION]",
+    "version": "0.1.0",
+    "language": "[PRIMARY_LANGUAGE]",
+    "component_count": "[COMPONENT_COUNT]",
+    "created_date": "[CREATED_DATE]"
+  },
+  "architecture": {
+    "type": "component-pipeline",
+    "principles": ["simple", "lovable", "complete"],
+    "validation_strategy": "reference-test-case",
+    "integration_pattern": "sequential-pipeline"
+  },
+  "development": {
+    "workflow": "ai-assisted",
+    "test_command": "[TEST_COMMAND]",
+    "lint_command": "[LINT_COMMAND]",
+    "format_command": "[FORMAT_COMMAND]",
+    "build_command": "[BUILD_COMMAND]",
+    "install_command": "[INSTALL_COMMAND]"
+  },
+  "ai_workflow": {
+    "enabled": true,
+    "primary_ai": "claude-code",
+    "reference_test_case": "tests/reference/",
+    "validation_required": true,
+    "auto_documentation": true,
+    "quality_gates": ["functional", "tested", "integrated", "documented"]
+  },
+  "testing": {
+    "framework": "[TEST_FRAMEWORK]",
+    "coverage_threshold": 80,
+    "reference_case_required": true,
+    "integration_tests": true,
+    "performance_tests": false
+  },
+  "quality": {
+    "code_style": "[CODE_STYLE]",
+    "linting": true,
+    "type_checking": "[TYPE_CHECKING]",
+    "formatting": true,
+    "pre_commit_hooks": false
+  },
+  "documentation": {
+    "prd_required": true,
+    "feature_specs_required": true,
+    "api_docs": false,
+    "architecture_docs": true,
+    "implementation_logs": true
+  },
+  "deployment": {
+    "target": "local",
+    "containerized": false,
+    "ci_cd": false,
+    "monitoring": false
+  },
+  "customization": {
+    "domain_specific": {
+      "data_processing": {
+        "focus": ["accuracy", "speed", "scalability"],
+        "validation": ["data_quality", "transformation_accuracy"]
+      },
+      "content_generation": {
+        "focus": ["quality", "consistency", "cost_efficiency"],
+        "validation": ["output_quality", "brand_compliance"]
+      },
+      "api_integration": {
+        "focus": ["reliability", "error_handling", "data_mapping"],
+        "validation": ["endpoint_compatibility", "data_integrity"]
+      }
+    }
+  }
+}

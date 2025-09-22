@@ -2503,7 +2503,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                                         <strong>Customer Value</strong> (similar value priorities), and <strong>Willingness to Pay</strong> (investment threshold).
                                                     </p>
                                                     <button
-                                                        onClick={() => startTourAtStep(1)}
+                                                        onClick={() => setShowOnboardingTour(true)}
                                                         className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
                                                     >
                                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2852,7 +2852,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             to create an <strong>Actionable ICP</strong> with both <em>Strategic Why</em> (messaging & positioning) and <em>Operational Where</em> (targeting & campaigns).
                         </p>
                         <button
-                            onClick={() => startTourAtStep(2)}
+                            onClick={() => setShowOnboardingTour(true)}
                             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
                         >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5638,7 +5638,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
         };
 
         // Home Component
-        const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal, startTourAtStep, onImport, onExport, disabled }) => {
+        const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal, setShowOnboardingTour }) => {
             console.log('HomeView props:', { appState, setAppState, onNavigate });
             
             const [showCompanySetupModal, setShowCompanySetupModal] = useState(() => {
@@ -5811,18 +5811,12 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                 </button>
 
                                 <button
-                                    onClick={() => startTourAtStep(1)}
+                                    onClick={() => setShowOnboardingTour(true)}
                                     className="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors duration-200 inline-flex items-center gap-2"
                                 >
                                     <span>🎯</span>
                                     Visual Tour
                                 </button>
-
-                                {React.createElement(SessionMenu, {
-                                    onImport: onImport,
-                                    onExport: onExport,
-                                    disabled: disabled
-                                })}
                             </div>
                         </div>
 
@@ -6078,300 +6072,44 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             );
         };
 
-        // SegmentFunnelDiagram Component
-        const SegmentFunnelDiagram = ({ highlightedSection = null, subStep = 0 }) => {
-            const getSectionOpacity = (sectionName) => {
-                if (!highlightedSection) return 1;
-                return highlightedSection === sectionName ? 1 : 0.3;
-            };
-
-            const getSectionFilter = (sectionName) => {
-                if (!highlightedSection) return '';
-                return highlightedSection === sectionName ? 'drop-shadow(0 0 8px currentColor)' : '';
-            };
-
-            return (
-                <svg width="850" height="450" viewBox="0 0 850 450" className="max-w-full h-auto transition-all duration-500">
-                    <defs>
-                        <marker id="tour-arrowhead" markerWidth="10" markerHeight="7"
-                                refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#224f41"/>
-                        </marker>
-                    </defs>
-
-                    {/* Total Market */}
-                    <g style={{ opacity: getSectionOpacity('total-market'), filter: getSectionFilter('total-market'), transition: 'all 0.3s ease' }}>
-                        <rect x="50" y="20" width="300" height="60" fill="#e5ecea" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="200" y="55" textAnchor="middle" fill="#224f41" fontSize="16" fontWeight="600">
-                            Total Market of Buyers
-                        </text>
-                    </g>
-
-                    {/* Arrow 1 */}
-                    <line x1="200" y1="80" x2="200" y2="110" stroke="#224f41" strokeWidth="2" markerEnd="url(#tour-arrowhead)"
-                          style={{ opacity: getSectionOpacity('arrow1'), transition: 'all 0.3s ease' }}/>
-
-                    {/* JTBD Filter */}
-                    <g style={{ opacity: getSectionOpacity('jtbd-filter'), filter: getSectionFilter('jtbd-filter'), transition: 'all 0.3s ease' }}>
-                        <rect x="80" y="115" width="240" height="50" fill="#7da399" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="200" y="135" textAnchor="middle" fill="white" fontSize="14" fontWeight="500">
-                            Shared Job to be Done
-                        </text>
-                        <text x="200" y="150" textAnchor="middle" fill="white" fontSize="12">
-                            (Common Context & Struggling Moments)
-                        </text>
-                    </g>
-
-                    {/* Arrow 2 */}
-                    <line x1="200" y1="165" x2="200" y2="195" stroke="#224f41" strokeWidth="2" markerEnd="url(#tour-arrowhead)"
-                          style={{ opacity: getSectionOpacity('arrow2'), transition: 'all 0.3s ease' }}/>
-
-                    {/* Value Filter */}
-                    <g style={{ opacity: getSectionOpacity('value-filter'), filter: getSectionFilter('value-filter'), transition: 'all 0.3s ease' }}>
-                        <rect x="110" y="200" width="180" height="50" fill="#528577" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="200" y="220" textAnchor="middle" fill="white" fontSize="14" fontWeight="500">
-                            Commonly Perceived Value
-                        </text>
-                        <text x="200" y="235" textAnchor="middle" fill="white" fontSize="12">
-                            (Similar Value Priorities)
-                        </text>
-                    </g>
-
-                    {/* Arrow 3 */}
-                    <line x1="200" y1="250" x2="200" y2="280" stroke="#224f41" strokeWidth="2" markerEnd="url(#tour-arrowhead)"
-                          style={{ opacity: getSectionOpacity('arrow3'), transition: 'all 0.3s ease' }}/>
-
-                    {/* WTP Filter */}
-                    <g style={{ opacity: getSectionOpacity('wtp-filter'), filter: getSectionFilter('wtp-filter'), transition: 'all 0.3s ease' }}>
-                        <rect x="140" y="285" width="120" height="50" fill="#224f41" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="200" y="305" textAnchor="middle" fill="white" fontSize="14" fontWeight="500">
-                            Similar Willingness
-                        </text>
-                        <text x="200" y="320" textAnchor="middle" fill="white" fontSize="14" fontWeight="500">
-                            to Pay
-                        </text>
-                    </g>
-
-                    {/* Arrow 4 */}
-                    <line x1="200" y1="335" x2="200" y2="365" stroke="#224f41" strokeWidth="2" markerEnd="url(#tour-arrowhead)"
-                          style={{ opacity: getSectionOpacity('arrow4'), transition: 'all 0.3s ease' }}/>
-
-                    {/* Market Segment Result */}
-                    <g style={{ opacity: getSectionOpacity('segment-result'), filter: getSectionFilter('segment-result'), transition: 'all 0.3s ease' }}>
-                        <rect x="160" y="370" width="80" height="60" fill="#e5a819" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="200" y="390" textAnchor="middle" fill="#224f41" fontSize="14" fontWeight="600">
-                            A True
-                        </text>
-                        <text x="200" y="405" textAnchor="middle" fill="#224f41" fontSize="14" fontWeight="600">
-                            Market
-                        </text>
-                        <text x="200" y="420" textAnchor="middle" fill="#224f41" fontSize="14" fontWeight="600">
-                            Segment
-                        </text>
-                    </g>
-
-                    {/* Side Labels */}
-                    <text x="30" y="225" textAnchor="middle" fill="#224f41" fontSize="12" transform="rotate(-90, 30, 225)"
-                          style={{ opacity: getSectionOpacity('labels'), transition: 'all 0.3s ease' }}>
-                        Filtering Process
-                    </text>
-                    <text x="370" y="225" textAnchor="middle" fill="#224f41" fontSize="12" transform="rotate(90, 370, 225)"
-                          style={{ opacity: getSectionOpacity('labels'), transition: 'all 0.3s ease' }}>
-                        Strategic Focus
-                    </text>
-
-                    {/* Relationship Flow - Right Side */}
-                    <g style={{ opacity: getSectionOpacity('relationship-flow'), transition: 'all 0.3s ease' }}>
-                        <line x1="425" y1="50" x2="425" y2="400" stroke="#e5e7eb" strokeWidth="2" strokeDasharray="5,5"/>
-
-                        <text x="625" y="40" textAnchor="middle" fill="#224f41" fontSize="18" fontWeight="600">
-                            How the Components Relate
-                        </text>
-
-                        {/* JTBD Box */}
-                        <rect x="450" y="120" width="110" height="120" fill="#7da399" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="505" y="145" textAnchor="middle" fill="white" fontSize="16" fontWeight="600">(1)</text>
-                        <text x="505" y="170" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">Why the</text>
-                        <text x="505" y="185" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">customer is</text>
-                        <text x="505" y="200" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">motivated</text>
-                        <text x="505" y="220" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">(Jobs to be Done)</text>
-
-                        <line x1="560" y1="180" x2="590" y2="180" stroke="#224f41" strokeWidth="3" markerEnd="url(#tour-arrowhead)"/>
-
-                        {/* Customer Value Box */}
-                        <rect x="590" y="120" width="110" height="120" fill="#528577" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="645" y="145" textAnchor="middle" fill="white" fontSize="16" fontWeight="600">(2)</text>
-                        <text x="645" y="170" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">How they</text>
-                        <text x="645" y="185" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">define</text>
-                        <text x="645" y="200" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">success</text>
-                        <text x="645" y="220" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">(Customer Value)</text>
-
-                        <line x1="700" y1="180" x2="730" y2="180" stroke="#224f41" strokeWidth="3" markerEnd="url(#tour-arrowhead)"/>
-
-                        {/* WTP Box */}
-                        <rect x="730" y="120" width="110" height="120" fill="#224f41" stroke="#224f41" strokeWidth="2" rx="4"/>
-                        <text x="785" y="145" textAnchor="middle" fill="white" fontSize="16" fontWeight="600">(3)</text>
-                        <text x="785" y="165" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">How much</text>
-                        <text x="785" y="180" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">they will</text>
-                        <text x="785" y="195" textAnchor="middle" fill="white" fontSize="12" fontWeight="500">invest & why</text>
-                        <text x="785" y="215" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">(Willingness</text>
-                        <text x="785" y="228" textAnchor="middle" fill="white" fontSize="11" fontStyle="italic">to Pay)</text>
-
-                        <text x="645" y="290" textAnchor="middle" fill="#224f41" fontSize="14" fontWeight="500">Understanding Progression</text>
-                        <text x="645" y="310" textAnchor="middle" fill="#6b7280" fontSize="12">Customer motivation drives what they value,</text>
-                        <text x="645" y="325" textAnchor="middle" fill="#6b7280" fontSize="12">which determines their investment threshold</text>
-                    </g>
-                </svg>
-            );
-        };
-
-        // ICPFlowDiagram Component
-        const ICPFlowDiagram = ({ highlightedSection = null, subStep = 0 }) => {
-            const getSectionOpacity = (sectionName) => {
-                if (!highlightedSection) return 1;
-                return highlightedSection === sectionName ? 1 : 0.3;
-            };
-
-            const getSectionFilter = (sectionName) => {
-                if (!highlightedSection) return '';
-                return highlightedSection === sectionName ? 'drop-shadow(0 0 8px currentColor)' : '';
-            };
-
-            return (
-                <svg viewBox="0 0 800 300" className="w-full h-auto max-w-4xl mx-auto transition-all duration-500">
-                    <defs>
-                        <marker id="icp-arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#6B7280" />
-                        </marker>
-                    </defs>
-
-                    {/* Market Segment Box */}
-                    <g style={{ opacity: getSectionOpacity('market-segment'), filter: getSectionFilter('market-segment'), transition: 'all 0.3s ease' }}>
-                        <rect x="30" y="100" width="150" height="100" rx="8" fill="#059669" />
-                        <text x="105" y="125" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Market Segment</text>
-                        <text x="105" y="145" textAnchor="middle" fill="white" fontSize="12">JTBD • Value • WTP</text>
-                        <text x="105" y="165" textAnchor="middle" fill="white" fontSize="10">Foundation Complete</text>
-                        <text x="105" y="180" textAnchor="middle" fill="white" fontSize="10">✓</text>
-                    </g>
-
-                    {/* Bridge Arrow */}
-                    <line x1="180" y1="150" x2="380" y2="150" stroke="#6B7280" strokeWidth="3" markerEnd="url(#icp-arrowhead)"
-                          style={{ opacity: getSectionOpacity('bridge-arrow'), transition: 'all 0.3s ease' }} />
-
-                    {/* Bridge Content Box */}
-                    <g style={{ opacity: getSectionOpacity('bridge'), filter: getSectionFilter('bridge'), transition: 'all 0.3s ease' }}>
-                        <rect x="220" y="60" width="180" height="80" rx="6" fill="#F3F4F6" stroke="#6B7280" strokeWidth="1" />
-                        <text x="310" y="80" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold">Add Product & Business</text>
-                        <text x="310" y="95" textAnchor="middle" fill="#374151" fontSize="12" fontWeight="bold">Model Fit</text>
-                        <text x="310" y="115" textAnchor="middle" fill="#6B7280" fontSize="10">Product-Problem Fit</text>
-                        <text x="310" y="128" textAnchor="middle" fill="#6B7280" fontSize="10">Scalable Business Model</text>
-                    </g>
-
-                    {/* Actionable ICP Container */}
-                    <rect x="420" y="50" width="350" height="200" rx="8" fill="#F9FAFB" stroke="#D1D5DB" strokeWidth="1"
-                          style={{ opacity: getSectionOpacity('actionable-icp'), filter: getSectionFilter('actionable-icp'), transition: 'all 0.3s ease' }} />
-
-                    <text x="595" y="75" textAnchor="middle" fill="#111827" fontSize="16" fontWeight="bold">Actionable ICP</text>
-
-                    {/* Strategic Why Section */}
-                    <g style={{ opacity: getSectionOpacity('strategic-why'), filter: getSectionFilter('strategic-why'), transition: 'all 0.3s ease' }}>
-                        <rect x="440" y="90" width="155" height="140" rx="6" fill="#DCFCE7" stroke="#16A34A" strokeWidth="1" />
-                        <text x="517.5" y="110" textAnchor="middle" fill="#166534" fontSize="12" fontWeight="bold">Strategic Why</text>
-                        <text x="455" y="130" fill="#15803D" fontSize="10">• Jobs to be Done</text>
-                        <text x="455" y="145" fill="#15803D" fontSize="10">• Value Drivers</text>
-                        <text x="455" y="160" fill="#15803D" fontSize="10">• Buyer Motivations</text>
-                        <text x="517.5" y="185" textAnchor="middle" fill="#059669" fontSize="9" fontStyle="italic">For messaging</text>
-                        <text x="517.5" y="200" textAnchor="middle" fill="#059669" fontSize="9" fontStyle="italic">& positioning</text>
-                    </g>
-
-                    {/* Operational Where Section */}
-                    <g style={{ opacity: getSectionOpacity('operational-where'), filter: getSectionFilter('operational-where'), transition: 'all 0.3s ease' }}>
-                        <rect x="610" y="90" width="155" height="140" rx="6" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="1" />
-                        <text x="687.5" y="110" textAnchor="middle" fill="#92400E" fontSize="12" fontWeight="bold">Operational Where</text>
-                        <text x="625" y="130" fill="#A16207" fontSize="10">• Firmographics</text>
-                        <text x="625" y="145" fill="#A16207" fontSize="10">• Technographics</text>
-                        <text x="625" y="160" fill="#A16207" fontSize="10">• Behavioral Signals</text>
-                        <text x="687.5" y="185" textAnchor="middle" fill="#D97706" fontSize="9" fontStyle="italic">For targeting</text>
-                        <text x="687.5" y="200" textAnchor="middle" fill="#D97706" fontSize="9" fontStyle="italic">& campaigns</text>
-                    </g>
-                </svg>
-            );
-        };
-
-        // OnboardingTour Component - Enhanced Version with Visual Improvements
+        // OnboardingTour Component
         const OnboardingTour = ({ isOpen, onClose, startStep = 1 }) => {
             const [currentStep, setCurrentStep] = useState(startStep);
             const [dontShowAgain, setDontShowAgain] = useState(false);
-            const [subStep, setSubStep] = useState(0);
-            const [visualMode, setVisualMode] = useState(true);
 
             const tourSteps = [
                 {
                     title: "Part 1: Segment Foundation",
                     icon: "🏗️",
-                    hasInteractive: true,
-                    subSteps: [
-                        { highlight: null, title: "The Filtering Funnel", description: "See how we narrow down from Total Market to Market Segment through strategic filtering." },
-                        { highlight: "total-market", title: "Total Market", description: "Start with everyone who could potentially buy any solution." },
-                        { highlight: "jtbd-filter", title: "Jobs-to-be-Done", description: "Filter to those with specific jobs they need to get done." },
-                        { highlight: "value-filter", title: "Value Recognition", description: "Narrow to those who recognize the value of solving the problem." },
-                        { highlight: "wtp-filter", title: "Willingness to Pay", description: "Focus on those willing to pay for a solution." },
-                        { highlight: "segment-result", title: "Market Segment", description: "Your refined, actionable market segment." }
-                    ],
-                    content: "Welcome to the Positioning Blueprint! Everything starts with the Foundation. Here, you will define the core market problems and customer motivations using the Jobs-to-be-Done framework."
+                    content: "Welcome to the Positioning Blueprint! Everything starts with the Foundation. Here, you will define the core market problems and customer motivations using the Jobs-to-be-Done framework. This is the 'why' behind any purchase."
                 },
                 {
                     title: "Part 2: ICP Definition",
                     icon: "🎯",
-                    hasInteractive: true,
-                    subSteps: [
-                        { highlight: null, title: "ICP Development Flow", description: "Transform your Market Segment into an Actionable ICP with strategic insights." },
-                        { highlight: "market-segment", title: "Market Segment", description: "Start with your refined market segment from Part 1." },
-                        { highlight: "bridge", title: "Product/Business Model Fit", description: "Align your offering with customer needs and business model." },
-                        { highlight: "strategic-why", title: "Strategic Why", description: "Understand the deeper motivations and strategic value." },
-                        { highlight: "operational-where", title: "Operational Where", description: "Define the tactical attributes and characteristics." },
-                        { highlight: "actionable-icp", title: "Actionable ICP", description: "Your complete, actionable Ideal Customer Profile." }
-                    ],
                     content: "Next, you'll use the foundation to build a clear picture of your Ideal Customer Profile (ICP). This step focuses on the firmographic, technographic, and behavioral attributes of your best customers."
                 },
                 {
                     title: "Part 3: Positioning",
                     icon: "🧩",
-                    hasInteractive: false,
                     content: "With a clear customer in mind, you can now define your product's unique positioning. This involves identifying competitive alternatives, unique attributes, and the value you deliver that no one else can."
                 },
                 {
                     title: "Part 4: Category Design",
                     icon: "📖",
-                    hasInteractive: false,
                     content: "Finally, you will craft the narrative. This is where you design a new market category or reframe an existing one, creating a powerful story that communicates your unique value and vision to the world."
                 }
             ];
 
             const handleNext = () => {
-                const currentStepData = tourSteps[currentStep - 1];
-                if (currentStepData.hasInteractive && subStep < currentStepData.subSteps.length - 1) {
-                    setSubStep(subStep + 1);
-                } else if (currentStep < tourSteps.length) {
+                if (currentStep < tourSteps.length) {
                     setCurrentStep(currentStep + 1);
-                    setSubStep(0);
                 }
             };
 
             const handleBack = () => {
-                const currentStepData = tourSteps[currentStep - 1];
-                if (currentStepData.hasInteractive && subStep > 0) {
-                    setSubStep(subStep - 1);
-                } else if (currentStep > 1) {
+                if (currentStep > 1) {
                     setCurrentStep(currentStep - 1);
-                    const prevStepData = tourSteps[currentStep - 2];
-                    setSubStep(prevStepData.hasInteractive ? prevStepData.subSteps.length - 1 : 0);
                 }
-            };
-
-            const handleStepClick = (stepIndex) => {
-                setCurrentStep(stepIndex + 1);
-                setSubStep(0);
             };
 
             const handleClose = () => {
@@ -6385,12 +6123,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 if (e.key === 'Escape') {
                     handleClose();
                 }
-                if (e.key === 'ArrowLeft') {
-                    handleBack();
-                }
-                if (e.key === 'ArrowRight') {
-                    handleNext();
-                }
             };
 
             useEffect(() => {
@@ -6403,245 +6135,88 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             if (!isOpen) return null;
 
             const currentStepData = tourSteps[currentStep - 1];
-            const currentSubStepData = currentStepData.hasInteractive ? currentStepData.subSteps[subStep] : null;
-
-            // Calculate progress for progress bar
-            let totalSteps = 0;
-            let completedSteps = 0;
-
-            tourSteps.forEach((step, index) => {
-                if (step.hasInteractive) {
-                    totalSteps += step.subSteps.length;
-                    if (index + 1 < currentStep) {
-                        completedSteps += step.subSteps.length;
-                    } else if (index + 1 === currentStep) {
-                        completedSteps += subStep;
-                    }
-                } else {
-                    totalSteps += 1;
-                    if (index + 1 < currentStep) {
-                        completedSteps += 1;
-                    }
-                }
-            });
-
-            const progress = Math.round((completedSteps / totalSteps) * 100);
 
             return (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
-                        {/* Enhanced Header with Gradient */}
-                        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h2 className="text-xl font-bold">Visual Tour</h2>
-                                    <p className="text-blue-100 text-sm mt-1">
-                                        Discover the power of strategic positioning
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={handleClose}
-                                    className="text-white hover:text-blue-200 transition-colors p-1"
-                                >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
+                    <div className="bg-white rounded-lg shadow-xl max-w-lg w-full">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h2 className="text-xl font-bold text-gray-800">Visual Tour</h2>
+                            <button
+                                onClick={handleClose}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6">
+                            <div className="text-center mb-6">
+                                <div className="text-4xl mb-4">{currentStepData.icon}</div>
+                                <h3 className="text-lg font-semibold text-gray-800 mb-2">{currentStepData.title}</h3>
+                                <p className="text-gray-600 leading-relaxed">{currentStepData.content}</p>
                             </div>
 
-                            {/* Progress Bar */}
-                            <div className="mt-4">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm text-blue-100">Progress</span>
-                                    <span className="text-sm text-blue-100">{progress}%</span>
-                                </div>
-                                <div className="bg-white bg-opacity-20 h-2 rounded-full overflow-hidden">
+                            {/* Step indicators */}
+                            <div className="flex justify-center space-x-2 mb-6">
+                                {tourSteps.map((_, index) => (
                                     <div
-                                        className="bg-white h-2 transition-all duration-300 ease-out"
-                                        style={{ width: `${progress}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Main Content */}
-                        <div className="p-6 flex flex-col lg:flex-row">
-                            {/* Visualization Panel */}
-                            <div className="flex-1 lg:pr-6 mb-6 lg:mb-0">
-                                {/* Interactive Content for Parts 1 and 2 */}
-                                {currentStepData.hasInteractive ? (
-                                    <div>
-                                        {/* Visual Mode Toggle */}
-                                        <div className="flex justify-center mb-4">
-                                            <button
-                                                onClick={() => setVisualMode(!visualMode)}
-                                                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                </svg>
-                                                <span className="text-sm">{visualMode ? 'Hide' : 'Show'} Visualization</span>
-                                            </button>
-                                        </div>
-
-                                        {/* Interactive SVG Diagrams */}
-                                        {visualMode && (
-                                            <div className="flex justify-center mb-6">
-                                                {currentStep === 1 && (
-                                                    <SegmentFunnelDiagram
-                                                        highlightedSection={currentSubStepData?.highlight}
-                                                        subStep={subStep}
-                                                    />
-                                                )}
-                                                {currentStep === 2 && (
-                                                    <ICPFlowDiagram
-                                                        highlightedSection={currentSubStepData?.highlight}
-                                                        subStep={subStep}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {/* Interactive Step Progress */}
-                                        <div className="flex justify-center">
-                                            <div className="flex items-center space-x-2">
-                                                {currentStepData.subSteps.map((_, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                                            index <= subStep ? 'bg-blue-600 scale-110' : 'bg-gray-300'
-                                                        }`}
-                                                    />
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    /* Static Content for Parts 3 and 4 */
-                                    <div className="text-center">
-                                        <div className="text-6xl mb-6">{currentStepData.icon}</div>
-                                        <div className="max-w-md mx-auto">
-                                            <h3 className="text-xl font-semibold text-gray-800 mb-4">{currentStepData.title}</h3>
-                                            <p className="text-gray-600 leading-relaxed">{currentStepData.content}</p>
-                                        </div>
-                                    </div>
-                                )}
+                                        key={index}
+                                        className={`w-2 h-2 rounded-full ${
+                                            index + 1 === currentStep ? 'bg-blue-600' : 'bg-gray-300'
+                                        }`}
+                                    />
+                                ))}
                             </div>
 
-                            {/* Explanation Panel */}
-                            <div className="w-full lg:w-80 flex flex-col">
-                                <div className="bg-gray-50 rounded-lg p-6 flex-1">
-                                    {/* Step Header */}
-                                    <div className="flex items-center mb-4">
-                                        <div className="text-2xl mr-3">{currentStepData.icon}</div>
-                                        <div>
-                                            <h3 className="font-semibold text-gray-800">{currentStepData.title}</h3>
-                                            <div className="text-sm text-gray-500">
-                                                Part {currentStep} of {tourSteps.length}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Current SubStep Info */}
-                                    {currentStepData.hasInteractive && currentSubStepData ? (
-                                        <div className="bg-white rounded-lg p-4 mb-4 border-l-4 border-blue-500">
-                                            <h4 className="font-medium text-gray-900 mb-2">{currentSubStepData.title}</h4>
-                                            <p className="text-gray-700 text-sm leading-relaxed">{currentSubStepData.description}</p>
-                                            <div className="mt-3 text-xs text-gray-500">
-                                                Step {subStep + 1} of {currentStepData.subSteps.length}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="bg-white rounded-lg p-4 mb-4">
-                                            <p className="text-gray-700 leading-relaxed">{currentStepData.content}</p>
-                                        </div>
-                                    )}
-
-                                    {/* Navigation Info */}
-                                    <div className="text-xs text-gray-500 bg-white rounded p-3">
-                                        <div className="font-medium mb-1">Navigation:</div>
-                                        <div>• Arrow keys: Navigate steps</div>
-                                        <div>• Escape: Close tour</div>
-                                        <div>• Click dots: Jump to step</div>
-                                    </div>
-                                </div>
-
-                                {/* Main Step Indicators */}
-                                <div className="flex justify-center space-x-2 mt-4">
-                                    {tourSteps.map((_, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => handleStepClick(index)}
-                                            className={`w-4 h-4 rounded-full transition-all duration-200 hover:scale-110 ${
-                                                index + 1 === currentStep
-                                                    ? 'bg-blue-600 shadow-lg'
-                                                    : 'bg-gray-300 hover:bg-gray-400'
-                                            }`}
+                            {/* Don't show again checkbox - only on last step */}
+                            {currentStep === tourSteps.length && (
+                                <div className="flex items-center justify-center mb-4">
+                                    <label className="flex items-center text-sm text-gray-600 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={dontShowAgain}
+                                            onChange={(e) => setDontShowAgain(e.target.checked)}
+                                            className="mr-2 rounded"
                                         />
-                                    ))}
+                                        Don't show this tour again
+                                    </label>
                                 </div>
-
-                                {/* Don't show again checkbox - only on last step */}
-                                {currentStep === tourSteps.length && (
-                                    <div className="flex items-center justify-center mt-4">
-                                        <label className="flex items-center text-sm text-gray-600 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={dontShowAgain}
-                                                onChange={(e) => setDontShowAgain(e.target.checked)}
-                                                className="mr-2 rounded"
-                                            />
-                                            Don't show this tour again
-                                        </label>
-                                    </div>
-                                )}
-                            </div>
+                            )}
                         </div>
 
-                        {/* Enhanced Footer */}
-                        <div className="flex justify-between items-center px-6 py-4 border-t bg-gradient-to-r from-gray-50 to-gray-100">
-                            <div className="text-sm text-gray-600">
-                                {currentStepData.hasInteractive ? (
-                                    <span>Part {currentStep} • Step {subStep + 1} of {currentStepData.subSteps.length}</span>
-                                ) : (
-                                    <span>Part {currentStep} of {tourSteps.length}</span>
-                                )}
+                        {/* Footer */}
+                        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+                            <div className="text-sm text-gray-500">
+                                Step {currentStep} of {tourSteps.length}
                             </div>
                             <div className="flex gap-3">
-                                {(currentStep > 1 || subStep > 0) && (
+                                {currentStep > 1 && (
                                     <button
                                         onClick={handleBack}
-                                        className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-all duration-200 font-medium"
+                                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
                                     >
-                                        ← Back
+                                        Back
                                     </button>
                                 )}
-                                {(() => {
-                                    const isLastStep = currentStep === tourSteps.length;
-                                    const isLastSubStep = currentStepData.hasInteractive ? (subStep === currentStepData.subSteps.length - 1) : true;
-                                    const canContinue = !isLastStep || !isLastSubStep;
-
-                                    if (canContinue) {
-                                        return (
-                                            <button
-                                                onClick={handleNext}
-                                                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg"
-                                            >
-                                                {currentStepData.hasInteractive && subStep < currentStepData.subSteps.length - 1 ? 'Continue →' : 'Next Part →'}
-                                            </button>
-                                        );
-                                    } else {
-                                        return (
-                                            <button
-                                                onClick={handleClose}
-                                                className="px-6 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:from-green-700 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg"
-                                            >
-                                                Get Started! 🚀
-                                            </button>
-                                        );
-                                    }
-                                })()}
+                                {currentStep < tourSteps.length ? (
+                                    <button
+                                        onClick={handleNext}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Next
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleClose}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Get Started
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -6663,7 +6238,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             const [pendingImport, setPendingImport] = useState(null);
             const [isProcessingImport, setIsProcessingImport] = useState(false);
             const [showOnboardingTour, setShowOnboardingTour] = useState(false);
-            const [tourStartStep, setTourStartStep] = useState(1);
 
             useEffect(() => {
                 saveAppState(appState);
@@ -6673,11 +6247,6 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
             const showNotice = (message, type = 'success') => {
                 setSessionNotice({ message, type, createdAt: Date.now() });
-            };
-
-            const startTourAtStep = (step) => {
-                setTourStartStep(step);
-                setShowOnboardingTour(true);
             };
 
             const handleExportSession = () => {
@@ -6908,7 +6477,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         return <CategoryDesignTool appState={appState} setAppState={setAppState} onNavigate={navigate} markPartAsCompleted={markPartAsCompleted} />;
                     case 'home':
                     default:
-                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} setShowAIResearchModal={setShowAIResearchModal} startTourAtStep={startTourAtStep} onImport={handleStartImport} onExport={handleExportSession} disabled={isProcessingImport} />;
+                        return <Home appState={appState} setAppState={setAppState} onNavigate={navigate} setShowAIResearchModal={setShowAIResearchModal} setShowOnboardingTour={setShowOnboardingTour} />;
                 }
             };
 
@@ -6952,7 +6521,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                     <OnboardingTour
                         isOpen={showOnboardingTour}
                         onClose={() => setShowOnboardingTour(false)}
-                        startStep={tourStartStep}
+                        startStep={1}
                     />
                 </div>
             );

@@ -1,0 +1,256 @@
+{
+  "mcp_servers": {
+    "filesystem": {
+      "enabled": true,
+      "type": "built-in",
+      "description": "File system operations and project management",
+      "capabilities": [
+        "read_file",
+        "write_file", 
+        "list_directory",
+        "search_files",
+        "file_info"
+      ],
+      "security_level": "high",
+      "allowed_directories": [
+        "src/",
+        "tests/",
+        "docs/",
+        "config/",
+        ".claude/"
+      ],
+      "restricted_operations": [
+        "system_files",
+        "root_directory",
+        "binary_execution"
+      ]
+    },
+    "notion": {
+      "enabled": false,
+      "type": "external",
+      "description": "Notion workspace integration for documentation and task management",
+      "capabilities": [
+        "create_page",
+        "update_page",
+        "query_database",
+        "create_database_item"
+      ],
+      "configuration": {
+        "api_key_env": "NOTION_API_KEY",
+        "workspace_id_env": "NOTION_WORKSPACE_ID",
+        "default_database_id": "",
+        "page_template_id": ""
+      },
+      "security_level": "medium",
+      "rate_limits": {
+        "requests_per_minute": 100,
+        "pages_per_hour": 1000
+      }
+    },
+    "github": {
+      "enabled": false,
+      "type": "external", 
+      "description": "GitHub integration for repository management and CI/CD",
+      "capabilities": [
+        "create_issue",
+        "create_pr",
+        "update_status",
+        "trigger_workflow"
+      ],
+      "configuration": {
+        "token_env": "GITHUB_TOKEN",
+        "repository": "",
+        "organization": ""
+      },
+      "security_level": "high",
+      "allowed_operations": [
+        "read_repository",
+        "create_issues",
+        "create_pull_requests",
+        "update_status_checks"
+      ],
+      "restricted_operations": [
+        "delete_repository",
+        "modify_settings",
+        "manage_secrets"
+      ]
+    },
+    "jira": {
+      "enabled": false,
+      "type": "external",
+      "description": "JIRA integration for issue tracking and project management",
+      "capabilities": [
+        "create_ticket",
+        "update_ticket",
+        "search_tickets",
+        "manage_sprints"
+      ],
+      "configuration": {
+        "base_url": "",
+        "username_env": "JIRA_USERNAME", 
+        "token_env": "JIRA_API_TOKEN",
+        "project_key": ""
+      },
+      "security_level": "medium"
+    },
+    "slack": {
+      "enabled": false,
+      "type": "external",
+      "description": "Slack integration for team notifications and collaboration",
+      "capabilities": [
+        "send_message",
+        "create_channel",
+        "upload_file",
+        "manage_notifications"
+      ],
+      "configuration": {
+        "bot_token_env": "SLACK_BOT_TOKEN",
+        "app_token_env": "SLACK_APP_TOKEN",
+        "default_channel": "#development",
+        "notification_channels": {
+          "alerts": "#alerts",
+          "deployments": "#deployments", 
+          "quality": "#code-quality"
+        }
+      },
+      "security_level": "low"
+    },
+    "database": {
+      "enabled": false,
+      "type": "external",
+      "description": "Database integration for data operations and analytics",
+      "capabilities": [
+        "execute_query",
+        "create_table",
+        "insert_data",
+        "backup_data"
+      ],
+      "configuration": {
+        "connection_string_env": "DATABASE_URL",
+        "driver": "postgresql",
+        "pool_size": 10,
+        "timeout": 30
+      },
+      "security_level": "high",
+      "allowed_operations": [
+        "read_data",
+        "insert_data",
+        "update_data"
+      ],
+      "restricted_operations": [
+        "drop_table",
+        "alter_schema",
+        "delete_data"
+      ],
+      "query_validation": {
+        "enabled": true,
+        "max_rows_returned": 10000,
+        "blocked_keywords": [
+          "DROP",
+          "DELETE",
+          "TRUNCATE",
+          "ALTER"
+        ]
+      }
+    },
+    "ai_services": {
+      "enabled": false,
+      "type": "external",
+      "description": "External AI service integrations",
+      "services": {
+        "openai": {
+          "enabled": false,
+          "api_key_env": "OPENAI_API_KEY",
+          "model": "gpt-4",
+          "max_tokens": 4000
+        },
+        "anthropic": {
+          "enabled": false,
+          "api_key_env": "ANTHROPIC_API_KEY", 
+          "model": "claude-3-sonnet",
+          "max_tokens": 4000
+        },
+        "perplexity": {
+          "enabled": false,
+          "api_key_env": "PERPLEXITY_API_KEY",
+          "model": "pplx-70b-online"
+        }
+      },
+      "security_level": "medium",
+      "usage_limits": {
+        "requests_per_day": 1000,
+        "tokens_per_request": 4000
+      }
+    },
+    "monitoring": {
+      "enabled": false,
+      "type": "external",
+      "description": "Application monitoring and observability",
+      "services": {
+        "datadog": {
+          "enabled": false,
+          "api_key_env": "DATADOG_API_KEY",
+          "app_key_env": "DATADOG_APP_KEY"
+        },
+        "newrelic": {
+          "enabled": false,
+          "license_key_env": "NEWRELIC_LICENSE_KEY"
+        },
+        "sentry": {
+          "enabled": false,
+          "dsn_env": "SENTRY_DSN"
+        }
+      },
+      "security_level": "medium"
+    }
+  },
+  "global_settings": {
+    "connection_timeout": 30,
+    "retry_attempts": 3,
+    "retry_delay": 5,
+    "rate_limiting": {
+      "enabled": true,
+      "global_requests_per_minute": 300
+    },
+    "logging": {
+      "enabled": true,
+      "level": "info",
+      "file": ".claude/logs/mcp-servers.log",
+      "max_size": "50MB",
+      "retention_days": 30
+    },
+    "security": {
+      "encryption_at_rest": true,
+      "encryption_in_transit": true,
+      "token_rotation_days": 90,
+      "audit_logging": true
+    },
+    "health_checks": {
+      "enabled": true,
+      "interval_seconds": 300,
+      "timeout_seconds": 10,
+      "failure_threshold": 3
+    }
+  },
+  "environments": {
+    "development": {
+      "mcp_servers_enabled": ["filesystem"],
+      "external_services_enabled": false,
+      "rate_limits_strict": false
+    },
+    "staging": {
+      "mcp_servers_enabled": ["filesystem", "github", "slack"],
+      "external_services_enabled": true,
+      "rate_limits_strict": true
+    },
+    "production": {
+      "mcp_servers_enabled": ["filesystem", "github", "notion", "monitoring"],
+      "external_services_enabled": true,
+      "rate_limits_strict": true,
+      "security_enhanced": true
+    }
+  },
+  "version": "1.0.0",
+  "schema_version": "2024.1",
+  "last_updated": "2024-07-19T00:00:00Z"
+}

@@ -1,0 +1,168 @@
+{
+  "steering_system": {
+    "version": "1.0",
+    "description": "Gyro-style agent steering configuration for AI-powered development",
+    "last_updated": "2025-07-19"
+  },
+  "inclusion_modes": {
+    "always": {
+      "description": "Files loaded in every AI interaction for consistent context",
+      "files": [
+        ".claude/steering/product.md",
+        ".claude/steering/tech.md",
+        ".claude/steering/structure.md"
+      ]
+    },
+    "fileMatch": {
+      "description": "Files loaded when working with specific file patterns",
+      "patterns": {
+        "*.py": [
+          ".claude/steering/testing.md",
+          ".claude/steering/security.md"
+        ],
+        "*.js": [
+          ".claude/steering/testing.md",
+          ".claude/steering/security.md"
+        ],
+        "*.go": [
+          ".claude/steering/testing.md",
+          ".claude/steering/security.md"
+        ],
+        "*test*.py": [
+          ".claude/steering/testing.md"
+        ],
+        "*test*.js": [
+          ".claude/steering/testing.md"
+        ],
+        "*_test.go": [
+          ".claude/steering/testing.md"
+        ],
+        "*api*.py": [
+          ".claude/steering/api-standards.md"
+        ],
+        "*routes*.js": [
+          ".claude/steering/api-standards.md"
+        ],
+        "*endpoints*.py": [
+          ".claude/steering/api-standards.md"
+        ],
+        "*router*.go": [
+          ".claude/steering/api-standards.md"
+        ],
+        "requirements.md": [
+          ".claude/steering/domain-specific/data-processing.md",
+          ".claude/steering/domain-specific/content-generation.md",
+          ".claude/steering/domain-specific/api-integration.md"
+        ],
+        "design.md": [
+          ".claude/steering/domain-specific/data-processing.md",
+          ".claude/steering/domain-specific/content-generation.md",
+          ".claude/steering/domain-specific/api-integration.md"
+        ]
+      }
+    },
+    "manual": {
+      "description": "Files available on-demand when explicitly referenced",
+      "files": [
+        ".claude/steering/accessibility.md",
+        ".claude/steering/domain-specific/data-processing.md",
+        ".claude/steering/domain-specific/content-generation.md",
+        ".claude/steering/domain-specific/api-integration.md"
+      ]
+    }
+  },
+  "context_management": {
+    "max_files_per_interaction": 10,
+    "priority_order": [
+      "always",
+      "fileMatch",
+      "manual"
+    ],
+    "file_size_limit": "50kb",
+    "cache_duration": "1 hour"
+  },
+  "domain_detection": {
+    "data_processing": {
+      "keywords": ["data", "process", "analyze", "transform", "etl", "pipeline"],
+      "file_patterns": ["*processor*", "*data*", "*transform*"],
+      "steering_files": [".claude/steering/domain-specific/data-processing.md"]
+    },
+    "content_generation": {
+      "keywords": ["content", "generate", "create", "publish", "cms"],
+      "file_patterns": ["*content*", "*generate*", "*publish*"],
+      "steering_files": [".claude/steering/domain-specific/content-generation.md"]
+    },
+    "api_integration": {
+      "keywords": ["api", "integrate", "endpoint", "rest", "service"],
+      "file_patterns": ["*api*", "*service*", "*client*"],
+      "steering_files": [".claude/steering/domain-specific/api-integration.md"]
+    },
+    "web_application": {
+      "keywords": ["web", "frontend", "backend", "ui", "ux"],
+      "file_patterns": ["*web*", "*ui*", "*frontend*", "*backend*"],
+      "steering_files": [".claude/steering/accessibility.md"]
+    }
+  },
+  "quality_gates": {
+    "specification_compliance": {
+      "enabled": true,
+      "check_requirements_traceability": true,
+      "validate_design_alignment": true,
+      "verify_task_breakdown": true
+    },
+    "code_quality": {
+      "enabled": true,
+      "enforce_naming_conventions": true,
+      "require_documentation": true,
+      "validate_test_coverage": true,
+      "check_security_patterns": true
+    },
+    "architecture_compliance": {
+      "enabled": true,
+      "validate_component_structure": true,
+      "check_dependency_patterns": true,
+      "enforce_interface_contracts": true
+    }
+  },
+  "ai_behavior_modifiers": {
+    "communication_style": {
+      "clarity_level": "high",
+      "technical_depth": "detailed",
+      "explanation_style": "educational",
+      "code_comments": "comprehensive"
+    },
+    "decision_making": {
+      "requirements_first": true,
+      "user_impact_consideration": true,
+      "quality_over_speed": true,
+      "traceability_required": true
+    },
+    "code_generation": {
+      "include_tests": true,
+      "add_documentation": true,
+      "follow_patterns": true,
+      "security_by_default": true
+    }
+  },
+  "learning_and_adaptation": {
+    "capture_decisions": true,
+    "update_patterns": true,
+    "refine_steering": true,
+    "project_history": {
+      "enabled": true,
+      "storage_location": ".aicontext/project-history.json"
+    }
+  },
+  "integration_hooks": {
+    "pre_generation": [
+      "validate_context_relevance",
+      "check_steering_currency",
+      "apply_domain_detection"
+    ],
+    "post_generation": [
+      "validate_compliance",
+      "check_quality_gates",
+      "update_learning_data"
+    ]
+  }
+}

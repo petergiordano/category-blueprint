@@ -1,0 +1,33 @@
+{
+  "gyro_integration": {
+    "version": "1.0.0",
+    "enabled": true,
+    "project_domain": "general"
+  },
+  "spec_driven_development": {
+    "enabled": true,
+    "workflow": ["requirements", "design", "tasks"],
+    "validation_required": true
+  },
+  "steering_system": {
+    "enabled": true,
+    "inclusion_modes": {
+      "always": ["product.md", "tech.md", "structure.md"],
+      "conditional": ["domain-specific.md"]
+    }
+  },
+  "hooks_framework": {
+    "enabled": true,
+    "auto_execution": true,
+    "config_file": "hooks-config.json"
+  },
+  "execution_modes": {
+    "default": "hybrid",
+    "available": ["autopilot", "supervised", "hybrid"]
+  },
+  "validation_framework": {
+    "enabled": true,
+    "auto_run": false,
+    "fail_on_errors": true
+  }
+}

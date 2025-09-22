@@ -1,0 +1,31 @@
+# Positioning Blueprint Swapfile
+
+## Global
+
+## Deep Research
+- Update prompt with better roles of known people
+
+## Session Import/Export
+
+## Visual Onboarding
+- Part 1 - Complete the "view interactive diagram"  at the top
+- Part 2 - Complete the "view interactive flow"  at the top
+
+
+
+
+
+## Part 1 - Segment Foundation
+
+## Part 2 - ICP Definition
+ 
+ 
+## Part 3 - Positioning
+Improve the Competitive Alternatives to include the following:
+- Why customers choose this alternative (e.g., Low cost, simplicity)
+- Weaknesses or gaps with this alternative (e.g., Time-consuming, prone to errors)
+- Customer Proof - List customers that provided the information
+
+
+
+## Part 4 - Category Design
