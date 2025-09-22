@@ -6083,6 +6083,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             const [sessionNotice, setSessionNotice] = useState(null);
             const [pendingImport, setPendingImport] = useState(null);
             const [isProcessingImport, setIsProcessingImport] = useState(false);
+            const [showOnboardingTour, setShowOnboardingTour] = useState(false);
 
             useEffect(() => {
                 saveAppState(appState);
