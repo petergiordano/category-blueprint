@@ -9,6 +9,33 @@
     return JSON.parse(JSON.stringify(value));
   }
 
+  // Enhanced array merging function to ensure backward compatibility for alternatives structure
+  function ensureAlternativesStructure(alternatives) {
+    if (!Array.isArray(alternatives)) {
+      return [{ val1: '', val2: '', val3: '', val4: '', val5: '' }];
+    }
+    return alternatives.map(alt => {
+      // Handle new enhanced structure with descriptive fields
+      if (alt.alternative || alt.description || alt.whyCustomersChoose || alt.weaknessesOrGaps || alt.customerProof) {
+        return {
+          val1: alt.alternative || '',
+          val2: alt.description || '',
+          val3: alt.whyCustomersChoose || '',
+          val4: alt.weaknessesOrGaps || '',
+          val5: alt.customerProof || ''
+        };
+      }
+      // Handle legacy structure
+      return {
+        val1: alt.val1 || '',
+        val2: alt.val2 || '',
+        val3: alt.val3 || '',
+        val4: alt.val4 || '',
+        val5: alt.val5 || ''
+      };
+    });
+  }
+
   function buildSessionPayload(state) {
     const safeState = state || {};
     const rawSegmentData = safeState.segmentData || {};
@@ -97,6 +124,36 @@
     return schema.createEnvelope({ appVersion, data });
   }
 
+  // Function to flatten organized segment data back to flat structure
+  function flattenSegmentData(organizedSegmentData) {
+    if (!organizedSegmentData || typeof organizedSegmentData !== 'object') {
+      return {};
+    }
+
+    const flattened = {};
+
+    // Handle organized structure (jobsToBeDone, customerValue, willingnessToPay, other)
+    if (organizedSegmentData.jobsToBeDone) {
+      Object.assign(flattened, organizedSegmentData.jobsToBeDone);
+    }
+    if (organizedSegmentData.customerValue) {
+      Object.assign(flattened, organizedSegmentData.customerValue);
+    }
+    if (organizedSegmentData.willingnessToPay) {
+      Object.assign(flattened, organizedSegmentData.willingnessToPay);
+    }
+    if (organizedSegmentData.other) {
+      Object.assign(flattened, organizedSegmentData.other);
+    }
+
+    // If it's already flat, return as-is
+    if (Object.keys(flattened).length === 0) {
+      return organizedSegmentData;
+    }
+
+    return flattened;
+  }
+
   function mergeWithInitial(initialState, importedData) {
     const base = deepCopy(initialState || {});
     const incoming = importedData || {};
@@ -110,11 +167,16 @@
       },
       segmentData: {
         ...deepCopy(base.segmentData),
-        ...(incoming.segmentData || {})
+        ...flattenSegmentData(incoming.segmentData || {})
       },
       positioningData: {
         ...deepCopy(base.positioningData),
-        ...(incoming.positioningData || {})
+        ...(incoming.positioningData || {}),
+        alternatives: ensureAlternativesStructure(
+          incoming.positioningData?.competitiveAlternatives ||
+          incoming.positioningData?.alternatives ||
+          base.positioningData?.alternatives
+        )
       },
       categoryData: {
         ...deepCopy(base.categoryData),

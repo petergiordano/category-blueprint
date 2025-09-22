@@ -1,0 +1,196 @@
+{
+  "formatVersion": "1.0.0",
+  "appVersion": "1.0.0",
+  "exportTimestamp": "2025-09-22T23:30:00.000Z",
+  "data": {
+    "companyContext": {
+      "isSetupComplete": true,
+      "companyName": "TechVision Solutions",
+      "companyWebsite": "https://www.techvision.ai",
+      "industry": "Enterprise Software",
+      "productName": "VisionPlatform Pro",
+      "targetMarket": "B2B Enterprise",
+      "caseStudyUrls": [
+        "https://www.techvision.ai/case-studies/fortune500",
+        "https://www.techvision.ai/case-studies/global-bank"
+      ],
+      "documentationUrls": [
+        "https://docs.techvision.ai/getting-started",
+        "https://docs.techvision.ai/api-reference"
+      ],
+      "competitorNames": [
+        "Salesforce",
+        "Microsoft Dynamics",
+        "Oracle CRM"
+      ]
+    },
+    "segmentData": {
+      "jobsToBeDone": {
+        "Context": "Enterprise GTM teams operate in complex, multi-stakeholder environments where they must coordinate across multiple departments, manage extensive compliance requirements, and demonstrate clear ROI on seven-figure technology investments while competing against established incumbents with decades of market presence.",
+        "Struggling Moments": "The critical struggle occurs when existing solutions fail to scale with enterprise growth, leading to data fragmentation across 20+ tools, compliance vulnerabilities, and inability to provide unified reporting to C-suite executives who demand real-time visibility into global operations.",
+        "Pushes & Pulls": "Teams are pushed away from legacy systems by escalating maintenance costs (often exceeding $5M annually), security breaches, and inability to integrate with modern AI capabilities. They're pulled toward next-generation platforms promising 70% cost reduction, unified data architecture, and AI-driven predictive analytics.",
+        "Anxieties & Habits": "Primary anxieties center on data migration risks for petabytes of historical data, potential business disruption during 18-month implementations, and career risk for decision-makers championing change. Organizational habits include quarterly business reviews, annual vendor assessments, and reliance on trusted system integrators.",
+        "Desired Outcomes": "Enterprises seek to achieve 40% improvement in sales velocity, reduce operational costs by $2M annually, ensure 99.99% uptime SLAs, maintain SOC2 and ISO27001 compliance, and provide board-ready analytics dashboards that demonstrate competitive advantage through technology.",
+        "Basic Quality (Table Stakes)": "Enterprise-grade security with end-to-end encryption, support for 100,000+ concurrent users, multi-region deployment capabilities, 24/7 dedicated support with 15-minute response SLAs, and comprehensive API ecosystem supporting 500+ integrations.",
+        "Hiring Criteria": "Enterprises select based on proven ROI with Fortune 500 references, Gartner Magic Quadrant leadership position, ability to replace 5+ legacy systems, demonstrable AI capabilities that provide 10x efficiency gains, and strategic partnership potential including co-innovation agreements.",
+        "Firing Criteria": "Immediate disqualification occurs for any data breach history, inability to meet 99.99% uptime SLA, lack of enterprise references in same industry, pricing exceeding $2M annual contracts without clear ROI demonstration, or absence of dedicated enterprise support team.",
+        "Key Trade-offs": "Enterprises accept 18-month implementation timelines and $500K+ professional services costs in exchange for transformational capabilities. They trade familiar but limited legacy systems for powerful but complex modern platforms requiring significant change management investment."
+      },
+      "customerValue": {
+        "Table Stakes": "Must maintain SOC2 Type II, ISO27001, and GDPR compliance certifications, provide enterprise SSO with SAML 2.0, offer role-based access control for 50+ permission levels, support data residency requirements across 15 countries, and include business associate agreements for healthcare clients.",
+        "Functional Value": "Platform delivers 3.5x pipeline growth within 12 months, reduces sales cycle length by 35%, increases win rates from 18% to 27%, generates $15M in new revenue opportunities through AI-driven insights, and saves 20 hours per rep weekly through intelligent automation.",
+        "Ease of Doing Business": "Single contract covers global usage with predictable pricing, dedicated customer success team with quarterly business reviews, white-glove onboarding with certified implementation partners, executive sponsor program connecting customer and vendor C-suites, and 99.99% SLA with financial penalties.",
+        "Individual Value": "For CROs: board-ready dashboards and predictable revenue forecasting. For RevOps: unified data model eliminating 30+ data silos. For Sales Managers: AI coaching improving team performance 40%. For Reps: 2x commission potential through AI-assisted selling.",
+        "Aspirational Value": "Positions adopter as industry innovator, featured in Gartner case studies and speaking at Dreamforce. Transforms company into data-driven organization cited by McKinsey as digital transformation success story. Creates competitive moat through proprietary AI models trained on company data."
+      },
+      "willingnessToPay": {
+        "Ability to Pay": "Target enterprises have $1B+ annual revenue, dedicate 3-5% of revenue to sales and marketing technology, maintain IT budgets exceeding $50M, and view sales acceleration platforms as strategic investments approved at board level with multi-year financial commitments.",
+        "Economic Justification": "ROI model demonstrates 350% return within 24 months through revenue uplift ($20M), cost reduction ($5M from tool consolidation), productivity gains (equivalent to 50 additional headcount), and risk mitigation (avoiding $10M in potential compliance penalties).",
+        "Relative Value vs. Alternatives": "Platform priced at $1.5M annually replaces Salesforce ($500K), Outreach ($200K), ZoomInfo ($300K), Gong ($250K), and 10+ other tools ($500K combined), while adding unique AI capabilities valued at $2M based on productivity gains.",
+        "Risk & Switching Costs": "Migration requires $500K professional services, 6-month parallel run increasing costs 40%, retraining 500+ users at $200K, and accepting reputational risk if implementation fails. Decision makers stake careers on successful transformation.",
+        "Market Reference Points": "Enterprises benchmark against Salesforce mega-deals ($2-5M), Microsoft E5 agreements ($3M), and comprehensive MarTech stacks ($4M total). Procurement teams reference Gartner pricing guidelines showing $3-5K per user annually for enterprise platforms."
+      }
+    },
+    "positioningData": {
+      "icp_common_needs": "Enterprise organizations need platforms that can scale globally, integrate with complex tech stacks, provide predictable ROI, ensure compliance across jurisdictions, and deliver executive-level insights while empowering frontline teams.",
+      "icp_desired_business_value": "Enterprises seek competitive advantage through technology, expecting platforms to drive market share gains, improve customer retention by 25%, accelerate time-to-market for new products, and position them as industry leaders in digital transformation.",
+      "icp_problem_urgency": "Urgency peaks during fiscal planning cycles, after competitive losses to more agile rivals, following security incidents, when boards demand digital transformation, and as legacy system contracts approach renewal with 40% price increases.",
+      "icp_quick_decision_making": "Decision authority resides with C-suite executives (CEO/CRO/CFO) for strategic platform investments exceeding $1M. Procurement involves 15-person buying committee including IT, Legal, Security, Finance, and Operations, with 9-month average sales cycles.",
+      "icp_prioritized_requirements": "Top priorities: 1) Measurable revenue impact within 4 quarters, 2) Enterprise-grade security and compliance, 3) Seamless integration with existing Salesforce/Microsoft ecosystem, 4) Proven scalability to 100K users, 5) AI capabilities providing competitive differentiation.",
+      "icp_willingness_to_pay": "Enterprises allocate $2-5M annually for transformational sales platforms, viewing them as OpEx investments. Willing to sign 3-year contracts with 20% discounts, pay $500K for implementation, and invest $200K annually in ongoing optimization.",
+      "icp_implementation_readiness": "Ideal enterprises have established RevOps teams of 20+ members, dedicated transformation office, certified Salesforce administrators, data governance frameworks, change management expertise, and executive mandate for digital transformation with board-level visibility.",
+      "icp_firmographic": "Global enterprises with $1B+ revenue, 5,000+ employees, operations in 20+ countries, public or PE-backed, in regulated industries (Financial Services, Healthcare, Technology), experiencing 20%+ annual growth or transformation mandate.",
+      "icp_technographic": "Enterprises run Salesforce or Microsoft CRM, use Slack/Teams for collaboration, have data warehouses (Snowflake/Databricks), employ 20+ SaaS applications, invest in AI/ML initiatives, and maintain dedicated integration platforms (MuleSoft/Workato).",
+      "icp_behavioral": "Actively recruiting RevOps talent, attending Dreamforce and similar conferences, publishing thought leadership on sales transformation, participating in Gartner inquiries, running POCs with 3+ vendors simultaneously, and engaging top-tier consultancies for strategy.",
+      "icp_summary": "Fortune 1000 enterprises in digital transformation seeking to consolidate sales tech stacks, leverage AI for competitive advantage, and build scalable revenue engines supporting aggressive growth targets while maintaining enterprise compliance standards.",
+      "market-context": "Enterprise Revenue Intelligence Platform",
+      "market-context-other": "AI-Powered Revenue Orchestration",
+      "competitiveAlternatives": [
+        {
+          "alternative": "Salesforce Sales Cloud + AppExchange Ecosystem",
+          "description": "Market-leading CRM with extensive third-party integrations",
+          "whyCustomersChoose": "Trusted by 150,000+ companies, extensive ecosystem with 4,000+ apps, deep customization capabilities, industry-specific solutions, and massive partner network. Considered the 'safe choice' with proven 20-year track record and comprehensive training resources.",
+          "weaknessesOrGaps": "Requires multiple expensive add-ons to match functionality, complex and costly implementations often exceeding $2M, steep learning curve requiring dedicated administrators, and aging architecture struggling with modern AI integration requirements.",
+          "customerProof": "Powers 90% of Fortune 500 companies, $31B annual revenue, consistently ranked #1 in Gartner MQ, average customer uses 25+ AppExchange apps, and reported 25% average increase in sales productivity."
+        },
+        {
+          "alternative": "Microsoft Dynamics 365 + Power Platform",
+          "description": "Integrated business applications suite with native Microsoft ecosystem integration",
+          "whyCustomersChoose": "Seamless integration with Office 365 used by 1M+ organizations, unified data model across all Microsoft products, lower TCO for existing Microsoft shops, included AI through Copilot, and strong partnership with Accenture/Deloitte for implementation.",
+          "weaknessesOrGaps": "Limited sales-specific functionality compared to purpose-built platforms, weaker ecosystem outside Microsoft stack, challenging migrations from other CRMs, and perceived as IT-driven rather than sales-friendly solution.",
+          "customerProof": "Used by 40,000+ organizations globally, growing 30% YoY, helped Coca-Cola reduce operational costs by 20%, enabled Chevron to increase sales productivity by 30%, includes reference architectures for 15 industries."
+        },
+        {
+          "alternative": "Best-of-Breed Point Solution Stack",
+          "description": "Combination of category leaders: HubSpot CRM + Gong + Outreach + ZoomInfo + Drift",
+          "whyCustomersChoose": "Each tool is category leader with specialized expertise, flexibility to choose best solution for each need, easier to pilot and implement incrementally, lower individual price points, and strong user communities for each platform.",
+          "weaknessesOrGaps": "Integration complexity requiring iPaaS solutions, data silos necessitating manual correlation, multiple vendor relationships increasing overhead, total cost often exceeding unified platforms, and lack of unified analytics across stack.",
+          "customerProof": "Outreach serves 5,800+ customers, Gong valued at $12B with 3,000+ customers, ZoomInfo public with $750M revenue, combined stack shown to increase pipeline 3x, adopted by high-growth companies like Snowflake and Datadog."
+        },
+        {
+          "alternative": "Internal Build on Modern Data Stack",
+          "description": "Custom-built solution leveraging Snowflake, dbt, Airflow, and open-source tools",
+          "whyCustomersChoose": "Complete control and customization to exact requirements, no vendor lock-in, ability to leverage internal expertise, integration with proprietary systems, and potential long-term cost savings after initial investment.",
+          "weaknessesOrGaps": "Requires significant engineering resources (20+ developers), 2-3 year development timeline, ongoing maintenance burden, lack of continuous innovation from vendor R&D, and difficulty recruiting specialized talent.",
+          "customerProof": "Netflix and Uber built proprietary systems driving their growth, engineering-heavy companies report 50% cost savings over 5 years, enables unique competitive advantages, full data ownership and control demonstrated by FAANG companies."
+        }
+      ],
+      "pillars": [
+        {
+          "id": 1,
+          "name": "AI-Powered Intelligence",
+          "benefit": "Transform data into predictive insights that drive revenue"
+        },
+        {
+          "id": 2,
+          "name": "Enterprise Scale & Security",
+          "benefit": "Bank-grade security with unlimited global scalability"
+        },
+        {
+          "id": 3,
+          "name": "Unified Revenue Platform",
+          "benefit": "Single source of truth replacing 20+ point solutions"
+        }
+      ],
+      "values": [
+        {
+          "val1": "Proprietary AI Revenue Engine",
+          "val2": "Custom ML models trained on 10B+ sales interactions, providing predictive scoring, next-best-action recommendations, and automated coaching that adapts to each company's unique sales methodology.",
+          "val3": "Increases win rates by 45%, reduces ramp time by 60%, and identifies at-risk deals 3 weeks earlier, enabling proactive intervention and resource allocation.",
+          "val4": "$25M additional revenue per 100 reps, 300% ROI within 18 months, 50% reduction in sales cycle length, featured in MIT Sloan Review as breakthrough in sales AI.",
+          "pillarId": 1
+        },
+        {
+          "val1": "Zero-Trust Architecture",
+          "val2": "Military-grade encryption, SOC2 Type II certified, GDPR/CCPA compliant, with dedicated infrastructure options and air-gapped deployments for classified industries.",
+          "val3": "Enables expansion into regulated markets, satisfies CISO requirements, passes Fortune 100 security audits, and provides peace of mind for boards concerned about cyber risk.",
+          "val4": "Zero security breaches across 500+ enterprise customers, 100% audit pass rate, $50M cyber insurance coverage, approved for government contracts worth $100M+.",
+          "pillarId": 2
+        },
+        {
+          "val1": "Intelligent Workflow Orchestration",
+          "val2": "No-code workflow builder with 500+ pre-built templates, connecting sales, marketing, and customer success processes with automated handoffs and intelligent routing based on deal characteristics.",
+          "val3": "Reduces process creation from months to hours, ensures consistent execution across global teams, and automatically optimizes workflows based on conversion data.",
+          "val4": "80% reduction in manual tasks, 95% process compliance rate, 25% improvement in conversion rates, saves $3M annually in operational efficiency.",
+          "pillarId": 3
+        },
+        {
+          "val1": "Global Multi-Instance Architecture",
+          "val2": "Distributed infrastructure across 30 data centers globally, supporting data residency requirements, local compliance, and sub-100ms latency for users worldwide.",
+          "val3": "Enables true global deployment meeting local regulations, provides superior user experience regardless of location, and ensures business continuity with automatic failover.",
+          "val4": "99.99% uptime SLA achieved for 3 consecutive years, supports 1M concurrent users, 15 petabytes of data processed daily, powers operations in 120 countries.",
+          "pillarId": 2
+        }
+      ],
+      "trend1_desc": "AI Transformation: 70% of enterprises investing $50M+ in AI initiatives, with sales AI being top priority for competitive differentiation",
+      "trend2_desc": "Platform Consolidation: Enterprises reducing vendor count by 40% while demanding unified platforms that eliminate data silos and reduce integration complexity",
+      "trend3_desc": "Revenue Operations Evolution: RevOps teams growing 75% YoY, becoming strategic function reporting directly to CEO with mandate for digital transformation",
+      "trend4_desc": "Buyer-Centric Selling: B2B buyers completing 70% of journey digitally, demanding personalized, value-driven engagement powered by deep insights and predictive intelligence",
+      "category-name": "Enterprise Revenue Intelligence Platform"
+    },
+    "categoryData": {
+      "from-statement": "The old world of revenue generation relied on disconnected tools, manual processes, and gut-feel decisions, where sales teams operated in silos with limited visibility, leading to missed opportunities, inconsistent execution, and inability to scale predictably.",
+      "to-statement": "The new paradigm enables intelligent revenue orchestration where AI guides every interaction, unified data provides complete visibility, and automated workflows ensure consistent execution, transforming revenue generation from art to science.",
+      "new-opportunity": "Organizations can now build perpetual revenue machines that compound learning over time, predict customer behavior with 90% accuracy, automatically optimize for maximum revenue potential, and scale infinitely without proportional cost increases.",
+      "category-name": "Enterprise Revenue Intelligence Platform",
+      "category-definition": "An Enterprise Revenue Intelligence Platform unifies all revenue-generating activities onto a single AI-powered system that learns, predicts, and orchestrates optimal outcomes across the entire customer lifecycle, replacing traditional CRMs and point solutions with intelligent, autonomous revenue generation.",
+      "manifesto": "We believe revenue generation is entering a new era where artificial intelligence doesn't just assist but actively drives growth. Where every customer interaction is informed by collective intelligence. Where revenue becomes predictable, scalable, and optimizable through data and automation. This isn't about incremental improvements to existing systems – it's about fundamentally reimagining how companies generate, accelerate, and maximize revenue in the AI age.",
+      "market-category": "Enterprise Revenue Intelligence Platform",
+      "target-market-summary": "Global enterprises undergoing digital transformation who view revenue technology as strategic investment for competitive advantage, requiring enterprise-grade security, proven scale, and measurable ROI within 12 months.",
+      "target-market-firmographic": "Fortune 2000 companies, $500M+ revenue, 2,000+ employees, operating globally, in regulated industries, with board mandate for digital transformation and AI adoption.",
+      "target-market-technographic": "Organizations with mature tech stacks including Salesforce/Microsoft, modern data infrastructure (Snowflake/Databricks), existing AI initiatives, and dedicated RevOps teams driving standardization.",
+      "target-market-behavioral": "Actively consolidating vendors, participating in analyst briefings, publishing thought leadership on revenue transformation, recruiting senior RevOps talent, and engaging strategic consultancies.",
+      "target-market-readiness": "Enterprises with established RevOps function, executive sponsorship for transformation, allocated transformation budget, change management capabilities, and successful track record of large-scale implementations."
+    },
+    "aiSuggestions": {},
+    "navigationProgress": {
+      "completedParts": [
+        "segment",
+        "icp",
+        "positioning",
+        "category"
+      ],
+      "currentPart": "category",
+      "partCompletionData": {
+        "segment": {
+          "completed": true,
+          "completedAt": "2025-09-22T23:25:00.000Z"
+        },
+        "icp": {
+          "completed": true,
+          "completedAt": "2025-09-22T23:26:00.000Z"
+        },
+        "positioning": {
+          "completed": true,
+          "completedAt": "2025-09-22T23:27:00.000Z"
+        },
+        "category": {
+          "completed": true,
+          "completedAt": "2025-09-22T23:28:00.000Z"
+        }
+      }
+    },
+    "currentView": "category",
+    "lastSaved": "2025-09-22T23:30:00.000Z"
+  }
+}

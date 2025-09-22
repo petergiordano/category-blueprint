@@ -233,19 +233,29 @@
               .filter(comp => comp && comp.trim())
               .join(', ') || 'Competitor 1, Competitor 2, Competitor 3';
 
-            // Embedded template from prompt-deep-research.md
+            // Updated template from docs/specifications/prompt-deep-research.md
             const promptTemplate = `# PROMPT: Positioning and Category Deep Research Brief
 
 ## PRIMARY DIRECTIVE: TEMPLATE PROCESSOR PROTOCOL
 Your sole, exclusive, and non-negotiable function is to act as a TEMPLATE PROCESSOR. You will be given a detailed blueprint below. Your only task is to populate every single field in that blueprint with information gathered from outside-in research. You are forbidden from altering the structure, headings, or formatting of the blueprint in any way. Any deviation is a critical failure.
 
-Your SYSTEM ROLE is that of a **Senior Go-to-Market Analyst & Intelligence Architect**. This role defines the *mindset* you will use for research (methodical, evidence-driven), but your *output format* is strictly governed by the TEMPLATE PROCESSOR PROTOCOL. Your voice must remain that of an objective, third-party analyst.
+## SYSTEM ROLE
+You are a **Senior Go-to-Market Analyst & Intelligence Architect**.
+Your research (methodical, evidence-driven) and analysis is guided by a composite of four expert mindsets:
+
+* **The Customer Theorist (Bob Moesta):** You will ground all analysis in the "Job to be Done." Your primary focus for Part 1 (Segment Foundation) is to uncover the deep, underlying "struggle" that causes a customer to act and the "progress" they are trying to make.
+* **The Positioner (April Dunford):** You will be relentlessly focused on the customer's point of view. For Part 3 (Positioning), your task is to cut through marketing fluff to find the "obvious" insight that makes a product uniquely valuable to a specific market by clearly defining its context.
+* **The Strategist (Michael Porter):** You will analyze the competitive landscape (Part 3A) with academic rigor, focusing on industry structure, competitive forces, and the creation of sustainable, unique advantages.
+* **The Monetizer (Madhavan Ramanujam):** You will operate on the principle that GTM strategy begins with price and value. As you analyze the product's attributes (Part 3C), you will constantly connect them to the customer's **willingness to pay** (Part 1C) and the metrics they use to **measure value**.
+
+Your *output format* is strictly governed by the TEMPLATE PROCESSOR PROTOCOL.
+Your voice must remain that of an objective, third-party analyst.
 
 ## PROMPT TITLE
-Positioning and Category Deep Research Brief for [Company Name]
+Positioning and Category Deep Research Brief for {{Company Name}}
 
 ## OBJECTIVE
-To conduct comprehensive, outside-in research into **[Company Name]** and its product **[Product Name]**. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
+To conduct comprehensive, outside-in research into **{{Company Name}}** and its product **{{Product Name}}**. The structure of your output MUST be a perfect 1-to-1 mirror of the application framework outlined below.
 
 ### Critical Output Constraints (Anti-Patterns)
 - **ANTI-PATTERN 1 (No Narrative):** Do NOT write in a narrative, marketing, or whitepaper style. The output must be a clinical, evidence-based intelligence brief.
@@ -253,13 +263,14 @@ To conduct comprehensive, outside-in research into **[Company Name]** and its pr
 - **ANTI-PATTERN 3 (No Invented Sections):** Do NOT generate sections that are not in the blueprint, such as "SWOT Analysis" or "Strategic Recommendations." Your output must ONLY contain the headings and sub-headings specified below.
 
 ### Critical Scoping Constraint
-- **FOCUS ON ARCHITECT ONLY:** Your research and analysis must be exclusively focused on the **[Product Name]** product. The target company, [Company Name], may have other products that you are to actively ignore and exclude any information, features, use cases, or value propositions that relate to products other than [Product Name]. Your entire report must reflect the perspective of a buyer for **[Product Name]**.
+- **FOCUS ON ARCHITECT ONLY:** Your research and analysis must be exclusively focused on the **{{Product Name}}** product. The target company, {{Company Name}}, may have other products that you are to actively ignore and exclude any information, features, use cases, or value propositions that relate to products other than {{Product Name}}. Your entire report must reflect the perspective of a buyer for **{{Product Name}}**.
+
 
 ### Research Parameters
-- **Company Name:** [Company Name]
-- **Company Website:** [Company Website]
-- **Product Name:** [Product Name]
-- **Competitors or Alternatives** [Competitor 1, Competitor 2, Competitor 3]
+- **Target Company:** {{Company Name}}
+- **Company Website:** {{Company Website}}
+- **Product Name:** {{Product Name}}
+- **User-Provided Competitors (Starting Point):** {{List of Competitors}}
 
 ---
 
@@ -270,7 +281,7 @@ Before generating the final report, you will execute the following research plan
 
 1.  **Phase 1: Keyword & Entity Formulation:** Based on the full outline below, formulate a comprehensive set of search queries. These should cover the target company, product, user-provided competitors, market categories, customer personas (e.g.,  "pain points with [Product] alternatives"), and related JTBD concepts.
 2.  **Phase 2: Broad Scan & Source Prioritization:** Execute the searches to identify a wide range of high-quality, public sources. Prioritize sources such as:
-    * Official company websites ([Company Name] and competitors)
+    * Official company websites ({{Company Name}} and competitors)
     * Third-party review sites (G2, Capterra, Gartner Peer Insights)
     * Reputable tech and business news relevant to the [Industry]
     * Analyst reports and blogs (Gartner, Forrester, independent analysts)
@@ -383,15 +394,19 @@ Collect evidence for:
 #### 3A. The Product
 * A factual, non-marketing description of what the product is and does.
 
-#### 3B. Competitive Alternatives
-- 2 to 5 alternatives the customer uses if [Product Name] doesn't exit. For example: Alternatives, Direct Competitors, Indirect Competitors, Status Quo or DIY solutions
-- Name of each alternative
-- Short description of each alternative
-- Why customers choose the alternative
-- What is the weakness/gap of the alternative compared to [Product Name]
+#### **3B. Competitive Alternatives:**
+-  **Initial Focus:** Begin your research with the user-provided starting point: **{{List of Competitors}}**.
+-  **Discovery of Other Alternatives:** Next, expand your research to identify and analyze 2 to 5 other key alternatives the customer uses if {{Product Name}} doesn't exist, including:
+    * **Publicly-Identified Direct Competitors**
+    * **Indirect Competitors** (solving the same JTBD differently)
+    * **The Status Quo** (manual processes, internal tools, etc.)
+-  **Detailed Analysis (For EACH Alternative):** For every alternative you identify, you must provide the following three points of analysis in your final deliverable:
+    * **Why Customers Choose This Alternative:** The primary reasons customers adopt this solution (e.g., *Low cost, simplicity, familiarity, existing vendor relationship*).
+    * **Weaknesses or Gaps:** The primary weaknesses of the alternative when compared to **[Product or Service Name]** (e.g., *Time-consuming, prone to errors, does not scale, lacks key features*).
+    * **Customer Proof:** Find and list the names of customers or include verbatim quotes from users (from sites like G2, Capterra, etc.) that provide evidence for the "Reasons for Choice" and "Weaknesses" you identified.
 
 #### 3C. Unique Attributes, Value, and Proof
-- 3 to 5 truly unique features/capabilities of [Product Name]
+- 3 to 5 truly unique features/capabilities of {{Product Name}}
 - Name of each attribute
 - Short description of each attribute
 - Customer Benefits delivered by each attribute
@@ -432,10 +447,10 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
 
             // Replace all placeholders with actual data
             const placeholders = {
-              '[Company Name]': safeData.companyName,
-              '[Company Website]': safeData.companyWebsite,
-              '[Product Name]': safeData.productName,
-              '[Competitor 1, Competitor 2, Competitor 3]': competitors
+              '{{Company Name}}': safeData.companyName,
+              '{{Company Website}}': safeData.companyWebsite,
+              '{{Product Name}}': safeData.productName,
+              '{{List of Competitors}}': competitors
             };
 
             let finalPrompt = promptTemplate;
@@ -449,6 +464,50 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             console.error('Error generating deep research prompt:', error);
             return 'Error generating prompt. Please check your company data and try again.';
           }
+        };
+
+        // Enhanced array merging function to ensure backward compatibility for alternatives structure
+        const ensureAlternativesStructure = (alternatives) => {
+          if (!Array.isArray(alternatives)) {
+            return [{ val1: '', val2: '', val3: '', val4: '', val5: '' }];
+          }
+          return alternatives.map(alt => ({
+            val1: alt.val1 || '',
+            val2: alt.val2 || '',
+            val3: alt.val3 || '',
+            val4: alt.val4 || '',
+            val5: alt.val5 || ''
+          }));
+        };
+
+        // Function to flatten organized segment data back to flat structure
+        const flattenSegmentData = (organizedSegmentData) => {
+          if (!organizedSegmentData || typeof organizedSegmentData !== 'object') {
+            return {};
+          }
+
+          const flattened = {};
+
+          // Handle organized structure (jobsToBeDone, customerValue, willingnessToPay, other)
+          if (organizedSegmentData.jobsToBeDone) {
+            Object.assign(flattened, organizedSegmentData.jobsToBeDone);
+          }
+          if (organizedSegmentData.customerValue) {
+            Object.assign(flattened, organizedSegmentData.customerValue);
+          }
+          if (organizedSegmentData.willingnessToPay) {
+            Object.assign(flattened, organizedSegmentData.willingnessToPay);
+          }
+          if (organizedSegmentData.other) {
+            Object.assign(flattened, organizedSegmentData.other);
+          }
+
+          // If it's already flat, return as-is
+          if (Object.keys(flattened).length === 0) {
+            return organizedSegmentData;
+          }
+
+          return flattened;
         };
 
         const loadAppState = () => {
@@ -465,10 +524,17 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             const mergedState = {
               ...initialState,
               ...parsedState,
-              // Ensure nested objects are properly merged
-              positioningData: { ...initialState.positioningData, ...(parsedState.positioningData || {}) },
+              // Ensure nested objects are properly merged with enhanced alternatives structure
+              positioningData: {
+                ...initialState.positioningData,
+                ...(parsedState.positioningData || {}),
+                alternatives: ensureAlternativesStructure(parsedState.positioningData?.alternatives)
+              },
               categoryData: { ...initialState.categoryData, ...(parsedState.categoryData || {}) },
-              segmentData: { ...initialState.segmentData, ...(parsedState.segmentData || {}) },
+              segmentData: {
+                ...initialState.segmentData,
+                ...flattenSegmentData(parsedState.segmentData || {})
+              },
               companyContext: { ...initialState.companyContext, ...(parsedState.companyContext || {}) },
               navigationProgress: { 
                 ...initialState.navigationProgress, 
@@ -502,7 +568,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
               icp_summary: '',
               'market-context': '',
               'market-context-other': '',
-              alternatives: [{ val1: '', val2: '' }],
+              alternatives: [{ val1: '', val2: '', val3: '', val4: '', val5: '' }],
               pillars: [{ id: 1, name: '', benefit: '' }],
               values: [{ val1: '', val2: '', val3: '', val4: '', pillarId: null }],
               trend1_desc: '',
@@ -1439,11 +1505,14 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         if (results['Positioning']?.content) {
                             const posContent = results['Positioning'].content;
 
-                            // Transform competitive alternatives array
+                            // Transform competitive alternatives array - enhanced 5-field structure
                             if (posContent.competitiveAlternatives && Array.isArray(posContent.competitiveAlternatives)) {
                                 newState.positioningData.alternatives = posContent.competitiveAlternatives.map(alt => ({
                                     val1: alt.alternative || '',
-                                    val2: alt.description || ''
+                                    val2: alt.description || '',
+                                    val3: alt.whyCustomersChoose || '',
+                                    val4: alt.weaknessesOrGaps || '',
+                                    val5: alt.customerProof || ''
                                 }));
                             }
 
@@ -3685,6 +3754,76 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             </div>
         );
 
+        const RemovableAlternative = ({ index, item, onUpdate, onRemove }) => (
+            <div className="space-y-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Alternative Name</label>
+                        <input
+                            type="text"
+                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                            placeholder="e.g., Excel spreadsheets, Tableau, PowerBI"
+                            value={item.val1}
+                            onChange={(e) => onUpdate(index, 'val1', e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea
+                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                            rows="2"
+                            placeholder="Brief explanation of what it is and how it works"
+                            value={item.val2}
+                            onChange={(e) => onUpdate(index, 'val2', e.target.value)}
+                        ></textarea>
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Why Customers Choose This</label>
+                        <textarea
+                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                            rows="2"
+                            placeholder="e.g., Low cost, simplicity, familiarity, incumbent status"
+                            value={item.val3}
+                            onChange={(e) => onUpdate(index, 'val3', e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Weaknesses/Gaps</label>
+                        <textarea
+                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                            rows="2"
+                            placeholder="e.g., Time-consuming, prone to errors, lacks scalability"
+                            value={item.val4}
+                            onChange={(e) => onUpdate(index, 'val4', e.target.value)}
+                        ></textarea>
+                    </div>
+                </div>
+                <div className="flex items-start space-x-2">
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Customer Proof</label>
+                        <textarea
+                            className="w-full p-2 border border-gray-300 rounded-md focus-ring-gold"
+                            rows="2"
+                            placeholder="Evidence: company names, quotes from reviews, survey data, case studies"
+                            value={item.val5}
+                            onChange={(e) => onUpdate(index, 'val5', e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div className="flex flex-col justify-end">
+                        <button
+                            onClick={() => onRemove(index)}
+                            className="text-gray-400 hover:text-red-600 font-bold text-2xl transition-colors mt-6"
+                            title="Remove this alternative"
+                        >
+                            ×
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+
         const RemovableInput = ({ index, item, onUpdate, onRemove, placeholder }) => (
             <div className="flex items-center space-x-2">
                 <input 
@@ -4063,11 +4202,14 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             const { content } = importedData;
                             const updates = {};
                             
-                            // Transform competitive alternatives: {alternative, description} → {val1, val2}
+                            // Transform competitive alternatives: enhanced 5-field structure → {val1, val2, val3, val4, val5}
                             if (content.competitiveAlternatives && Array.isArray(content.competitiveAlternatives)) {
                                 updates.alternatives = content.competitiveAlternatives.map(alt => ({
                                     val1: alt.alternative || '',
-                                    val2: alt.description || ''
+                                    val2: alt.description || '',
+                                    val3: alt.whyCustomersChoose || '',
+                                    val4: alt.weaknessesOrGaps || '',
+                                    val5: alt.customerProof || ''
                                 }));
                             }
                             
@@ -4169,12 +4311,15 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 // Format competitive alternatives
                 const formatCompetitiveAlternatives = () => {
                     if (!appState.positioningData.alternatives || !Array.isArray(appState.positioningData.alternatives)) {
-                        return [{ alternative: null, description: null }];
+                        return [{ alternative: null, description: null, whyCustomersChoose: null, weaknessesOrGaps: null, customerProof: null }];
                     }
                     
                     return appState.positioningData.alternatives.map(alt => ({
                         alternative: formatFieldValue(alt.val1),
-                        description: formatFieldValue(alt.val2)
+                        description: formatFieldValue(alt.val2),
+                        whyCustomersChoose: formatFieldValue(alt.val3),
+                        weaknessesOrGaps: formatFieldValue(alt.val4),
+                        customerProof: formatFieldValue(alt.val5)
                     }));
                 };
 
@@ -4516,19 +4661,17 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">Competitive Alternatives</h2>
                                 <p className="text-gray-600 mb-6">What are your target customers currently using to solve this problem?</p>
                                 <div className="space-y-4">
-                                    {(appState.positioningData?.alternatives || []).map((item, index) => 
-                                        React.createElement(RemovableRow, {
+                                    {(appState.positioningData?.alternatives || []).map((item, index) =>
+                                        React.createElement(RemovableAlternative, {
                                             key: index,
                                             index: index,
                                             item: item,
                                             onUpdate: (idx, key, value) => updateNestedValue('alternatives', idx, key, value),
-                                            onRemove: (idx) => removeItem('alternatives', idx),
-                                            placeholder1: 'Alternative',
-                                            placeholder2: 'Why it\'s inadequate'
+                                            onRemove: (idx) => removeItem('alternatives', idx)
                                         })
                                     )}
                                     <button
-                                        onClick={() => addItem('alternatives', { val1: '', val2: '' })}
+                                        onClick={() => addItem('alternatives', { val1: '', val2: '', val3: '', val4: '', val5: '' })}
                                         className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
                                     >
                                         + Add Alternative
@@ -4885,7 +5028,10 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             .filter(alt => alt && alt.val1)
                             .map(alt => ({
                                 alternative: formatFieldValue(alt.val1),
-                                description: formatFieldValue(alt.val2)
+                                description: formatFieldValue(alt.val2),
+                                whyCustomersChoose: formatFieldValue(alt.val3),
+                                weaknessesOrGaps: formatFieldValue(alt.val4),
+                                customerProof: formatFieldValue(alt.val5)
                             }));
                         if (alternatives.length > 0) {
                             foundation.competitiveAlternatives = alternatives;
