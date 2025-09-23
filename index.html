@@ -1416,6 +1416,53 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
             const downloadResults = () => {
                 if (!results) return;
 
+                // Extract and populate form fields from AI suggestions
+                const populateSegmentData = () => {
+                    const segmentContent = results['Segment Foundation']?.content || {};
+                    const jobsToBeDone = segmentContent.jobsToBeDone || {};
+                    const customerValue = segmentContent.customerValue || {};
+                    const willingnessToPay = segmentContent.willingnessToPay || {};
+
+                    return {
+                        ...jobsToBeDone,
+                        ...customerValue,
+                        ...willingnessToPay
+                    };
+                };
+
+                const populatePositioningData = () => {
+                    const positioningContent = results['Positioning']?.content || {};
+                    const icpContent = results['ICP Definition']?.content || {};
+
+                    return {
+                        ...icpContent.icpDefinition || {},
+                        competitiveAlternatives: positioningContent.competitiveAlternatives || [],
+                        uniqueValueAndProof: positioningContent.uniqueValueAndProof || [],
+                        marketCategory: positioningContent.marketCategory || '',
+                        categoryName: positioningContent.categoryName || '',
+                        relevantTrends: positioningContent.relevantTrends || {}
+                    };
+                };
+
+                const populateCategoryData = () => {
+                    const categoryContent = results['Category Design']?.content || {};
+
+                    return {
+                        'from-statement': categoryContent.pointOfView?.fromStatement || '',
+                        'to-statement': categoryContent.pointOfView?.toStatement || '',
+                        'new-opportunity': categoryContent.newOpportunity || '',
+                        'category-name': categoryContent.categoryNameAndDefinition?.name || '',
+                        'category-definition': categoryContent.categoryNameAndDefinition?.definition || '',
+                        'manifesto': categoryContent.manifesto || '',
+                        'market-category': categoryContent.marketCategory || '',
+                        'target-market-summary': categoryContent.targetMarketCharacteristics?.summary || '',
+                        'target-market-firmographic': categoryContent.targetMarketCharacteristics?.firmographic || '',
+                        'target-market-technographic': categoryContent.targetMarketCharacteristics?.technographic || '',
+                        'target-market-behavioral': categoryContent.targetMarketCharacteristics?.behavioral || '',
+                        'target-market-readiness': categoryContent.targetMarketCharacteristics?.implementationReadiness || ''
+                    };
+                };
+
                 // Create export data using same format as session export
                 const exportData = {
                     formatVersion: "1.0.0",
@@ -1423,9 +1470,9 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                     exportTimestamp: new Date().toISOString(),
                     data: {
                         companyContext: appState.companyContext || {},
-                        segmentData: {},
-                        positioningData: {},
-                        categoryData: {},
+                        segmentData: populateSegmentData(),
+                        positioningData: populatePositioningData(),
+                        categoryData: populateCategoryData(),
                         aiSuggestions: results,
                         navigationProgress: {
                             completedParts: [],
