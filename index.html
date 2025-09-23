@@ -1472,6 +1472,40 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                     // Extract trend descriptions
                     const relevantTrends = positioningContent.relevantTrends || {};
 
+                    // Smart market category mapping function
+                    const mapMarketCategory = (aiCategory) => {
+                        if (!aiCategory) return { dropdown: '', other: '' };
+
+                        const category = aiCategory.toLowerCase();
+                        const originalCategory = aiCategory.trim();
+
+                        // Check for new category indicators
+                        if (category.includes('new') || category.includes('novel') ||
+                            category.includes('first') || category.includes('emerging') ||
+                            category.includes('revolutionary') || category.includes('breakthrough')) {
+                            return { dropdown: 'New Category', other: '' };
+                        }
+                        // Check for existing category indicators
+                        else if (category.includes('existing') || category.includes('established') ||
+                                category.includes('traditional') || category.includes('current') ||
+                                category.includes('standard') || category.includes('conventional')) {
+                            return { dropdown: 'Existing Category', other: '' };
+                        }
+                        // Check for sub-category indicators
+                        else if (category.includes('sub') || category.includes('segment') ||
+                                category.includes('niche') || category.includes('specialized') ||
+                                category.includes('subset')) {
+                            return { dropdown: 'Sub-category', other: '' };
+                        }
+                        // Default to "Other" with the original category name
+                        else {
+                            return { dropdown: 'Other', other: originalCategory };
+                        }
+                    };
+
+                    // Apply smart mapping to market category
+                    const categoryMapping = mapMarketCategory(positioningContent.marketCategory || '');
+
                     return {
                         // ICP fields with correct naming convention
                         icp_quick_decision_making: icpDefinition.quickDecisionMaking || '',
@@ -1496,9 +1530,9 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                         icp_willingness_to_pay: willingnessToPay['Economic Justification'] || willingnessToPay['Ability to Pay'] || '',
                         icp_summary: categoryContent.targetMarketCharacteristics?.summary || '',
 
-                        // Market context fields
-                        'market-context': positioningContent.marketCategory || '',
-                        'market-context-other': positioningContent.categoryName || '',
+                        // Market context fields (using smart mapping)
+                        'market-context': categoryMapping.dropdown,
+                        'market-context-other': categoryMapping.other || positioningContent.categoryName || '',
 
                         // Trend descriptions
                         trend1_desc: relevantTrends.trend1 || '',
@@ -1796,6 +1830,9 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                 }
                             }
                         }
+
+                        // Ensure user stays on home page after applying results
+                        newState.currentView = 'home';
 
                         return newState;
                     });
