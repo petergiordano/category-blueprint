@@ -103,7 +103,10 @@ const jsonTemplates = {
     "competitiveAlternatives": [
       {
         "alternative": "",
-        "description": ""
+        "description": "",
+        "whyCustomersChoose": "",
+        "weaknessesOrGaps": "",
+        "customerProof": ""
       }
     ],
     "uniqueValueAndProof": [
@@ -156,7 +159,8 @@ const masterPrompt = (reportText, jsonSchema, partName) => {
   4. For each field in the JSON schema, provide CONCISE, ACTIONABLE content (1-3 sentences max per field).
   5. If specific information is not found in the report, leave the field as an empty string (""). DO NOT invent information.
   6. For array fields (like competitiveAlternatives, uniqueValueAndProof), extract multiple items when available.
-  7. Your output MUST be ONLY valid JSON - no markdown, no comments, no additional text.
+  7. For competitive alternatives specifically: Look for sections with alternative names/titles followed by bullet points or paragraphs containing "Why Customers Choose This Alternative", "Weaknesses or Gaps" or "Weaknesses/Gaps", and "Customer Proof". Extract the content after these headers, removing any markdown formatting.
+  8. Your output MUST be ONLY valid JSON - no markdown, no comments, no additional text.
 
   **JSON Formatting Requirements:**
   - Use double quotes for all strings
@@ -198,7 +202,7 @@ const getPartContext = (partName) => {
     case 'ICP Definition':
       return 'This section defines the Ideal Customer Profile (ICP). Look for firmographic (company characteristics), technographic (technology stack), and behavioral attributes of ideal customers.';
     case 'Positioning':
-      return 'This section covers competitive positioning. Look for competitive alternatives, unique value propositions, market category information, and relevant market trends.';
+      return 'This section covers competitive positioning. For competitive alternatives, look for each alternative with these patterns: alternative name/title, description of what it is, "Why Customers Choose This Alternative" or similar reasoning, "Weaknesses or Gaps" or "Weaknesses/Gaps" or limitations, and "Customer Proof" or evidence (company names, quotes, statistics). Extract each alternative as a separate object with all available details. Also look for unique value propositions, market category information, and relevant market trends.';
     case 'Category Design':
       return 'This section focuses on category creation and narrative. Look for point of view statements (from/to), new opportunities, category definitions, and market messaging.';
     default:
@@ -247,6 +251,7 @@ export default async function handler(req, res) {
         const result = await model.generateContent(prompt);
         const response = await result.response;
         let extractedJsonString = response.text();
+
 
         // Enhanced JSON cleaning - handle various LLM response formats
         extractedJsonString = extractedJsonString

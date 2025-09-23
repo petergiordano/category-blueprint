@@ -23,7 +23,29 @@
       "jobContext": "Fast-growing companies need agile decision-making capabilities"
     },
     "positioningData": {
-      "competitiveAlternatives": ["Tableau", "PowerBI", "Custom Excel dashboards"],
+      "competitiveAlternatives": [
+        {
+          "alternative": "Tableau",
+          "description": "Enterprise-grade data visualization platform",
+          "whyCustomersChoose": "Powerful visualization capabilities, market leader status",
+          "weaknessesOrGaps": "Expensive licensing, requires technical expertise",
+          "customerProof": "Used by Fortune 500 companies like Netflix, Airbnb"
+        },
+        {
+          "alternative": "PowerBI",
+          "description": "Microsoft's business intelligence tool",
+          "whyCustomersChoose": "Integration with Microsoft ecosystem, familiar interface",
+          "weaknessesOrGaps": "Limited advanced analytics, performance issues with large datasets",
+          "customerProof": "Preferred by Microsoft Office users, G2 reviews mention ease of use"
+        },
+        {
+          "alternative": "Custom Excel dashboards",
+          "description": "Manually created spreadsheet-based reporting",
+          "whyCustomersChoose": "Low cost, familiar to all business users",
+          "weaknessesOrGaps": "Time-consuming to maintain, prone to errors, not real-time",
+          "customerProof": "90% of businesses still use Excel for reporting according to recent surveys"
+        }
+      ],
       "uniqueAttributes": ["AI-powered anomaly detection", "No-code data pipeline builder", "Real-time collaboration"],
       "valueAndProof": {
         "timeToValue": "Deploy insights in hours, not weeks",
