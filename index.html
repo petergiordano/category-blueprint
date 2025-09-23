@@ -1473,10 +1473,23 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                     const relevantTrends = positioningContent.relevantTrends || {};
 
                     return {
-                        // Original ICP fields
-                        ...icpDefinition,
+                        // ICP fields with correct naming convention
+                        icp_quick_decision_making: icpDefinition.quickDecisionMaking || '',
+                        icp_prioritized_requirements: icpDefinition.prioritizedRequirements || '',
+                        icp_implementation_readiness: icpDefinition.implementationReadiness || '',
+                        icp_firmographic: icpDefinition.firmographic || '',
+                        icp_technographic: icpDefinition.technographic || '',
+                        icp_behavioral: icpDefinition.behavioral || '',
 
-                        // Missing ICP analysis fields
+                        // Legacy ICP field names (for backwards compatibility)
+                        quickDecisionMaking: icpDefinition.quickDecisionMaking || '',
+                        prioritizedRequirements: icpDefinition.prioritizedRequirements || '',
+                        implementationReadiness: icpDefinition.implementationReadiness || '',
+                        firmographic: icpDefinition.firmographic || '',
+                        technographic: icpDefinition.technographic || '',
+                        behavioral: icpDefinition.behavioral || '',
+
+                        // Additional ICP analysis fields
                         icp_common_needs: jobsToBeDone['Desired Outcomes'] || customerValue['Functional Value'] || '',
                         icp_desired_business_value: customerValue['Aspirational Value'] || customerValue['Individual Value'] || '',
                         icp_problem_urgency: jobsToBeDone['Struggling Moments'] || jobsToBeDone['Pushes & Pulls'] || '',

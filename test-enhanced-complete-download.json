@@ -1,0 +1,154 @@
+{
+  "formatVersion": "1.0.0",
+  "appVersion": "1.0.0",
+  "exportTimestamp": "2025-09-23T03:00:00.000Z",
+  "data": {
+    "companyContext": {
+      "isSetupComplete": true,
+      "companyName": "TechVision Solutions",
+      "companyWebsite": "https://www.techvision.ai",
+      "industry": "Enterprise Software",
+      "productName": "VisionPlatform Pro",
+      "targetMarket": "B2B Enterprise"
+    },
+    "segmentData": {
+      "Context": "Go-to-Market (GTM) teams face high pressure to meet revenue targets.",
+      "Struggling Moments": "Prospecting inefficiency is the main struggle.",
+      "Pushes & Pulls": "Teams are pushed away from legacy workflows.",
+      "Anxieties & Habits": "Anxieties include high price and robotic AI content.",
+      "Desired Outcomes": "Customers aim for efficient and predictable pipeline growth.",
+      "Basic Quality (Table Stakes)": "A viable solution must offer core sales engagement functionalities.",
+      "Hiring Criteria": "Key differentiators are the all-in-one platform.",
+      "Firing Criteria": "The platform would be rejected if AI content quality is poor.",
+      "Key Trade-offs": "Customers trade safety for simplicity and cost savings.",
+      "Table Stakes": "The platform must meet security and compliance standards.",
+      "Functional Value": "The platform delivers measurable business outcomes.",
+      "Ease of Doing Business": "The platform simplifies the sales rep's workflow.",
+      "Individual Value": "The platform benefits SDRs/AEs by saving time.",
+      "Aspirational Value": "Adopting RegieOne aligns with building a modern GTM engine.",
+      "Ability to Pay": "The platform's pricing targets mid-market companies.",
+      "Economic Justification": "The business case combines cost savings.",
+      "Relative Value vs. Alternatives": "RegieOne's bundled price is positioned as lower.",
+      "Risk & Switching Costs": "Adopting RegieOne involves significant perceived risk.",
+      "Market Reference Points": "Customers use the costs of their current tech stack."
+    },
+    "positioningData": {
+      "quickDecisionMaking": "The economic buyer is a senior executive.",
+      "prioritizedRequirements": "The ICP prioritizes predictable pipeline growth.",
+      "implementationReadiness": "Ideal prospects have a dedicated Sales Operations function.",
+      "firmographic": "The ICP consists of B2B companies in high-growth sectors.",
+      "technographic": "The ICP uses a mature GTM tech stack.",
+      "behavioral": "The ICP shows strong focus on scaling outbound sales.",
+      "icp_common_needs": "Customers aim for efficient and predictable pipeline growth.",
+      "icp_desired_business_value": "Adopting RegieOne aligns with building a modern GTM engine.",
+      "icp_problem_urgency": "Prospecting inefficiency is the main struggle.",
+      "icp_willingness_to_pay": "The business case combines cost savings from consolidation.",
+      "icp_summary": "The target market is composed of sophisticated, high-growth B2B organizations.",
+      "market-context": "AI Sales Engagement Platform (AI SEP)",
+      "market-context-other": "AI Sales Engagement Platform",
+      "trend1_desc": "Widespread adoption of Generative AI, increasing market familiarity.",
+      "trend2_desc": "Economic pressures forcing businesses to prioritize operational efficiency.",
+      "trend3_desc": "Diminishing returns of traditional outbound prospecting.",
+      "trend4_desc": "Evolution of the B2B buying process towards 'Buyer Enablement'.",
+      "competitiveAlternatives": [
+        {
+          "alternative": "Salesloft",
+          "description": "Best-of-Breed Sales Engagement Platform",
+          "whyCustomersChoose": "Trusted, market-leading platform with proven track record.",
+          "weaknessesOrGaps": "Contributes to tech stack complexity and total cost of ownership.",
+          "customerProof": "Users on G2 rate Salesloft highly for key features."
+        }
+      ],
+      "uniqueValueAndProof": [
+        {
+          "attributeName": "Unified Human-Agent Workflow",
+          "attributeDescription": "A collaborative model where AI and humans work in partnership.",
+          "benefit": "Significantly reduces administrative burden on sales talent.",
+          "value": "Increased quality conversations per rep."
+        },
+        {
+          "attributeName": "All-in-One Platform",
+          "attributeDescription": "Integrates several sales tools into a single platform.",
+          "benefit": "Reduces GTM technology costs and simplifies workflow.",
+          "value": "Reduction in total GTM technology spend."
+        },
+        {
+          "attributeName": "Built-in AI Parallel Dialer",
+          "attributeDescription": "Native parallel dialer with AI-generated talking points.",
+          "benefit": "Increases efficiency of phone channel.",
+          "value": "Increased call connect rate and live conversations."
+        }
+      ],
+      "pillars": [
+        {
+          "id": 1,
+          "name": "Unified Human-Agent Workflow",
+          "benefit": "Significantly reduces administrative burden on sales talent."
+        },
+        {
+          "id": 2,
+          "name": "All-in-One Platform",
+          "benefit": "Reduces GTM technology costs and simplifies workflow."
+        },
+        {
+          "id": 3,
+          "name": "Built-in AI Parallel Dialer",
+          "benefit": "Increases efficiency of phone channel."
+        }
+      ],
+      "values": [
+        {
+          "val1": "Unified Human-Agent Workflow",
+          "val2": "A collaborative model where AI and humans work in partnership.",
+          "val3": "Significantly reduces administrative burden on sales talent.",
+          "val4": "Increased quality conversations per rep.",
+          "pillarId": 1
+        },
+        {
+          "val1": "All-in-One Platform",
+          "val2": "Integrates several sales tools into a single platform.",
+          "val3": "Reduces GTM technology costs and simplifies workflow.",
+          "val4": "Reduction in total GTM technology spend.",
+          "pillarId": 2
+        },
+        {
+          "val1": "Built-in AI Parallel Dialer",
+          "val2": "Native parallel dialer with AI-generated talking points.",
+          "val3": "Increases efficiency of phone channel.",
+          "val4": "Increased call connect rate and live conversations.",
+          "pillarId": 3
+        }
+      ],
+      "marketCategory": "AI Sales Engagement Platform (AI SEP)",
+      "categoryName": "AI Sales Engagement Platform",
+      "relevantTrends": {
+        "trend1": "Widespread adoption of Generative AI, increasing market familiarity.",
+        "trend2": "Economic pressures forcing businesses to prioritize operational efficiency.",
+        "trend3": "Diminishing returns of traditional outbound prospecting.",
+        "trend4": "Evolution of the B2B buying process towards 'Buyer Enablement'."
+      }
+    },
+    "categoryData": {
+      "from-statement": "The 'old way' involved sales teams drowning in fragmented tools.",
+      "to-statement": "The 'new way' is a shift to unified, intelligent workflow.",
+      "new-opportunity": "The new opportunity is creating a predictable, scalable pipeline generation engine.",
+      "category-name": "AI Sales Engagement Platform (AI SEP)",
+      "category-definition": "Regie.ai defines a new set of expectations for sales engagement.",
+      "manifesto": "Regie.ai's messaging is built on three consistent pillars.",
+      "market-category": "AI Sales Engagement Platform (AI SEP)",
+      "target-market-summary": "Sophisticated, high-growth B2B organizations in technology and SaaS.",
+      "target-market-firmographic": "Mid-market to large enterprise companies (51-1,000+ employees).",
+      "target-market-technographic": "Standardized on Salesforce with dedicated SEP platforms.",
+      "target-market-behavioral": "Strong focus on scaling outbound sales and technology adoption.",
+      "target-market-readiness": "Dedicated Sales Operations or Revenue Operations function."
+    },
+    "aiSuggestions": {},
+    "navigationProgress": {
+      "completedParts": [],
+      "currentPart": "home",
+      "partCompletionData": {}
+    },
+    "currentView": "home",
+    "lastSaved": "2025-09-23T03:00:00.000Z"
+  }
+}
