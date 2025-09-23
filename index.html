@@ -1433,14 +1433,78 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 const populatePositioningData = () => {
                     const positioningContent = results['Positioning']?.content || {};
                     const icpContent = results['ICP Definition']?.content || {};
+                    const segmentContent = results['Segment Foundation']?.content || {};
+                    const categoryContent = results['Category Design']?.content || {};
+
+                    // Extract data for missing ICP fields
+                    const icpDefinition = icpContent.icpDefinition || {};
+                    const jobsToBeDone = segmentContent.jobsToBeDone || {};
+                    const customerValue = segmentContent.customerValue || {};
+                    const willingnessToPay = segmentContent.willingnessToPay || {};
+
+                    // Create pillars from uniqueValueAndProof
+                    const uniqueValues = positioningContent.uniqueValueAndProof || [];
+                    const pillars = uniqueValues.slice(0, 3).map((item, index) => ({
+                        id: index + 1,
+                        name: item.attributeName || '',
+                        benefit: item.benefit || ''
+                    }));
+
+                    // Ensure we have at least one pillar
+                    if (pillars.length === 0) {
+                        pillars.push({ id: 1, name: '', benefit: '' });
+                    }
+
+                    // Create values from uniqueValueAndProof
+                    const values = uniqueValues.map((item, index) => ({
+                        val1: item.attributeName || '',
+                        val2: item.attributeDescription || '',
+                        val3: item.benefit || '',
+                        val4: item.value || '',
+                        pillarId: (index % 3) + 1 // Distribute across pillars
+                    }));
+
+                    // Ensure we have at least one value
+                    if (values.length === 0) {
+                        values.push({ val1: '', val2: '', val3: '', val4: '', pillarId: null });
+                    }
+
+                    // Extract trend descriptions
+                    const relevantTrends = positioningContent.relevantTrends || {};
 
                     return {
-                        ...icpContent.icpDefinition || {},
+                        // Original ICP fields
+                        ...icpDefinition,
+
+                        // Missing ICP analysis fields
+                        icp_common_needs: jobsToBeDone['Desired Outcomes'] || customerValue['Functional Value'] || '',
+                        icp_desired_business_value: customerValue['Aspirational Value'] || customerValue['Individual Value'] || '',
+                        icp_problem_urgency: jobsToBeDone['Struggling Moments'] || jobsToBeDone['Pushes & Pulls'] || '',
+                        icp_willingness_to_pay: willingnessToPay['Economic Justification'] || willingnessToPay['Ability to Pay'] || '',
+                        icp_summary: categoryContent.targetMarketCharacteristics?.summary || '',
+
+                        // Market context fields
+                        'market-context': positioningContent.marketCategory || '',
+                        'market-context-other': positioningContent.categoryName || '',
+
+                        // Trend descriptions
+                        trend1_desc: relevantTrends.trend1 || '',
+                        trend2_desc: relevantTrends.trend2 || '',
+                        trend3_desc: relevantTrends.trend3 || '',
+                        trend4_desc: relevantTrends.trend4 || '',
+
+                        // Competitive data
                         competitiveAlternatives: positioningContent.competitiveAlternatives || [],
                         uniqueValueAndProof: positioningContent.uniqueValueAndProof || [],
+
+                        // Pillars and values structure
+                        pillars: pillars,
+                        values: values,
+
+                        // Market category fields
                         marketCategory: positioningContent.marketCategory || '',
                         categoryName: positioningContent.categoryName || '',
-                        relevantTrends: positioningContent.relevantTrends || {}
+                        relevantTrends: relevantTrends
                     };
                 };
 

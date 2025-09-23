@@ -59,13 +59,17 @@
       // Customer Value fields
       const customerValueFields = [
         'successMetrics', 'Customer Value', 'Value Metrics', 'Value Proposition',
-        'Benefits', 'Outcomes', 'Emotional Benefits', 'Functional Benefits'
+        'Benefits', 'Outcomes', 'Emotional Benefits', 'Functional Benefits',
+        'Table Stakes', 'Functional Value', 'Ease of Doing Business',
+        'Individual Value', 'Aspirational Value'
       ];
 
       // Willingness to Pay fields
       const willingnessToPayFields = [
         'Willingness to Pay', 'Price Sensitivity', 'Budget', 'Cost Structure',
-        'Pricing Model', 'Payment Terms', 'Economic Value'
+        'Pricing Model', 'Payment Terms', 'Economic Value',
+        'Ability to Pay', 'Economic Justification', 'Relative Value vs. Alternatives',
+        'Risk & Switching Costs', 'Market Reference Points'
       ];
 
       // Categorize all segment data fields
