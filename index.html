@@ -1728,9 +1728,42 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             }
 
                             // Map positioning fields with V8 timing fix
-                            // Map market category (corrected field name)
+                            // Smart market category mapping function (same as in downloadResults)
+                            const mapMarketCategory = (aiCategory) => {
+                                if (!aiCategory) return { dropdown: '', other: '' };
+
+                                const category = aiCategory.toLowerCase();
+                                const originalCategory = aiCategory.trim();
+
+                                // Check for new category indicators
+                                if (category.includes('new') || category.includes('novel') ||
+                                    category.includes('first') || category.includes('emerging') ||
+                                    category.includes('revolutionary') || category.includes('breakthrough')) {
+                                    return { dropdown: 'New Category', other: '' };
+                                }
+                                // Check for existing category indicators
+                                else if (category.includes('existing') || category.includes('established') ||
+                                        category.includes('traditional') || category.includes('current') ||
+                                        category.includes('standard') || category.includes('conventional')) {
+                                    return { dropdown: 'Existing Category', other: '' };
+                                }
+                                // Check for sub-category indicators
+                                else if (category.includes('sub') || category.includes('segment') ||
+                                        category.includes('niche') || category.includes('specialized') ||
+                                        category.includes('subset')) {
+                                    return { dropdown: 'Sub-category', other: '' };
+                                }
+                                // Default to "Other" with the original category name
+                                else {
+                                    return { dropdown: 'Other', other: originalCategory };
+                                }
+                            };
+
+                            // Apply smart mapping to market category
                             if (posContent.marketCategory && posContent.marketCategory.trim()) {
-                                newState.positioningData['market-context'] = posContent.marketCategory;
+                                const categoryMapping = mapMarketCategory(posContent.marketCategory);
+                                newState.positioningData['market-context'] = categoryMapping.dropdown;
+                                newState.positioningData['market-context-other'] = categoryMapping.other || posContent.categoryName || '';
                                 // V8 deoptimization trigger - prevents TurboFan property assignment optimization bug
                                 void 0; // V8 deopt timing fix
                             }
