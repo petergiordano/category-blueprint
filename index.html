@@ -1413,6 +1413,48 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                 }
             };
 
+            const downloadResults = () => {
+                if (!results) return;
+
+                // Create export data using same format as session export
+                const exportData = {
+                    formatVersion: "1.0.0",
+                    appVersion: APP_VERSION,
+                    exportTimestamp: new Date().toISOString(),
+                    data: {
+                        companyContext: appState.companyContext || {},
+                        segmentData: {},
+                        positioningData: {},
+                        categoryData: {},
+                        aiSuggestions: results,
+                        navigationProgress: {
+                            completedParts: [],
+                            currentPart: "home",
+                            partCompletionData: {}
+                        },
+                        currentView: "home",
+                        lastSaved: new Date().toISOString()
+                    }
+                };
+
+                // Use SessionFileIO for consistent download experience
+                if (window.SessionFileIO) {
+                    const filename = `ai-research-results-${new Date().toISOString().split('T')[0]}.json`;
+                    window.SessionFileIO.triggerDownload(filename, JSON.stringify(exportData, null, 2));
+                } else {
+                    // Fallback download method
+                    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `ai-research-results-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            };
+
             const handleApplySuggestions = () => {
                 if (!results) return;
 
@@ -1662,7 +1704,7 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
                                 </div>
-                                <h2 className="text-2xl font-bold scale-green-text">AI Research Assistant</h2>
+                                <h2 className="text-2xl font-bold scale-green-text">AI Processing Assistant</h2>
                             </div>
                             <button onClick={handleClose} className="text-gray-400 hover:text-gray-800 text-3xl font-light">×</button>
                         </div>
@@ -1803,16 +1845,19 @@ Summarize SECTION 1: Jobs-to-Be-Done & Value and SECTION 2: ICP & Buyer Personas
                             ) : (
                                 <>
                                     <button
-                                        onClick={resetModal}
-                                        className="border border-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                                        onClick={downloadResults}
+                                        className="border border-blue-500 text-blue-600 font-bold py-2 px-4 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2"
                                     >
-                                        Process Another Report
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Save these Results
                                     </button>
                                     <button
                                         onClick={handleApplySuggestions}
                                         className="scale-green-bg text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
                                     >
-                                        Apply AI Suggestions
+                                        Apply Results to Framework
                                     </button>
                                 </>
                             )}
