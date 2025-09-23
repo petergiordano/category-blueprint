@@ -64,3 +64,13 @@ temp/
 # Project-specific files (local only)
 docs/specifications/category-blueprint-swapfile.txt
 positioning-blueprint-swapfile.txt
+
+# Duplicate files (prevent accidental creation)
+* [0-9].*
+* [0-9]/*
+* [0-9]/
+
+# Test files
+test-*.json
+sample-*.json
+test-data/*.json
