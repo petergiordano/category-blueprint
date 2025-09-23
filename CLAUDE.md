@@ -51,9 +51,9 @@ git checkout -b feat/descriptive-name
 pkill -f "vercel dev"
 
 # Step 5: Start fresh dev server with environment variables
-BRAVE_API_KEY=BSAhA_k_Edk6teNnB2ZEXx9qXuJQefE \
-GEMINI_API_KEY=AIzaSyCtz42hEkwKNG5EmKa6ZM6F4FtP6dgme4A \
-vercel dev --listen 3000 --token 98FYQ5I4lUnZWbLqAoWNJlPt
+BRAVE_API_KEY=[YOUR_BRAVE_API_KEY] \
+GEMINI_API_KEY=[YOUR_GEMINI_API_KEY] \
+vercel dev --listen 3000 --token [YOUR_VERCEL_TOKEN]
 
 # Step 6: Verify application loads correctly
 open http://localhost:3000

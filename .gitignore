@@ -50,6 +50,9 @@ Thumbs.db
 *.key
 *.pem
 
+# Claude Code settings with sensitive data
+.claude/settings.local.json
+
 # Logs and databases
 *.log
 *.sqlite
