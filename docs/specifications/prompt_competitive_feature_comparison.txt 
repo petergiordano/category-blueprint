@@ -1,0 +1,90 @@
+# Competitive Feature Comparison Prompt
+
+You are an expert market analyst.
+Your task is to create a **normalized feature comparison chart** for a B2B SaaS product.
+
+### Inputs
+
+* **Company name**
+* **Product name**
+* **Website**
+
+### Tasks
+
+1. **Find Competitors and Alternatives**
+
+   * Identify direct competitors (same category).
+   * Identify substitutes/alternatives customers might use if this product didn’t exist.
+
+2. **Collect Features and Capabilities**
+
+   * Extract product features, technical specs, and unique capabilities.
+   * Include pricing models, contract terms, and service elements when available.
+   * Normalize naming: if Company A calls a feature "Engagement AI" and Company B calls it "Conversational Insights," group them under one common baseline name (e.g., "AI Conversation Analysis").
+
+3. **Build the Comparison Chart**
+
+   * Rows = normalized features/capabilities.
+   * Columns = product names (target + competitors).
+   * Mark which features each product offers.
+   * Clearly note unique features only one product provides.
+
+4. **Highlight Differentiation**
+
+   * Summarize where the target product stands out.
+   * Call out table stakes vs. differentiators.
+
+### Output Format
+
+* Provide a **table** with normalized features and checkmarks (✓) or notes under each company.
+* Include a short **executive summary** highlighting differentiators, gaps, and overlaps.
+
+---
+
+# Example: Datadog vs Honeycomb vs Dynatrace
+Here’s a worked-out example comparison using **Datadog vs Honeycomb vs Dynatrace**. Use this as a model for how your normalized chart + summary could look. Data is pulled from recent public sources; it may be somewhat approximate.
+
+### Normalized Features / Capabilities vs What Each Vendor Calls Them
+
+| Baseline Capability / Attribute                                      | Datadog                                                                                                             | Honeycomb                                                                                                                                                        | Dynatrace                                                                                                                                                                       |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unified metrics-logs-traces observability**                        | Metrics + Logs + Traces + APM + Infrastructure + RUM etc. ([Middleware][1])                                         | Strong event-/trace-centric model, high-cardinality event data; logs+traces+metrics less bundled / less breadth, but deep in trace/event analysis. ([SigNoz][2]) | Also full stack: APM + metrics + logs + traces, with dependency mapping, auto-instrumentation etc. ([Taloflow][3])                                                              |
+| **High-cardinality, event-level exploration**                        | Moderate: supports tags, dimensions, but often more aggregated metrics; configuration needed. ([SigNoz][2])         | Very strong: event-based model, rich filtering, slicing, dimensions, exploratory queries. ([SigNoz][2])                                                          | Good: can do trace level and dependency mapping; but sometimes more traditional/pre-configured; less focus on extreme exploratory event slicing than Honeycomb. ([Taloflow][3]) |
+| **Automatic dependency / topology mapping**                          | Yes; many integrations; but may require setup. ([Middleware][1])                                                    | More manual or built around instrumentation; less built-in auto topology compared to Dynatrace. ([StackShare][4])                                                | Very strong: auto discovery of services, microservices, dependencies. ([Taloflow][3])                                                                                           |
+| **AI / automation / root cause / anomaly detection**                 | Has facilities: alerts, anomaly detection, some automated correlation. ([Middleware][1])                            | More focused on letting you explore deeply; less hype about full auto root cause (though improving). ([SigNoz][2])                                               | Strong—lots of automation, AI-assisted root cause, etc. ([Taloflow][3])                                                                                                         |
+| **Real-User Monitoring / Digital Experience Monitoring**             | Yes; RUM + Synthetic + Front-end performance etc. ([Middleware][1])                                                 | Less emphasis; more back-end / system behavior; less mature or less broad on RUM/synthetic. ([SigNoz][2])                                                        | Very strong: UX, digital experience monitoring is a core component. ([Middleware][1])                                                                                           |
+| **Pricing model / Cost transparency**                                | Usage based (hosts, data ingested, etc.); fairly broad; can get complex at scale. ([Middleware][1])                 | Also usage/data-based; cost scales with event volume, cardinality; often pitched as efficient for high-cardinality work. ([Honeycomb][5])                        | Enterprise oriented; often more expensive; auto-agent/discovery and full-stack breadth contributes to cost. ([Middleware][1])                                                   |
+| **Ease of setup / Out-of-box functionality**                         | Good; many integrations; dashboards etc. to get started. ([Middleware][1])                                          | More setup/instrumentation required for full event model, metrics etc. ([SigNoz][2])                                                                             | Requires some configuration; agent/auto-instrumentation helps; steeper learning curve especially for very detailed or custom observability. ([Middleware][1])                   |
+| **Scaling & performance (ingestion, query latency, data retention)** | Strong infrastructure; good scaling; sometimes cost / performance trade-offs at very large scale. ([Middleware][1]) | Very good for deep queries; trades off maybe in breadth and generality; query latency in some scenarios depends on data volume. ([SigNoz][2])                    | Strong; built for large enterprise, complex systems, high traffic; good automated handling of scale. ([Taloflow][3])                                                            |
+| **Support for open-source / standards (e.g., OpenTelemetry)**        | Yes; largely supportive of OTEL etc. ([SigNoz][2])                                                                  | Very strong alignment; many users pick Honeycomb for its support of instrumentation / telemetry standards. ([Honeycomb][5])                                      | Also supports standard telemetry protocols / open-source; plus proprietary enhancements. ([Taloflow][3])                                                                        |
+
+---
+
+### Example Summary / Executive Insights
+
+* **Overlap / Table stakes**: All three offer core observability capabilities: metrics, traces, logs, dashboards, alerting. If you need full-stack visibility, each can do it.
+
+* **Differentiators**:
+    • Honeycomb stands out when you need *deep exploratory analysis of high-cardinality / event-level data*. If your use-case involves debugging complex interactions, microservice hops, many dimensions, you’ll see value there.
+    • Dynatrace shines in automated dependency mapping, long-term scale, and auto-root-cause and AI features. For large or complex distributed systems, it aims to reduce manual work.
+    • Datadog is strong in the generalist case: broad integrations, lots of features across observability + infrastructure + security, good out-of-box capabilities.
+
+* **Trade-offs / Gaps**:
+    • Honeycomb may require more work to instrument & configure at first; might lack some of the breadth of integrations or polished UI features for certain edge functionalities.
+    • Dynatrace may be more expensive, steeper learning curve. More “serious” setup required.
+    • Datadog sometimes trades depth for ease; for extreme cardinality or very custom querying, you may hit limits.
+
+* **Implications**:
+    • If your target product is going for deep debugging / event-level insights vs big enterprise automation, different priorities matter.
+    • Cost matters heavily at large scale: the difference in how they price things (data volume, host count, event traffic, agents, etc.) will significantly affect TCO.
+
+---
+
+If you want, I can build a fully fleshed-out written example that looks more like a report (with sidecharts, transcript, narrative etc.) as if I’d done this for one of your product ideas. Do you want me to do that?
+
+[1]: https://middleware.io/blog/datadog-vs-dynatrace/?utm_source=chatgpt.com "Datadog vs Dynatrace: Ultimate Comparison Guide [2025]"
+[2]: https://signoz.io/comparisons/honeycomb-vs-datadog/?utm_source=chatgpt.com "Honeycomb vs Datadog - Choosing the Right Observability ..."
+[3]: https://www.taloflow.ai/guides/comparisons/dynatrace-vs-honeycomb-apm-observability?utm_source=chatgpt.com "Dynatrace vs Honeycomb for APM and Observability in 2025"
+[4]: https://stackshare.io/stackups/dynatrace-vs-honeycomb?utm_source=chatgpt.com "Dynatrace vs Honeycomb | What are the differences?"
+[5]: https://www.honeycomb.io/why-honeycomb/comparisons?utm_source=chatgpt.com "Choosing the Right Observability Platform - Honeycomb"
+
