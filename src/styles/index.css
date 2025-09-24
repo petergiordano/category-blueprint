@@ -1,0 +1,16 @@
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #f6f6f6;
+}
+
+.scale-green-bg {
+    background-color: #10b981;
+}
+
+.scale-green-text {
+    color: #10b981;
+}
+
+.scale-gold-text {
+    color: #d97706;
+}
