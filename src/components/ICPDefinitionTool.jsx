@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PrimaryActions from './PrimaryActions.jsx';
 import ExportModal from './ExportModal.jsx';
-import ICPFlowVisualization from './ICPFlowVisualization.jsx';
+import ICPFlowDiagram from './ICPFlowDiagram.jsx';
 
 const ICPDefinitionTool = ({ appState, setAppState, onNavigate, markPartAsCompleted, openTourAtStep }) => {
     const [exportModal, setExportModal] = useState({ isOpen: false, content: '', title: '' });
@@ -64,7 +64,7 @@ const ICPDefinitionTool = ({ appState, setAppState, onNavigate, markPartAsComple
                 <div className="lg:flex lg:space-x-8">
                     <main className="w-full">
                         <div className="space-y-8">
-                            <ICPFlowVisualization appState={appState} onNavigate={onNavigate} openTourAtStep={openTourAtStep} />
+                            <ICPFlowDiagram appState={appState} onNavigate={onNavigate} openTourAtStep={openTourAtStep} />
                             {/* Rest of the component JSX will be restored later */}
                         </div>
                     </main>

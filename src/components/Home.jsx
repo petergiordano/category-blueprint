@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { CompanySetupModal } from './CompanySetupModal';
-import { PromptDisplayModal } from './PromptDisplayModal';
-import { SessionMenu } from './SessionMenu';
+import CompanySetupModal from './CompanySetupModal';
+import PromptDisplayModal from './PromptDisplayModal';
+import SessionMenu from './SessionMenu';
 import { generateDeepResearchPrompt } from '../utils/helpers';
 
 const Home = ({ appState, setAppState, onNavigate, setShowAIResearchModal, openTourAtStep, onImport, onExport, disabled }) => {

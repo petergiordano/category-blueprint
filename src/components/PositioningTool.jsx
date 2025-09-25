@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { PrimaryActions } from './PrimaryActions';
-import { ExportModal } from './ExportModal';
+import PrimaryActions from './PrimaryActions';
+import ExportModal from './ExportModal';
 import { getInitialState } from '../utils/helpers';
 
 // Dynamic Field Components for PositioningTool

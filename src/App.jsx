@@ -140,7 +140,7 @@ const App = () => {
             <SessionImportModal
                 isOpen={Boolean(pendingImport)}
                 fileName={pendingImport?.fileName}
-.                onCancel={handleCancelImport}
+                onCancel={handleCancelImport}
                 onConfirm={handleConfirmImport}
                 isProcessing={isProcessingImport}
             />
