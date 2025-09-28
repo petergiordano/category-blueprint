@@ -18,3 +18,30 @@ body {
 .scale-gold-text {
     color: #d97706;
 }
+
+/* Custom focus ring for form elements */
+.focus-ring-gold:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #d97706;
+    border-color: #d97706;
+}
+
+/* Custom button styles */
+.btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200;
+}
+
+.btn-secondary {
+    @apply px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200;
+}
+
+/* Card styles */
+.card {
+    @apply bg-white rounded-lg shadow-md p-6;
+}
+
+/* Modal overlay */
+.modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
