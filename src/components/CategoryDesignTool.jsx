@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PrimaryActions from './PrimaryActions';
 import ExportModal from './ExportModal';
+import { getInitialState } from '../utils/helpers';
 
 // CategoryDesignTool Component
 const CategoryDesignTool = ({ appState, setAppState, onNavigate, markPartAsCompleted }) => {

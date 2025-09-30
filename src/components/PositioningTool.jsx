@@ -196,6 +196,8 @@ const PositioningTool = ({ appState, setAppState, onNavigate, markPartAsComplete
     const [pillarGenModalOpen, setPillarGenModalOpen] = useState(false);
     const [importMessage, setImportMessage] = useState(null);
     const [importMessageType, setImportMessageType] = useState('');
+    const [gradingState, setGradingState] = useState({});
+    const [uniquenessResults, setUniquenessResults] = useState({});
 
     // Helper functions for nested data management
     const updateNestedValue = (section, index, key, value) => {
