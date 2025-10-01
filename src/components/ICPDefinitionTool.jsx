@@ -215,7 +215,7 @@ const ICPDefinitionTool = ({ appState, setAppState, onNavigate, markPartAsComple
 
                     const updates = {};
                     Object.keys(fieldMapping).forEach(importField => {
-                        if (icpDefinition[importField] && icpDefinition[importField].trim()) {
+                        if (icpDefinition[importField] !== undefined && icpDefinition[importField] !== null) {
                             const stateField = fieldMapping[importField];
                             updates[stateField] = icpDefinition[importField];
                         }
