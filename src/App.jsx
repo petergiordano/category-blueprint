@@ -12,6 +12,7 @@ import SessionImportModal from './components/SessionImportModal.jsx';
 import OnboardingTour from './components/OnboardingTour.jsx';
 
 import { getInitialState, saveAppState, loadAppState } from './utils/helpers.js';
+import { triggerDownload, pickJsonFile } from './utils/sessionFileIO.js';
 
 const App = () => {
     const [appState, setAppState] = useState(() => {
@@ -42,15 +43,65 @@ const App = () => {
     };
 
     const handleExportSession = () => {
-        // This will be re-connected once SessionManager is available
+        try {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `positioning-blueprint-${timestamp}.json`;
+            const exportData = JSON.stringify(appState, null, 2);
+            triggerDownload(filename, exportData);
+            showNotice('Session exported successfully!', 'success');
+        } catch (error) {
+            console.error('Export failed:', error);
+            showNotice('Failed to export session', 'error');
+        }
     };
 
     const handleStartImport = async () => {
-        // This will be re-connected once SessionFileIO is available
+        try {
+            const { json, fileName } = await pickJsonFile();
+            setPendingImport({ data: json, fileName });
+        } catch (error) {
+            if (error.message !== 'NO_FILE_SELECTED') {
+                console.error('Import failed:', error);
+                showNotice(error.message || 'Failed to read file', 'error');
+            }
+        }
     };
 
     const handleConfirmImport = async () => {
-        // This will be re-connected once SessionManager is available
+        if (!pendingImport) return;
+
+        try {
+            setIsProcessingImport(true);
+
+            // Handle both old and new export formats
+            let importedData = pendingImport.data;
+
+            // Check if this is the old format with wrapper
+            if (importedData.data && importedData.formatVersion) {
+                importedData = importedData.data;
+            }
+
+            // Merge with initial state to ensure all required properties exist
+            const mergedState = {
+                ...getInitialState(),
+                ...importedData,
+                // Ensure navigationProgress exists
+                navigationProgress: {
+                    ...getInitialState().navigationProgress,
+                    ...(importedData.navigationProgress || {})
+                }
+            };
+
+            setAppState(mergedState);
+            saveAppState(mergedState);
+            setPendingImport(null);
+            showNotice('Session imported successfully!', 'success');
+        } catch (error) {
+            console.error('Import confirmation failed:', error);
+            showNotice('Failed to import session', 'error');
+        } finally {
+            setIsProcessingImport(false);
+        }
     };
 
     const handleCancelImport = () => {
