@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-19T00:00:00.000Z",
+    "partName": "Category Design",
+    "company": {
+      "name": "TechVision AI",
+      "url": "https://techvision.ai",
+      "productName": "VisionFlow",
+      "industry": "Enterprise AI"
+    }
+  },
+  "content": {
+    "pointOfView": {
+      "fromStatement": "Traditional AI tools require extensive coding and data science expertise, limiting adoption to technical teams",
+      "toStatement": "AI should be accessible to business users through natural language interfaces and pre-built workflows"
+    },
+    "newOpportunity": "Democratize AI capabilities by enabling business users to build, deploy, and manage AI workflows without code, creating a new category of 'Citizen AI Development'",
+    "categoryNameAndDefinition": {
+      "name": "Citizen AI Development Platform",
+      "definition": "A no-code platform that empowers business users to create, deploy, and manage enterprise-grade AI workflows using natural language and visual interfaces, without requiring data science or engineering expertise"
+    },
+    "manifesto": "We believe AI should be a tool for everyone, not just data scientists. Every business user should have the power to automate their workflows, generate insights, and make data-driven decisions without waiting for technical teams. The future of AI is not in complexity, but in accessibility.",
+    "marketCategory": "AI Development Platforms",
+    "targetMarketCharacteristics": {
+      "summary": "Mid-market to Enterprise companies ($50M-$1B revenue) undergoing digital transformation with distributed business teams seeking to democratize AI capabilities",
+      "firmographic": "Companies with 200-5000 employees, B2B focus, annual revenue $50M-$1B, technology budget >$5M, 3+ business units",
+      "technographic": "Cloud-first infrastructure (AWS/Azure/GCP), existing SaaS tools (Salesforce, HubSpot, Slack), API-first architecture, moderate technical maturity",
+      "behavioral": "Active digital transformation initiatives, history of adopting no-code/low-code tools, collaborative work culture, data-driven decision making, willingness to experiment with emerging technologies",
+      "implementationReadiness": "Established IT governance, dedicated transformation budget, executive sponsorship for innovation, cross-functional collaboration mechanisms, 3-6 month implementation timeline tolerance"
+    }
+  }
+}

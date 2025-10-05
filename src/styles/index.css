@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #f6f6f6;
+}
+
+.scale-green-bg {
+    background-color: #10b981;
+}
+
+.scale-green-text {
+    color: #10b981;
+}
+
+.scale-gold-text {
+    color: #d97706;
+}
+
+/* Custom focus ring for form elements */
+.focus-ring-gold:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #d97706;
+    border-color: #d97706;
+}
+
+/* Custom button styles */
+.btn-primary {
+    padding: 0.5rem 1rem;
+    background-color: #2563eb;
+    color: white;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    padding: 0.5rem 1rem;
+    background-color: #4b5563;
+    color: white;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #374151;
+}
+
+/* Card styles */
+.card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+/* Modal overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+/* Tailwind v4 compatibility - missing utilities */
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.py-4 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.bg-opacity-50 {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.bg-opacity-90 {
+    background-color: rgba(16, 185, 129, 0.9);
+}
+
+.hover\:bg-opacity-90:hover {
+    background-color: rgba(16, 185, 129, 0.9);
+}

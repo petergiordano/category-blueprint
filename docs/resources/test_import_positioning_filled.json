@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "exportDate": "2025-01-19T00:00:00.000Z",
+    "partName": "Positioning",
+    "company": {
+      "name": "TechVision AI",
+      "url": "https://techvision.ai",
+      "productName": "VisionFlow",
+      "industry": "Enterprise AI"
+    }
+  },
+  "content": {
+    "competitiveAlternatives": [
+      {
+        "alternative": "Traditional BI Tools (Tableau, PowerBI)",
+        "description": "Legacy business intelligence platforms requiring SQL knowledge and technical setup",
+        "whyCustomersChoose": "Familiar interface, enterprise support, existing data infrastructure integration",
+        "weaknessesOrGaps": "Steep learning curve, requires data teams, no AI capabilities, static dashboards",
+        "ourDifferentiation": "No-code AI workflows with natural language queries and automated insights"
+      },
+      {
+        "alternative": "Custom Python Scripts",
+        "description": "In-house developed data analysis and automation scripts",
+        "whyCustomersChoose": "Full customization, no vendor lock-in, existing team expertise",
+        "weaknessesOrGaps": "High maintenance burden, fragile code, no governance, requires engineers",
+        "ourDifferentiation": "Pre-built AI models with enterprise governance and business user accessibility"
+      },
+      {
+        "alternative": "Spreadsheet Analysis",
+        "description": "Manual data analysis using Excel or Google Sheets",
+        "whyCustomersChoose": "Universal availability, low cost, familiar to all business users",
+        "weaknessesOrGaps": "Error-prone, not scalable, no automation, version control issues",
+        "ourDifferentiation": "Automated AI analysis with audit trails and real-time collaboration"
+      }
+    ],
+    "uniqueValueAndProof": [
+      {
+        "attributeName": "Natural Language AI Workflows",
+        "attributeDescription": "Business users build AI workflows using plain English commands without code",
+        "benefit": "Reduces time-to-insight from weeks to hours by eliminating dependency on data teams",
+        "value": "Customers report 10x faster deployment of AI use cases and 60% reduction in data team workload"
+      },
+      {
+        "attributeName": "Enterprise-Grade AI Governance",
+        "attributeDescription": "Built-in compliance, audit trails, and access controls for all AI operations",
+        "benefit": "Enables scaling AI adoption across organization while maintaining regulatory compliance",
+        "value": "Supports SOC2, GDPR, and HIPAA requirements with automated compliance reporting"
+      },
+      {
+        "attributeName": "Pre-Built Industry AI Models",
+        "attributeDescription": "Library of 200+ ready-to-use AI models trained on industry-specific datasets",
+        "benefit": "Accelerates time-to-value by providing proven AI solutions for common business problems",
+        "value": "Customers achieve ROI in 3 months vs 12-18 months with custom AI development"
+      }
+    ],
+    "marketCategory": "AI Development Platforms",
+    "categoryName": "Citizen AI Development Platform",
+    "relevantTrends": {
+      "trend1": "Democratization of AI: Business users expect self-service access to AI capabilities without technical barriers",
+      "trend2": "AI Governance Requirements: Regulatory pressure for transparent, auditable, and compliant AI systems",
+      "trend3": "No-Code Movement: Acceleration of low-code/no-code adoption across enterprise software categories",
+      "trend4": "Distributed AI Teams: Shift from centralized data science teams to AI capabilities embedded in business units"
+    }
+  }
+}
