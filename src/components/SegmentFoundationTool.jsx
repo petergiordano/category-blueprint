@@ -740,11 +740,15 @@ const SegmentFoundationTool = ({ appState, setAppState, onNavigate, markPartAsCo
                                             {/* Segment Foundation Summary */}
                                             <div className="bg-gray-50 rounded-lg p-6 mb-6 max-w-4xl mx-auto">
                                                 <div className="text-center mb-4">
-                                                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Market Segmentation Process</h3>
-                                                    <p className="text-gray-600 mb-4">
-                                                        We filter the total market through three criteria: <strong>Jobs to be Done</strong> (shared context & struggling moments),
-                                                        <strong>Customer Value</strong> (similar value priorities), and <strong>Willingness to Pay</strong> (investment threshold).
+                                                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Market Segmentation Process:</h3>
+                                                    <p className="text-gray-600 mb-4 text-left">
+                                                        To determine a true Market Segment, we filter the total market to find customers who share the same:
                                                     </p>
+                                                    <ul className="text-left text-gray-700 mb-4 space-y-2 ml-6">
+                                                        <li><strong>Jobs to be Done</strong> (shared context & struggling moments)</li>
+                                                        <li><strong>Customer Value</strong> (similar value priorities)</li>
+                                                        <li><strong>Willingness to Pay</strong> (investment threshold)</li>
+                                                    </ul>
                                                     <button
                                                         onClick={() => openTourAtStep(1)}
                                                         className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -757,6 +761,10 @@ const SegmentFoundationTool = ({ appState, setAppState, onNavigate, markPartAsCo
                                                     </button>
                                                 </div>
                                             </div>
+
+                                            <p className="text-sm text-gray-600 mt-4 max-w-3xl mx-auto">
+                                                The three input sections below help you define each filter criterion to identify your true market segment.
+                                            </p>
                                         </div>
                                     </div>
                                     
