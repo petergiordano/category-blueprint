@@ -757,10 +757,6 @@ const SegmentFoundationTool = ({ appState, setAppState, onNavigate, markPartAsCo
                                                     </button>
                                                 </div>
                                             </div>
-
-                                            <p className="text-sm text-gray-600 mt-4 max-w-3xl mx-auto">
-                                                The three input sections below help you define each filter criterion to identify your true market segment.
-                                            </p>
                                         </div>
                                     </div>
                                     
