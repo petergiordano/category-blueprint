@@ -229,7 +229,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ message: 'Server configuration error: GEMINI_API_KEY is not set.' });
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using gemini-1.5-flash for text generation
+  console.log('Initializing Gemini model: gemini-2.5-flash');
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Using stable gemini-2.5-flash
 
   const results = {};
   const errors = [];
@@ -387,13 +388,27 @@ export default async function handler(req, res) {
         }
 
       } catch (error) {
-        console.error(`Error processing part "${partName}" on attempt ${attempt}:`, error.message);
+        console.error(`Error processing part "${partName}" on attempt ${attempt}:`);
+        console.error('  Error message:', error.message);
+        console.error('  Error name:', error.name);
+        console.error('  Error stack:', error.stack);
+
+        // Log additional context for API errors
+        if (error.response) {
+          console.error('  API Response Status:', error.response.status);
+          console.error('  API Response Data:', JSON.stringify(error.response.data, null, 2));
+        }
+        if (error.statusCode) {
+          console.error('  Status Code:', error.statusCode);
+        }
 
         if (attempt === maxRetries) {
           errors.push({
             part: partName,
             message: error.message,
-            attempts: attempt
+            attempts: attempt,
+            errorType: error.name,
+            statusCode: error.statusCode || error.response?.status
           });
           results[partName] = {
             error: `Failed to process after ${maxRetries} attempts: ${error.message}`,
@@ -404,6 +419,7 @@ export default async function handler(req, res) {
             }
           };
         } else {
+          console.log(`Retrying ${partName} in ${1000 * attempt}ms...`);
           // Wait a bit before retrying
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         }

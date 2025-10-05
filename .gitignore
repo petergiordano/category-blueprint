@@ -77,6 +77,3 @@ positioning-blueprint-swapfile.txt
 test-*.json
 sample-*.json
 test-data/*.json
-
-# Node.js
-node_modules/

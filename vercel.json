@@ -1,7 +1,7 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
+  "buildCommand": "echo 'No build required'",
+  "outputDirectory": ".",
+  "framework": null,
   "functions": {
     "api/search.js": {
       "maxDuration": 30
@@ -9,12 +9,8 @@
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/((?!api|public).*)",
+      "destination": "/index.html"
     }
   ]
 }
