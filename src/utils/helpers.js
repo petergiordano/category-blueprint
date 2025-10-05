@@ -87,7 +87,7 @@ To conduct comprehensive, outside-in research into **{{Company Name}}** and its 
 - **ANTI-PATTERN 3 (No Invented Sections):** Do NOT generate sections that are not in the blueprint, such as "SWOT Analysis" or "Strategic Recommendations." Your output must ONLY contain the headings and sub-headings specified below.
 
 ### Critical Scoping Constraint
-- **FOCUS ON ARCHITECT ONLY:** Your research and analysis must be exclusively focused on the **{{Product Name}}** product. The target company, {{Company Name}}, may have other products that you are to actively ignore and exclude any information, features, use cases, or value propositions that relate to products other than {{Product Name}}. Your entire report must reflect the perspective of a buyer for **{{Product Name}}**.
+- **FOCUS ON {{Product Name}} ONLY:** Your research and analysis must be exclusively focused on the **{{Product Name}}** product. The target company, {{Company Name}}, may have other products that you are to actively ignore and exclude any information, features, use cases, or value propositions that relate to products other than {{Product Name}}. Your entire report must reflect the perspective of a buyer for **{{Product Name}}**.
 
 
 ### Research Parameters
