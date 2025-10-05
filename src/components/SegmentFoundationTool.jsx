@@ -731,20 +731,15 @@ const SegmentFoundationTool = ({ appState, setAppState, onNavigate, markPartAsCo
                                 <div className="space-y-8">
                                     {/* Market Segment Definition Header */}
                                     <div id="segment-definition-section" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
-                                        <div className="text-center mb-8">
-                                            <p className="text-lg text-gray-700 mb-8 max-w-4xl mx-auto">
-                                                A true market segment is composed of customers who share a common Job to be Done, 
-                                                perceive value similarly, and have a similar Willingness to Pay.
-                                            </p>
-                                            
+                                        <div className="mb-8">
                                             {/* Segment Foundation Summary */}
                                             <div className="bg-gray-50 rounded-lg p-6 mb-6 max-w-4xl mx-auto">
-                                                <div className="text-center mb-4">
+                                                <div className="mb-4">
                                                     <h3 className="text-lg font-semibold text-gray-800 mb-3">Market Segmentation Process:</h3>
-                                                    <p className="text-gray-600 mb-4 text-left">
+                                                    <p className="text-gray-600 mb-4">
                                                         To determine a true Market Segment, we filter the total market to find customers who share the same:
                                                     </p>
-                                                    <ul className="text-left text-gray-700 mb-4 space-y-2 ml-6">
+                                                    <ul className="text-gray-700 mb-4 space-y-2 ml-6">
                                                         <li><strong>Jobs to be Done</strong> (shared context & struggling moments)</li>
                                                         <li><strong>Customer Value</strong> (similar value priorities)</li>
                                                         <li><strong>Willingness to Pay</strong> (investment threshold)</li>
