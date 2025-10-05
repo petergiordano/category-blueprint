@@ -348,8 +348,38 @@ const ICPDefinitionTool = ({ appState, setAppState, onNavigate, markPartAsComple
                 <div className="lg:flex lg:space-x-8">
                     <main className="w-full">
                         <div className="space-y-8">
-                            {/* ICP Flow Visualization */}
-                            <ICPFlowDiagram appState={appState} onNavigate={onNavigate} openTourAtStep={openTourAtStep} />
+                            {/* ICP Definition Process */}
+                            <div className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
+                                <div className="mb-8">
+                                    <div className="bg-gray-50 rounded-lg p-6 mb-6 max-w-4xl mx-auto">
+                                        <div className="mb-4">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-3">ICP Definition Process:</h3>
+                                            <p className="text-gray-600 mb-4">
+                                                To determine an <strong>Actionable ICP</strong>, we enhance the Market Segment with additional targeting characteristics:
+                                            </p>
+                                            <ul className="text-gray-700 mb-4 space-y-2 ml-6">
+                                                <li><strong>Firmographics</strong></li>
+                                                <li><strong>Technographics</strong></li>
+                                                <li><strong>Behavioral Signals</strong></li>
+                                            </ul>
+                                            <button
+                                                onClick={() => openTourAtStep(2)}
+                                                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                            >
+                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                                View Interactive Diagram
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-sm text-gray-600 mt-4 max-w-3xl mx-auto">
+                                        The input sections below help you define the enhanced targeting characteristics.
+                                    </p>
+                                </div>
+                            </div>
 
                             <div id="section-1" className="bg-white p-8 rounded-lg shadow-md scroll-mt-32">
                                 <h2 className="text-2xl font-bold scale-green-text mb-2">Define Your Ideal Customer Profile (ICP)</h2>
